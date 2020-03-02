@@ -1,2 +1,2 @@
-# ton.js
+# tonweb
 JavaScript API for TON (Telegram Open Network)
