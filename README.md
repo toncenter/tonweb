@@ -8,6 +8,8 @@ TonWeb has only 3 external dependencies (BN.js, tweetnacl, ethjs-unit) and is no
 
 Used by [gram-wallet.org](https://gram-wallet.org) and [gram-wallet plugin](https://gram-wallet.org/plugin).
 
+TonWeb has a modular structure so you can only import what you need (e.g. BOC serialization without everything else).
+
 ## Install
 
 `npm install tonweb`
