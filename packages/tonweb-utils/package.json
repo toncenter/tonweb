@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/toncenter/tonweb/issues"
   },
-  "repository": "https://github.com/toncenter/tonweb/packages/tonweb-utils",
+  "repository": "https://github.com/toncenter/tonweb/blob/master/packages/tonweb-utils",
   "dependencies": {
     "bn.js": "^5.1.1",
     "tweetnacl": "^1.0.3",

@@ -1,7 +1,7 @@
 {
   "name": "tonweb",
   "version": "0.0.1",
-  "description": "TonWeb",
+  "description": "TonWeb - JavaScript API for TON (Telegram Open Network)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -14,11 +14,12 @@
     "API"
   ],
   "author": "@rulon and @tolyayanot",
-  "license": "???",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/toncenter/tonweb/issues"
   },
   "homepage": "https://github.com/toncenter/tonweb#readme",
+  "repository": "https://github.com/toncenter/tonweb",
   "dependencies": {
     "tonweb-utils": "file:../tonweb-utils",
     "tonweb-boc": "file:../tonweb-boc",
