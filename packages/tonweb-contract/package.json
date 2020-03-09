@@ -20,7 +20,7 @@
   },
   "repository": "https://github.com/toncenter/tonweb/blob/master/packages/tonweb-contract",
   "dependencies": {
-    "tonweb-utils": "file:../tonweb-utils",
-    "tonweb-boc": "file:../tonweb-boc"
+    "tonweb-utils": "^0.0.1",
+    "tonweb-boc": "^0.0.1"
   }
 }

@@ -20,8 +20,8 @@
   },
   "repository": "https://github.com/toncenter/tonweb/blob/master/packages/tonweb-contract-wallet",
   "dependencies": {
-    "tonweb-utils": "file:../tonweb-utils",
-    "tonweb-boc": "file:../tonweb-boc",
-    "tonweb-contract": "file:../tonweb-contract"
+    "tonweb-utils": "^0.0.1",
+    "tonweb-boc": "^0.0.1",
+    "tonweb-contract": "^0.0.1"
   }
 }
