@@ -63,15 +63,15 @@ tonweb.sendBoc(bocBytes);
 
 Each package is documented separately:
 
-[tonweb](https://github.com/toncenter/packages/tonweb/README.md) - root module and methods
+[tonweb](https://github.com/toncenter/tonweb/blob/master/packages/tonweb/README.md) - root module and methods
 
-[tonweb-contract-wallet](https://github.com/toncenter/packages/tonweb-contract-wallet/README.md) - interaction with wallet's smart contracts.
+[tonweb-contract-wallet](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-contract-wallet/README.md) - interaction with wallet's smart contracts.
 
-[tonweb-contract](https://github.com/toncenter/packages/tonweb-contract/README.md) - abstract interface to interact with TON smart contracts.
+[tonweb-contract](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-contract/README.md) - abstract interface to interact with TON smart contracts.
 
-[tonweb-boc](https://github.com/toncenter/packages/tonweb-boc/README.md) - serializations of Cell and BitString
+[tonweb-boc](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-boc/README.md) - serializations of Cell and BitString
 
-[tonweb-utils](https://github.com/toncenter/packages/tonweb-utils/README.md) - work with TON Addresses, gram values, byte arrays, hex, hash functions.
+[tonweb-utils](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-utils/README.md) - work with TON Addresses, gram values, byte arrays, hex, hash functions.
 
 
 **Also we use JSDoc in code** 
