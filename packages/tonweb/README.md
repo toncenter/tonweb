@@ -1,0 +1,45 @@
+# tonweb
+
+Root package of TonWeb
+
+## Usage
+
+* TonWeb.version - current version
+
+* TonWeb.utils - [utils](https://github.com/toncenter/tonweb/packages/tonweb-utils) package
+
+* TonWeb.Address - [Address class](https://github.com/toncenter/tonweb/packages/tonweb-utils)
+
+* TonWeb.boc - [boc](https://github.com/toncenter/tonweb/packages/tonweb-boc) package
+
+* TonWeb.Contract - [Contract class](https://github.com/toncenter/tonweb/packages/tonweb-contract)
+
+* tonweb.wallet - [wallets object](https://github.com/toncenter/tonweb/packages/tonweb-contract-wallet)
+
+* tonweb.getTransactions(address: Address | string, limit?: number) - Use this method to get transaction history of a given address.
+
+* tonweb.getTransaction(hash: string) - Get transaction by hash
+
+* tonweb.getBalance(address: Address | string) - The current balance for the given address in nanograms.
+
+* tonweb.sendBoc(bytes: Uint8Array) - Use this method to send serialized boc file: fully packed and serialized external message.
+
+* tonweb.call(address: Address | string, method: string | number, params: Array) - Invoke get-method of smart contract
+
+## Additional
+
+* tonweb.provider.getAddressInfo(address: string) - Use this method to get information about address: balance, code, data, last_transaction_id.
+
+* tonweb.provider.getExtendedAddressInfo(address: string) - Similar to previous one but tries to parse additional information for known contract types. This method is based on generic.getAccountState thus number of recognizable contracts may grow. For wallets we recommend to use getWalletInformation.
+
+* tonweb.provider.getWalletInfo(address: string) - Use this method to retrieve wallet information, this method parse contract state and currently supports more wallet types than getExtendedAddressInformation: simple wallet, stadart wallet and v3 wallet.
+
+## Build
+
+```
+npx webpack --mode=none
+```
+
+## Authors
+
+@rulon and @tolyayanot
