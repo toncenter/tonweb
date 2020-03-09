@@ -1,5 +1,7 @@
 # TonWeb - JavaScript API for TON (Telegram Open Network)
 
+[![NPM](https://img.shields.io/npm/v/tonweb.svg)](https://www.npmjs.org/package/tonweb)
+
 TonWeb interface is close as possible to the web3.js.
 
 TonWeb has only 3 external dependencies (BN.js, tweetnacl, ethjs-unit) and is not too big (~200kb).
