@@ -1,20 +1,20 @@
 # tonweb
 
-Root package of TonWeb
+Root package of [TonWeb](https://github.com/toncenter/tonweb).
 
 ## Usage
 
 * TonWeb.version - current version
 
-* TonWeb.utils - [utils](https://github.com/toncenter/tonweb/packages/tonweb-utils) package
+* TonWeb.utils - [utils](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-utils/README.md) package
 
-* TonWeb.Address - [Address class](https://github.com/toncenter/tonweb/packages/tonweb-utils)
+* TonWeb.Address - [Address class](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-utils/README.md#address-class)
 
-* TonWeb.boc - [boc](https://github.com/toncenter/tonweb/packages/tonweb-boc) package
+* TonWeb.boc - [boc](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-boc/README.md) package
 
-* TonWeb.Contract - [Contract class](https://github.com/toncenter/tonweb/packages/tonweb-contract)
+* TonWeb.Contract - [Contract class](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-contract/README.md)
 
-* tonweb.wallet - [wallets object](https://github.com/toncenter/tonweb/packages/tonweb-contract-wallet)
+* tonweb.wallet - [wallets object](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-contract-wallet/README.md)
 
 * tonweb.getTransactions(address: Address | string, limit?: number) - Use this method to get transaction history of a given address.
 
