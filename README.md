@@ -55,7 +55,7 @@ cell.bits.writeGrams(1);
 console.log(cell.print()); // print cell data like Fift
 const bocBytes = cell.toBoc();
 
-const history = await tonweb.getTransaction(address);
+const history = await tonweb.getTransactions(address);
 
 const balance = await tonweb.getBalance(address);
 
