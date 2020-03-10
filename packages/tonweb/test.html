@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script src="tonweb.js"></script>
+<script>
+    async function testWalletV3() {
+        const tonweb = new TonWeb();
+        const a = 'EQDjVXa_oltdBP64Nc__p397xLCvGm2IcZ1ba7anSW0NAkeP';
+        const address = new TonWeb.Address(a)
+        console.log(await tonweb.getTransactions(address));
+        console.log(await tonweb.getBalance(address));
+        console.log(await tonweb.sendBoc(new Uint8Array(0)));
+        console.log(await tonweb.call(address, 'seqno'));
+
+        console.log(await tonweb.provider.getAddressInfo(a));
+        console.log(await tonweb.provider.getExtendedAddressInfo(a));
+        console.log(await tonweb.provider.getWalletInfo(a));
+    }
+
+    testWalletV3();
+</script>
+</body>
+</html>

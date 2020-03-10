@@ -18,8 +18,6 @@ Root package of [TonWeb](https://github.com/toncenter/tonweb).
 
 * tonweb.getTransactions(address: Address | string, limit?: number) - Use this method to get transaction history of a given address.
 
-* tonweb.getTransaction(hash: string) - Get transaction by hash
-
 * tonweb.getBalance(address: Address | string) - The current balance for the given address in nanograms.
 
 * tonweb.sendBoc(bytes: Uint8Array) - Use this method to send serialized boc file: fully packed and serialized external message.

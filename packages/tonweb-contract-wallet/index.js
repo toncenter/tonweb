@@ -48,9 +48,19 @@ class WalletContract extends Contract {
             },
             seqno: () => {
                 return {
+                    /**
+                     * @return {Promise<number>}
+                     */
                     call: async () => {
                         const address = await this.getAddress();
-                        return provider.call(address.toString(false), 'seqno', []);
+                        const result = await provider.call(address.toString(false), 'seqno', []);
+                        let n = null;
+                        try {
+                            n = parseInt(result.stack[0][1], 16);
+                        } catch (e) {
+
+                        }
+                        return n;
                     }
                 }
             }

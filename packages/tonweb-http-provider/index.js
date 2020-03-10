@@ -82,15 +82,7 @@ export default class HttpProvider {
      * @return array of transaction object
      */
     async getTransactions(address, limit = 20) {
-        return this.send("getTransactions", {'address': address, 'limit': limit});
-    };
-
-    /**
-     * Get transaction by hash
-     * @param hash   {string}
-     */
-    async getTransaction(hash) {
-        return this.send("getTransactions", {hash});
+        return this.send("getTransactions", {address, limit});
     };
 
     /**
@@ -132,9 +124,9 @@ export default class HttpProvider {
      * Invoke get-method of smart contract
      * @param address   {string}    contract address
      * @param method   {string | number}    	method name or method id
-     * @param params   Array of stack elements: [['num',3], ['cell', cell_object], ['slice', slice_object]]
+     * @param params?   Array of stack elements: [['num',3], ['cell', cell_object], ['slice', slice_object]]
      */
-    async call(address, method, params) {
+    async call(address, method, params = []) {
         return this.send('runGetMethod', {
             address: address,
             method: method,

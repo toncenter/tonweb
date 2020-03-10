@@ -4,7 +4,7 @@ const boc = require("tonweb-boc");
 const HttpProvider = require("tonweb-http-provider").default;
 const {Contract} = require("tonweb-contract");
 const Wallets = require("tonweb-contract-wallet").default;
-const version = '0.0.1';
+const version = '0.0.3';
 
 class TonWeb {
     constructor(provider) {
@@ -22,19 +22,11 @@ class TonWeb {
      * Use this method to get transaction history of a given address.
      * @param address   {Address | string}
      * @param limit?    {number}
-     * @return array of transaction object
+     * @return array of transaction objects
      */
     async getTransactions(address, limit = 20) {
         return this.provider.getTransactions(address.toString(), limit);
     };
-
-    /**
-     * Get transaction by hash
-     * @param hash   {string}
-     */
-    async getTransaction(hash) {
-        return this.provider.getTransaction(hash);
-    }
 
     /**
      * @param address   {Address | string}
@@ -56,9 +48,9 @@ class TonWeb {
      * Invoke get-method of smart contract
      * @param address   {Address | string}    contract address
      * @param method   {string | number}        method name or method id
-     * @param params   Array of stack elements: [['num',3], ['cell', cell_object], ['slice', slice_object]]
+     * @param params?   Array of stack elements: [['num',3], ['cell', cell_object], ['slice', slice_object]]
      */
-    async call(address, method, params) {
+    async call(address, method, params = []) {
         return this.provider.call(address.toString(), method, params);
     }
 }
