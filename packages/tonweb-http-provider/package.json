@@ -1,6 +1,6 @@
 {
   "name": "tonweb-http-provider",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "HTTP Provider used in TonWeb",
   "main": "index.js",
   "scripts": {

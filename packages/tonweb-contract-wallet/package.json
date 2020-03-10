@@ -1,6 +1,6 @@
 {
   "name": "tonweb-contract-wallet",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Interaction with wallet's smart contracts used in TonWeb",
   "main": "index.js",
   "scripts": {
@@ -20,8 +20,8 @@
   },
   "repository": "https://github.com/toncenter/tonweb/blob/master/packages/tonweb-contract-wallet",
   "dependencies": {
-    "tonweb-utils": "^0.0.1",
-    "tonweb-boc": "^0.0.1",
-    "tonweb-contract": "^0.0.1"
+    "tonweb-utils": "^0.0.3",
+    "tonweb-boc": "^0.0.3",
+    "tonweb-contract": "^0.0.3"
   }
 }

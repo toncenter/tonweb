@@ -1,6 +1,6 @@
 {
   "name": "tonweb",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "TonWeb - JavaScript API for TON (Telegram Open Network)",
   "main": "index.js",
   "scripts": {
@@ -21,11 +21,11 @@
   "homepage": "https://github.com/toncenter/tonweb#readme",
   "repository": "https://github.com/toncenter/tonweb",
   "dependencies": {
-    "tonweb-utils": "^0.0.1",
-    "tonweb-boc": "^0.0.1",
-    "tonweb-http-provider": "^0.0.1",
-    "tonweb-contract": "^0.0.1",
-    "tonweb-contract-wallet": "^0.0.1"
+    "tonweb-utils": "^0.0.3",
+    "tonweb-boc": "^0.0.3",
+    "tonweb-http-provider": "^0.0.3",
+    "tonweb-contract": "^0.0.3",
+    "tonweb-contract-wallet": "^0.0.3"
   },
   "devDependencies": {
     "webpack": "^4.41.6",
