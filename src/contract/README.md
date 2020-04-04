@@ -10,7 +10,7 @@ tonweb.Contract is abstract class for all smart contract objects in TonWeb.
 
 ABI and json interface of contract not yet invented in TON, so you need extend tonweb.Contract and compose messages to contract yourself.
 
-```
+```js
 import {Contract} from 'web3-eth-contract';
 
 export class MyContract extends Contract {
@@ -47,7 +47,7 @@ You can see an example of extending Contract class and using these functions in 
 
 ## Common Interface 
 
-```
+```js
 /**
 * @param provider    {HttpProvider}
 * @param options    {{code?: Uint8Array, address?: Address, wc?: number}}

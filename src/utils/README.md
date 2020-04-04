@@ -5,7 +5,7 @@ Part of [TonWeb](https://github.com/toncenter/tonweb).
 This contains useful utility functions for Dapp developers: work with TON Addresses, gram values, byte arrays, hex, hash functions.
 
 ## Address Class
-```
+```js
 const Address = TonWeb.utils.Address;
 
 const address = new Address(anyForm: string | Address);

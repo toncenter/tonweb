@@ -14,7 +14,7 @@ They all have almost the same interface.
 
 ## Usage
 
-```
+```js
 const nacl = TonWeb.utils.nacl; // use nacl library for key pairs
 const tonweb = new TonWeb();
 
@@ -62,7 +62,7 @@ const transferQuery = await transfer.getQuery(); // get transfer query Cell
 
 ## Usage non-default wallet
 
-```
+```js
 tonweb.wallet.all
 -> {SimpleWalletContract, StandardWalletContract, WalletV3Contract}
 

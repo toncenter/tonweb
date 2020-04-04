@@ -6,7 +6,7 @@ Serialization of BOC (Bag of Cells)
 
 ## BitString
 
-```
+```js
 const bitString = new BitString(1023); // create BitString with length 1023 bits
 
 bitString.array: Uint8Array
@@ -55,7 +55,7 @@ bitString.toHex(): string // prints BitString like Fift
 
 ## Cell
  
-```
+```js
 const cell = new Cell();
 
 cell.bits: BitString // with length 1023
@@ -75,7 +75,8 @@ Cell.fromBoc(boc: string | UInt8Array): Cell - decerialize boc bytearray to Cell
 ``` 
  
 ### Cell deserialization example
-```
+
+```js
 // Create some cells
 const c2 = new TonWeb.boc.Cell();
 c2.bits.writeUint(42, 7);
