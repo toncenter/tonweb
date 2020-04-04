@@ -24,7 +24,7 @@ or
 
 ## Overview example
 
-```
+```js
 const tonweb = new TonWeb();
 
 const wallet = tonweb.wallet.create({publicKey});
