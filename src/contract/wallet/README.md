@@ -78,4 +78,6 @@ const simpleWallet = new tonweb.wallet.all.SimpleWalletContract({publicKey})
 
 ## Authors
 
-@rulon and @tolyayanot
+[Emelyanenko Kirill](https://github.com/EmelyanenkoK), mail: emelyanenko.kirill@gmail.com
+ 
+[Anatoliy Makosov](https://github.com/tolya-yanot), mail: info@coding.studio
