@@ -63,9 +63,9 @@ tonweb.sendBoc(bocBytes);
 
 ## Documentation
 
-Each module is documented separately:
+Each part is documented separately:
 
-[tonweb](https://github.com/toncenter/tonweb/blob/master/src/README.md) - root module and methods
+[tonweb](https://github.com/toncenter/tonweb/blob/master/src/README.md) - root class and methods
 
 [tonweb-contract-wallet](https://github.com/toncenter/tonweb/blob/master/src/contract/wallet/README.md) - interaction with wallet's smart contracts.
 
