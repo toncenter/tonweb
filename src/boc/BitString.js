@@ -121,7 +121,7 @@ class BitString {
             (number.toString(2).length > bitLength)
         ) {
             if (number == 0) return;
-            throw Error("bitLength is too small for number, got number="+number+",bitLength="+ bitLength);
+            throw Error("bitLength is too small for number, got number=" + number + ",bitLength=" + bitLength);
         }
         const s = number.toString(2, bitLength);
         for (let i = 0; i < bitLength; i++) {
@@ -151,7 +151,7 @@ class BitString {
                 this.writeBit(true);
                 const b = new BN(2);
                 const nb = b.pow(new BN(bitLength - 1));
-                this.writeUint(nb.sub(number), bitLength - 1);
+                this.writeUint(nb.add(number), bitLength - 1);
             } else {
                 this.writeBit(false);
                 this.writeUint(number, bitLength - 1);
@@ -281,6 +281,34 @@ class BitString {
             }
             const hex = temp.toHex().toUpperCase();
             return hex + '_';
+        }
+    }
+
+    /**
+     * set this cell data to match provided topUppedArray
+     * @param array  {Uint8Array}
+     * @param fullfilledBytes  {boolean}
+     */
+    setTopUppedArray(array, fullfilledBytes = true) {
+        this.length = array.length * 8;
+        this.array = array;
+        this.cursor = this.length;
+        if (fullfilledBytes || !this.length) {
+            return;
+        } else {
+            let foundEndBit = false;
+            for (let c = 0; c < 7; c++) {
+                this.cursor -= 1;
+                if (this.get(this.cursor)) {
+                    foundEndBit = true;
+                    this.off(this.cursor);
+                    break;
+                }
+            }
+            if (!foundEndBit) {
+                console.log(array, fullfilledBytes);
+                throw new Error("Incorrect TopUppedArray");
+            }
         }
     }
 }

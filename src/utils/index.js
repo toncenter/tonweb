@@ -170,6 +170,16 @@ function concatBytes(a, b) {
     return c;
 }
 
+/**
+ * @param a {Uint8Array}
+ * @param b {Uint8Array}
+ * @return {boolean}
+ */
+function compareBytes(a, b) {
+    // TODO Make it smarter
+    return a.toString() === b.toString();
+}
+
 const base64abc = (() => {
     const abc = []
     const A = "A".charCodeAt(0);
@@ -233,6 +243,19 @@ function base64ToBytes(base64) {
     return bytes;
 }
 
+/**
+ * @param n  {number}
+ * @param ui8array  {Uint8Array}
+ * @return {number}
+ */
+function readNBytesUIntFromArray(n, ui8array) {
+    let res = 0;
+    for (let c = 0; c < n; c++) {
+        res *= 256;
+        res += ui8array[c];
+    }
+    return res;
+}
 
 export {
     BN,
@@ -248,4 +271,6 @@ export {
     concatBytes,
     bytesToBase64,
     base64ToBytes,
+    compareBytes,
+    readNBytesUIntFromArray
 };
