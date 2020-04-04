@@ -1,6 +1,6 @@
 # tonweb-contract-wallet
 
-This is a sub package of [TonWeb](https://github.com/toncenter/tonweb).
+Part of [TonWeb](https://github.com/toncenter/tonweb).
 
 Interaction with wallet's smart contracts.
 
@@ -8,30 +8,9 @@ Interaction with wallet's smart contracts.
 
 There is currently no single standard wallet in TON.
 
-This package implements wallet's smart contracts published in the [TON repository](https://github.com/ton-blockchain/ton/tree/master/crypto/smartcont).
+This code implements wallet's smart contracts published in the [TON repository](https://github.com/ton-blockchain/ton/tree/master/crypto/smartcont).
 
 They all have almost the same interface.
-
-## Install
-
-tonweb-contract-wallet is already included in the main package:
-
-`npm install tonweb`
-
-```
-import TonWeb from "tonweb";
-
-const tonweb = new TonWeb();
-tonweb.wallet;
-```
-
-You can use the tonweb-contract-wallet separately:
-
-`npm install tonweb-contract-wallet`
-
-```
-import Wallets from "tonweb-contract-wallet"
-``` 
 
 ## Usage
 
@@ -93,9 +72,9 @@ const simpleWallet = new tonweb.wallet.all.SimpleWalletContract({publicKey})
 
 ## Low level
 
-[Comparison with new-wallet.fif](https://github.com/toncenter/tonweb/blob/master/packages/tonweb/test-new-wallet-fif.html)
+[Comparison with new-wallet.fif](https://github.com/toncenter/tonweb/blob/master/test/test-new-wallet-fif.html)
 
-[Comparison with wallet.fif](https://github.com/toncenter/tonweb/blob/master/packages/tonweb/test-wallet-fif.html)
+[Comparison with wallet.fif](https://github.com/toncenter/tonweb/blob/master/test/test-wallet-fif.html)
 
 ## Authors
 

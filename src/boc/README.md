@@ -1,30 +1,8 @@
 # tonweb-boc
 
-This is a sub package of [TonWeb](https://github.com/toncenter/tonweb).
+Part of [TonWeb](https://github.com/toncenter/tonweb).
 
 Serialization of BOC (Bag of Cells)
-
-## Install
-
-tonweb-boc is already included in the main package:
-
-`npm install tonweb`
-
-```
-import TonWeb from "tonweb";
-TonWeb.boc;
-
-const tonweb = new TonWeb();
-tonweb.boc;
-```
-
-You can use the tonweb-boc separately, without the main package:
-
-`npm install tonweb-boc`
-
-```
-import {BitString, Cell} from "tonweb-boc"
-```
 
 ## BitString
 

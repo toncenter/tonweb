@@ -1,4 +1,4 @@
-import {BN, bytesToHex} from "tonweb-utils";
+import {BN, bytesToHex} from "../utils";
 
 class BitString {
     /**

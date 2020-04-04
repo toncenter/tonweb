@@ -1,5 +1,5 @@
-import {Cell} from "tonweb-boc";
-import {Address, bytesToBase64, bytesToHex, nacl} from "tonweb-utils";
+import {Cell} from "../boc";
+import {Address, bytesToBase64, bytesToHex, nacl} from "../utils";
 
 class Contract {
     /**

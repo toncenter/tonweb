@@ -1,30 +1,8 @@
 # tonweb-utils
 
-This is a sub package of [TonWeb](https://github.com/toncenter/tonweb).
+Part of [TonWeb](https://github.com/toncenter/tonweb).
 
 This contains useful utility functions for Dapp developers: work with TON Addresses, gram values, byte arrays, hex, hash functions.
-
-## Install
-
-tonweb-utils is already included in the main package:
-
-`npm install tonweb`
-
-```
-import TonWeb from "tonweb";
-TonWeb.utils;
-
-const tonweb = new TonWeb();
-tonweb.utils;
-```
-
-You can use the tonweb-utils separately, without the main package:
-
-`npm install tonweb-utils`
-
-```
-import {Address, toNano, ...} from "tonweb-utils"
-``` 
 
 ## Address Class
 ```

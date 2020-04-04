@@ -1,11 +1,11 @@
 {
-  "name": "tonweb-utils",
-  "version": "0.0.3",
-  "description": "Collection of utility functions used in TonWeb.",
+  "name": "tonweb",
+  "version": "0.0.4",
+  "description": "TonWeb - JavaScript API for TON (Telegram Open Network)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": ""
+    "build": "npx webpack --mode=none"
   },
   "keywords": [
     "TON",
@@ -18,10 +18,15 @@
   "bugs": {
     "url": "https://github.com/toncenter/tonweb/issues"
   },
-  "repository": "https://github.com/toncenter/tonweb/blob/master/packages/tonweb-utils",
+  "homepage": "https://github.com/toncenter/tonweb#readme",
+  "repository": "https://github.com/toncenter/tonweb",
   "dependencies": {
     "bn.js": "^5.1.1",
     "tweetnacl": "^1.0.3",
     "ethjs-unit": "^0.1.6"
+  },
+  "devDependencies": {
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11"
   }
 }

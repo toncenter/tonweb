@@ -1,6 +1,6 @@
-import {Cell} from "tonweb-boc";
-import {Address, BN, toNano, bytesToHex, hexToBytes, nacl, stringToBytes, bytesToBase64} from "tonweb-utils";
-import {Contract} from "tonweb-contract";
+import {Cell} from "../../boc";
+import {Address, BN, toNano, bytesToHex, hexToBytes, nacl, stringToBytes, bytesToBase64} from "../../utils";
+import {Contract} from "../index.js";
 
 /**
  * Abstract standard wallet class

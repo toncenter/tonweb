@@ -8,8 +8,6 @@ TonWeb has only 3 external dependencies (BN.js, tweetnacl, ethjs-unit) and is no
 
 Used by [gram-wallet.org](https://gram-wallet.org) and [gram-wallet plugin](https://gram-wallet.org/plugin).
 
-TonWeb has a modular structure so you can only import what you need (e.g. BOC serialization without everything else).
-
 ## Install
 
 `npm install tonweb`
@@ -65,17 +63,17 @@ tonweb.sendBoc(bocBytes);
 
 ## Documentation
 
-Each package is documented separately:
+Each module is documented separately:
 
-[tonweb](https://github.com/toncenter/tonweb/blob/master/packages/tonweb/README.md) - root module and methods
+[tonweb](https://github.com/toncenter/tonweb/blob/master/src/README.md) - root module and methods
 
-[tonweb-contract-wallet](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-contract-wallet/README.md) - interaction with wallet's smart contracts.
+[tonweb-contract-wallet](https://github.com/toncenter/tonweb/blob/master/src/contract/wallet/README.md) - interaction with wallet's smart contracts.
 
-[tonweb-contract](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-contract/README.md) - abstract interface to interact with TON smart contracts.
+[tonweb-contract](https://github.com/toncenter/tonweb/blob/master/src/contract/README.md) - abstract interface to interact with TON smart contracts.
 
-[tonweb-boc](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-boc/README.md) - serializations of Cell and BitString
+[tonweb-boc](https://github.com/toncenter/tonweb/blob/master/src/boc/README.md) - serializations of Cell and BitString
 
-[tonweb-utils](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-utils/README.md) - work with TON Addresses, gram values, byte arrays, hex, hash functions.
+[tonweb-utils](https://github.com/toncenter/tonweb/blob/master/src/utils/README.md) - work with TON Addresses, gram values, byte arrays, hex, hash functions.
 
 
 **Also we use JSDoc in code** 
@@ -83,8 +81,6 @@ Each package is documented separately:
 ## Build
 
 ```
-cd packages/tonweb
-
 npx webpack --mode=none
 ```
 

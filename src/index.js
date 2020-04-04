@@ -1,10 +1,10 @@
-const utils = require("tonweb-utils");
+const utils = require("./utils");
 const Address = utils.Address;
-const boc = require("tonweb-boc");
-const HttpProvider = require("tonweb-http-provider").default;
-const {Contract} = require("tonweb-contract");
-const Wallets = require("tonweb-contract-wallet").default;
-const version = '0.0.3';
+const boc = require("./boc");
+const HttpProvider = require("./providers").default;
+const {Contract} = require("./contract");
+const Wallets = require("./contract/wallet").default;
+const version = '0.0.4';
 
 class TonWeb {
     constructor(provider) {

@@ -1,5 +1,5 @@
 import {BitString} from "./BitString";
-import {bytesToHex, bytesToBase64, concatBytes, crc32c, hexToBytes} from "tonweb-utils";
+import {bytesToHex, bytesToBase64, concatBytes, crc32c, hexToBytes} from "../utils";
 
 class Cell {
     constructor() {

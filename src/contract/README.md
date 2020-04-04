@@ -1,32 +1,10 @@
 # tonweb-contract
 
-This is a sub package of [TonWeb](https://github.com/toncenter/tonweb).
+Part of [TonWeb](https://github.com/toncenter/tonweb).
 
 The idea is to interact with smart contracts as if they were JavaScript objects.
 
 tonweb.Contract is abstract class for all smart contract objects in TonWeb.
-
-## Install
-
-tonweb-contract is already included in the main package:
-
-`npm install tonweb`
-
-```
-import TonWeb from "tonweb";
-TonWeb.Contract;
-
-const tonweb = new TonWeb();
-tonweb.Contract;
-```
-
-You can use the tonweb-contract separately:
-
-`npm install tonweb-contract`
-
-```
-import {Contract} from "tonweb-contract"
-``` 
 
 ## Implement your custom contract
 
@@ -65,7 +43,7 @@ tonweb.Contract contains several static functions to help compose messages:
 
 * Contract.createCommonMsgInfo
 
-You can see an example of extending Contract class and using these functions in the code [tonweb-contract-wallet](https://github.com/toncenter/tonweb/blob/master/packages/tonweb-contract-wallet)
+You can see an example of extending Contract class and using these functions in the code [tonweb-contract-wallet](https://github.com/toncenter/tonweb/blob/master/src/contract/wallet)
 
 ## Common Interface 
 
