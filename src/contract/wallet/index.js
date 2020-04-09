@@ -1,6 +1,6 @@
-import {Cell} from "../../boc";
-import {Address, BN, toNano, bytesToHex, hexToBytes, nacl, stringToBytes, bytesToBase64} from "../../utils";
-import {Contract} from "../index.js";
+const {Cell} = require("../../boc");
+const {Address, BN, toNano, bytesToHex, hexToBytes, nacl, stringToBytes, bytesToBase64} = require("../../utils");
+const {Contract} = require("../index.js");
 
 /**
  * Abstract standard wallet class
@@ -238,4 +238,4 @@ class Wallets {
     }
 }
 
-export default Wallets;
+module.exports.default = Wallets;

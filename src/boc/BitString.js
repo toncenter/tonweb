@@ -1,4 +1,4 @@
-import {BN, bytesToHex} from "../utils";
+const {BN, bytesToHex} = require("../utils");
 
 class BitString {
     /**
@@ -313,4 +313,4 @@ class BitString {
     }
 }
 
-export {BitString};
+module.exports = {BitString};

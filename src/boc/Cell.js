@@ -1,5 +1,5 @@
-import {BitString} from "./BitString";
-import {bytesToBase64, compareBytes, concatBytes, crc32c, hexToBytes, readNBytesUIntFromArray} from "../utils";
+const {BitString} = require("./BitString");
+const {bytesToBase64, compareBytes, concatBytes, crc32c, hexToBytes, readNBytesUIntFromArray, sha256} = require("../utils");
 
 const reachBocMagicPrefix = hexToBytes('B5EE9C72');
 const leanBocMagicPrefix = hexToBytes('68ff65f3');
@@ -137,7 +137,7 @@ class Cell {
      */
     async hash() {
         return new Uint8Array(
-            await crypto.subtle.digest("SHA-256", await this.getRepr())
+            await sha256(await this.getRepr())
         );
     }
 
@@ -455,4 +455,4 @@ function deserializeBoc(serializedBoc) {
     return root_cells;
 }
 
-export {Cell};
+module.exports = {Cell};

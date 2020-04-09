@@ -1,4 +1,11 @@
-export default class HttpProvider {
+let XMLHttpRequest;
+if (typeof window === 'undefined') {
+    XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+} else {
+    XMLHttpRequest = window.XMLHttpRequest;
+}
+
+class HttpProvider {
     /**
      * @param host? {string}
      */
@@ -123,7 +130,7 @@ export default class HttpProvider {
     /**
      * Invoke get-method of smart contract
      * @param address   {string}    contract address
-     * @param method   {string | number}    	method name or method id
+     * @param method   {string | number}        method name or method id
      * @param params?   Array of stack elements: [['num',3], ['cell', cell_object], ['slice', slice_object]]
      */
     async call(address, method, params = []) {
@@ -134,3 +141,5 @@ export default class HttpProvider {
         });
     }
 }
+
+module.exports.default = HttpProvider;

@@ -1,10 +1,11 @@
 const utils = require("./utils");
-const Address = utils.Address;
+const Address = require("./utils/Address").default;
+utils.Address = Address;
 const boc = require("./boc");
 const HttpProvider = require("./providers").default;
 const {Contract} = require("./contract");
 const Wallets = require("./contract/wallet").default;
-const version = '0.0.7';
+const version = '0.0.8';
 
 class TonWeb {
     constructor(provider) {
@@ -63,6 +64,8 @@ TonWeb.HttpProvider = HttpProvider;
 TonWeb.Contract = Contract;
 TonWeb.Wallets = Wallets;
 
-window.TonWeb = TonWeb;
+if (typeof window !== 'undefined') {
+    window.TonWeb = TonWeb;
+}
 
-export default TonWeb;
+module.exports = TonWeb;

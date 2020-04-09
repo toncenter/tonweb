@@ -1,5 +1,5 @@
-import {Cell} from "../boc";
-import {Address, bytesToBase64, bytesToHex, nacl} from "../utils";
+const {Cell} = require("../boc");
+const {Address, bytesToBase64, bytesToHex, nacl} = require("../utils");
 
 class Contract {
     /**
@@ -295,4 +295,4 @@ class Contract {
 //     return new TonContract(address, options);
 // }
 
-export {Contract};
+module.exports = {Contract};

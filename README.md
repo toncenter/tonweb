@@ -8,7 +8,7 @@ TonWeb has only 3 external dependencies (BN.js, tweetnacl, ethjs-unit) and is no
 
 Used by [gram-wallet.org](https://gram-wallet.org) and [gram-wallet plugin](https://gram-wallet.org/plugin).
 
-## Install
+## Install Web
 
 `npm install tonweb`
 
@@ -21,6 +21,14 @@ or
 `<script src="tonweb.js"></script>`
 
 `const tonweb = new window.TonWeb();`
+
+## Install NodeJS
+
+`npm install tonweb`
+
+`const TonWeb = require('tonweb');`
+
+`const tonweb = new TonWeb();`
 
 ## Overview example
 
@@ -46,6 +54,7 @@ const fee = await wallet.methods.transfer({
     sendMode: 3,
 }).estimateFee();
 
+const Cell = TonWeb.boc.Cell;
 const cell = new Cell();
 cell.bits.writeUint(0, 32);
 cell.bits.writeAddress(address);

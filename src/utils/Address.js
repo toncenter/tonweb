@@ -1,4 +1,4 @@
-import {crc16, hexToBytes, bytesToHex, stringToBytes} from "./index";
+const {crc16, hexToBytes, bytesToHex, stringToBytes, base64toString, stringToBase64} = require("./index");
 
 const bounceable_tag = 0x11;
 const non_bounceable_tag = 0x51;
@@ -10,7 +10,7 @@ const test_flag = 0x80;
  * @return {{isTestOnly: boolean, workchain: number, hashPart: Uint8Array, isBounceable: boolean}}
  */
 function parseFriendlyAddress(addressString) {
-    const data = stringToBytes(atob(addressString));
+    const data = stringToBytes(base64toString(addressString));
     if (data.length !== 36) { // 1byte tag + 1byte workchain + 32 bytes hash + 2 byte crc
         throw "Unknown address type: byte length is not equal to 36";
     }
@@ -129,7 +129,7 @@ class Address {
             const addressWithChecksum = new Uint8Array(36);
             addressWithChecksum.set(addr);
             addressWithChecksum.set(crc16(addr), 34);
-            let addressBase64 = btoa(String.fromCharCode.apply(null, new Uint8Array(addressWithChecksum)))
+            let addressBase64 = stringToBase64(String.fromCharCode.apply(null, new Uint8Array(addressWithChecksum)));
 
             if (isUrlSafe) {
                 addressBase64 = addressBase64.replace(/\+/g, '-').replace(/\//g, '_');
@@ -139,4 +139,4 @@ class Address {
     }
 }
 
-export default Address;
+module.exports.default = Address;

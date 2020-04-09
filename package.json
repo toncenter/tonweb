@@ -1,6 +1,6 @@
 {
   "name": "tonweb",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "TonWeb - JavaScript API for TON (Telegram Open Network)",
   "main": "src/index.js",
   "scripts": {
@@ -34,10 +34,15 @@
   "dependencies": {
     "bn.js": "^5.1.1",
     "tweetnacl": "^1.0.3",
-    "ethjs-unit": "^0.1.6"
+    "ethjs-unit": "^0.1.6",
+    "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11"
+  },
+  "browser": {
+    "crypto": false,
+    "xmlhttprequest": false
   }
 }

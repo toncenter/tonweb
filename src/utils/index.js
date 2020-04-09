@@ -1,7 +1,23 @@
-import BN from "bn.js"
-import nacl from "tweetnacl"
-import Address from "./Address"
-import ethunit from "ethjs-unit"
+const BN = require("bn.js");
+const nacl = require("tweetnacl");
+const ethunit = require("ethjs-unit");
+
+let nodeCrypto = null;
+if (typeof window === 'undefined') {
+    nodeCrypto = require('crypto');
+}
+
+/**
+ * @param bytes {Uint8Array}
+ * @return  {Promise<ArrayBuffer>}
+ */
+function sha256(bytes) {
+    if (typeof window === 'undefined') {
+        return nodeCrypto.createHash('sha256').update(bytes);
+    } else {
+        return crypto.subtle.digest("SHA-256", bytes);
+    }
+}
 
 /**
  * from grams to nanograms
@@ -229,12 +245,28 @@ function bytesToBase64(bytes) {
     return result;
 }
 
+function base64toString(base64) {
+    if (typeof window === 'undefined') {
+        return new Buffer(base64, 'base64').toString('binary');
+    } else {
+        return atob(base64);
+    }
+}
+
+function stringToBase64(s) {
+    if (typeof window === 'undefined') {
+        return Buffer.from(s, "binary").toString('base64')
+    } else {
+        return btoa(s);
+    }
+}
+
 /**
  * @param base64  {string}
  * @return {Uint8Array}
  */
 function base64ToBytes(base64) {
-    const binary_string = window.atob(base64);
+    const binary_string = base64toString(base64);
     const len = binary_string.length;
     const bytes = new Uint8Array(len);
     for (let i = 0; i < len; i++) {
@@ -257,10 +289,10 @@ function readNBytesUIntFromArray(n, ui8array) {
     return res;
 }
 
-export {
+module.exports = {
     BN,
     nacl,
-    Address,
+    sha256,
     fromNano,
     toNano,
     bytesToHex,
@@ -271,6 +303,8 @@ export {
     concatBytes,
     bytesToBase64,
     base64ToBytes,
+    base64toString,
+    stringToBase64,
     compareBytes,
     readNBytesUIntFromArray
 };

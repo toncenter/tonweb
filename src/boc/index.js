@@ -1,4 +1,4 @@
-import {BitString} from "./BitString";
-import {Cell} from "./Cell";
+const {BitString} = require("./BitString");
+const {Cell} = require("./Cell");
 
-export {BitString, Cell};
+module.exports = {BitString, Cell};
