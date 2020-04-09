@@ -13,7 +13,7 @@ if (typeof window === 'undefined') {
  */
 function sha256(bytes) {
     if (typeof window === 'undefined') {
-        return nodeCrypto.createHash('sha256').update(bytes);
+        return nodeCrypto.createHash('sha256').update(bytes).digest();
     } else {
         return crypto.subtle.digest("SHA-256", bytes);
     }

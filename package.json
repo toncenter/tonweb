@@ -1,6 +1,6 @@
 {
   "name": "tonweb",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "TonWeb - JavaScript API for TON (Telegram Open Network)",
   "main": "src/index.js",
   "scripts": {
