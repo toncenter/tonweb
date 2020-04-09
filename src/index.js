@@ -4,7 +4,7 @@ const boc = require("./boc");
 const HttpProvider = require("./providers").default;
 const {Contract} = require("./contract");
 const Wallets = require("./contract/wallet").default;
-const version = '0.0.6';
+const version = '0.0.7';
 
 class TonWeb {
     constructor(provider) {

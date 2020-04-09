@@ -81,6 +81,8 @@ Each part is documented separately:
 ## Build
 
 ```
+npm install 
+
 npx webpack --mode=none
 ```
 
