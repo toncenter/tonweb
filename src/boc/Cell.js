@@ -40,7 +40,7 @@ class Cell {
     readExoticType() {
       return this.bits.array[0];
     }
-
+    
     /**
      * @return {number}
      */
@@ -55,7 +55,7 @@ class Cell {
           }
           return maxLevel;
         } else {
-          ensureExoticType();
+          this.ensureExoticType();
           if(this.exoticType==1) {
             return (this.bits.array.length - 3)/32;
           }
@@ -89,7 +89,7 @@ class Cell {
       if(!this.level)
         this.level = this.calculateLevel();
     }
-
+    
     /**
      * 
      */
@@ -210,12 +210,12 @@ class Cell {
      */
     async hash(hash_level=infinity) {
         this.ensureLevel();
-        if(!this.isExotic()) {
+        if(!this.isExotic) {
           return new Uint8Array(
               await sha256(await this.getRepr((hash_level>this.level)? infinity : hash_level))
           );
         } else {
-          ensureExoticType();
+          this.ensureExoticType();
           if(this.exoticType==1) {
             if(hash_level>this.level) {
               return new Uint8Array(
@@ -236,7 +236,7 @@ class Cell {
               return this.bits.array.slice(offset, offset+32);              
             } else {
               return new Uint8Array(
-                await sha256(await this.getRepr(hash_level+1)
+                await sha256(await this.getRepr(hash_level+1))
               );
             }
           }
