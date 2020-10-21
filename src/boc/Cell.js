@@ -5,10 +5,14 @@ const reachBocMagicPrefix = hexToBytes('B5EE9C72');
 const leanBocMagicPrefix = hexToBytes('68ff65f3');
 const leanBocMagicPrefixCRC = hexToBytes('acc3a728');
 const cellTypes = {0:"Ordinary", 1:"Pruned", 2:"Library", 3:"MerkleProof", 4:"MerkleUpdate"};
-const infinity = 5;
+const infinity = 5; // max hash/depth level
 
 class Cell {
     constructor() {
+        //TODO instead of explicitly storing cells in refs we shoud store
+        // only hashes, while keeping hashmap with hash -> cell
+        // that way we can effectively handle cells with near infinite
+        // number of identical leafs
         this.bits = new BitString(1023);
         this.refs = [];
         this.level = undefined;
@@ -40,12 +44,12 @@ class Cell {
     readExoticType() {
       return this.bits.array[0];
     }
-    
+
     /**
      * @return {number}
      */
     calculateLevel() {
-        if(!this.exoctic) {
+        if(!this.isExotic) {
           let maxLevel = 0;
           for (let k in this.refs) {
               const i = this.refs[k];
@@ -57,7 +61,7 @@ class Cell {
         } else {
           this.ensureExoticType();
           if(this.exoticType==1) {
-            return (this.bits.array.length - 3)/32;
+            return (this.bits.array.length - 4)/32;
           }
           if(this.exoticType==2) {
             return 0;
@@ -77,28 +81,30 @@ class Cell {
             if(!this.refs[1].level)
               this.refs[1].level=this.refs[1].calculateLevel()
             return Math.max(this.refs[0].level-1, this.refs[1].level-1, 0);
-           
+
           }
         }
     }
 
+
+
     /**
-     * 
+     *
      */
-    ensureLevel() {    
+    ensureLevel() {
       if(!this.level)
         this.level = this.calculateLevel();
     }
-    
+
     /**
-     * 
+     *
      */
-    ensureExoticType() {    
+    ensureExoticType() {
       if(!this.exoticType) {
             this.exoticType = this.readExoticType();
       }
     }
-    
+
     /**
      * @return {number}
      */
@@ -131,10 +137,10 @@ class Cell {
           return this.bits.array[offset]*256+this.bits.array[offset+1];
         }
         //merkle proof
-        if(this.exoticType==3) // exoticType, hash, depth 
+        if(this.exoticType==3) // exoticType, hash, depth
           return this.bits.array[1+32]*256+this.bits.array[1+32+1];
         //merkle update //TODO check hash/depth order
-        if(this.exoticType==4) // exoticType, hash, hash, depth, depth 
+        if(this.exoticType==4) // exoticType, hash, hash, depth, depth
           return Math.max(this.bits.array[1+32+32]*256+this.bits.array[1+32+32+1],
                           this.bits.array[1+32+32+2]*256+this.bits.array[1+32+32+2+1],
                          );
@@ -186,16 +192,23 @@ class Cell {
      * @return {Promise<Uint8Array>}
      */
     async getRepr(hash_level=infinity) {
-        const reprArray = [];
-
-        reprArray.push(this.getDataWithDescriptors());
+        const reprArray = [this.getRefsDescriptor(), this.getBitsDescriptor()];
+        if(!this.isExotic || this.level==0 || (this.isExotic && this.exoticType==1)) {
+          reprArray.push(this.bits.getTopUppedArray());
+        } else {
+          reprArray.push(await this.hash(this.level-1));
+        }
         for (let k in this.refs) {
             const i = this.refs[k];
             reprArray.push(i.getDepthAsArray());
         }
         for (let k in this.refs) {
             const i = this.refs[k];
-            reprArray.push(await i.hash(hash_level));
+            if(i.exoticType==3 || i.exoticType==4) {
+              reprArray.push(await i.hash(hash_level+1));
+            } else {
+              reprArray.push(await i.hash(hash_level));
+            }
         }
         let x = new Uint8Array();
         for (let k in reprArray) {
@@ -233,7 +246,7 @@ class Cell {
           if(this.exoticType==3) {
             if(hash_level==1) {
               const offset = 1;
-              return this.bits.array.slice(offset, offset+32);              
+              return this.bits.array.slice(offset, offset+32);
             } else {
               return new Uint8Array(
                 await sha256(await this.getRepr(hash_level+1))
@@ -245,7 +258,7 @@ class Cell {
             return this.bits.array.slice(offset, offset+32);
           }
         }
-        
+
     }
 
     /**
@@ -417,6 +430,16 @@ class Cell {
      */
     async treeWalk() {
         return treeWalk(this, [], {});
+    }
+
+    clone() {
+      let result = new Cell();
+      result.bits = this.bits.clone();
+      for(subcell of refs)
+        result.push(subcell.clone());
+      result.level = this.level;
+      result.isExotic = this.isExotic;
+      result.exoticType = this.exoticType;
     }
 }
 

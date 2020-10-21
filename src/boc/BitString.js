@@ -8,6 +8,7 @@ class BitString {
         this.array = Uint8Array.from({length: Math.ceil(length / 8)}, () => 0);
         this.cursor = 0;
         this.length = length;
+        this.mode = undefined; //"reading"/"writing"/undefined
     }
 
     /**
@@ -92,6 +93,9 @@ class BitString {
      * @param b  {boolean | number}
      */
     writeBit(b) {
+        if(this.mode && this.mode!="writing")
+          throw Error("Try write to bitstring in " + this.mode+ " mode");
+        this.mode = "writing";
         if (b && b > 0) {
             this.on(this.cursor);
         } else {
@@ -311,6 +315,85 @@ class BitString {
             }
         }
     }
+
+    /**
+     * set cursor to 0 and drop read/write mode
+     */
+    dropMode() {
+      this.cursor = 0;
+      delete this.mode;
+    }
+
+
+    /**
+     * read next bit from bitString and return it
+     * @return {boolean}
+     */
+    readBit() {
+        if(this.mode && this.mode!="reading")
+          throw Error("Try read to bitstring in " + this.mode+ " mode");
+        this.mode="reading";
+        const result = get(this.cursor);
+        this.cursor = this.cursor + 1;
+        return result;
+    }
+
+    /**
+     * Read unsigned int and move cursor
+     * @param bitLength  {number}  size of int in bits
+     * @return {number | BN}
+     */
+    readUint(bitLength) {
+      let result = new BN(0);
+      const b = new BN(2);
+      for(let i=0; i<bitLength; i++) {
+        result = result*b + (new BN(this.readBit()));
+      }
+      return result;
+    }
+
+    /**
+     * Read signed int and move cursor
+     * @param bitLength  {number}  size of int in bits
+     * @return {number | BN}
+     */
+    readInt(bitLength) {
+      const b = new BN(2);
+      const threshold = b.pow(new BN(bitLength-1));
+      let result = this.readUint(bitLength);
+      if(result>threshold){
+        result = result - threshold - threshold;
+      }
+      return result;
+    }
+
+    /**
+     * return part of this bitstring
+     * @param [start=0]  {number}
+     * @param [end=bitstring.length]  {number}
+     * @returns {BitString} - slice of the bitstring (cursor at 0, no mode set)
+     */
+    slice(start = 0, end = this.length) {
+        if(this.mode && this.mode!="reading")
+          throw Error("Try slice bitstring in " + this.mode+ " mode");
+        if(start < 0 || end<start || end > this.length)
+          throw Error("Wrong indicies during slice creation: "+ String(start)+" "+String(end));
+        const result = new BitString(end-start);
+        for (let x = start; x < end; x++) {
+            if(this.get(x))
+              result.on(x-start);
+        }
+    }
+
+    /**
+     * Read array of bits and return them as bitstring
+     * @param bitLength  {number}
+     * @returns {BitString} - slice of the bitstring (cursor at 0, no mode set)
+     */
+    readBitstring(bitLength) {
+        return this.slice(this.cursor, this.cursor+bitLength);
+    }
+
 }
 
 module.exports = {BitString};
