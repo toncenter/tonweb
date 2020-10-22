@@ -2,7 +2,7 @@ const {Cell} = require("./Cell");
 const {BitString} = require("./BitString");
 
 function dropCellCursors(cell) {
-  cell.bits.dropCursor();
+  cell.bits.dropMode();
   for(subcell of cell.refs)
     dropCellCursors(subcell);
 }
@@ -12,12 +12,9 @@ function deserUnary(bitstring) {
     // unary_succ$1 {n:#} x:(Unary ~n) = Unary ~(n + 1);
     let n = 0;
     while(true) {
-      const r = bitstring,readBit();
-      if(r) {
-        n = n + 1;
-      } else {
+      if(!bitstring.readBit())
         return n;
-      }
+      n = n + 1;
     }
 }
 
@@ -37,28 +34,36 @@ function deserHashMapLabel(bitstring, m) {
         suffix = bitstring.readBitstring(_len);
         break;
       case 'long':
-        const _len = bitstring.readUint(bitLength(m));
-        suffix = bitstring.readBitstring(_len);
+        const _len2 = bitstring.readUint(bitLength(m));
+        suffix = bitstring.readBitstring(_len2);
         break;
       default: //same
         const bit = bitstring.readBit();
-        suffix = new BitString(m);
+        const _len3 = bitstring.readUint(bitLength(m));
+        suffix = new BitString(_len3);
         if(bit)
-          for(let i=0; i<m; i++)
+          for(let i=0; i<_len3; i++)
             suffix.on(i);
         break;
     }
     return suffix;
 }
 
-function deserHashMapNode(cell, m, resultDict, prefix, maxElements) {
+function sliceToCell(cellslice) {
+  x= cellslice.clone();
+  x.bits = cellslice.bits.slice(cellslice.bits.cursor);
+  return x;
+}
+
+function deserHashMapNode(cell, m, resultDict, prefix, maxElements, indexWrapper) {
     // hmn_leaf#_ {X:Type} value:X = HashmapNode 0 X;
     // hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X) right:^(Hashmap n X) = HashmapNode (n + 1) X;
 
     if(Object.keys(resultDict).length > maxElements)
       throw Error("Too many elements in dictionary");
     if(m == 0) { //leaf
-      resultDict[prefix] = cell;
+      const index = indexWrapper(prefix);
+      resultDict[index] = sliceToCell(cell);
       return;
     }
     let l_prefix = new BitString(prefix.length+1);
@@ -68,32 +73,33 @@ function deserHashMapNode(cell, m, resultDict, prefix, maxElements) {
     l_prefix.dropMode();
     r_prefix.dropMode();
 
-    parse_hashmap(cell.refs[0].clone(), m-1, resultDict, l_prefix, maxElements)
-    parse_hashmap(cell.refs[1].clone(), m-1, resultDict, r_prefix, maxElements)
+    parseHashMap(cell.refs[0].clone(), m-1, resultDict, l_prefix, maxElements, indexWrapper)
+    parseHashMap(cell.refs[1].clone(), m-1, resultDict, r_prefix, maxElements, indexWrapper)
 }
 
-function parseHashMap(cell, bitSize, resultDict, prefix, maxElements) {
+function parseHashMap(cell, bitSize, resultDict, prefix, maxElements, indexWrapper) {
     // hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
     //     {n = (~m) + l} node:(HashmapNode m X) = Hashmap n X;
-    suffix = deserHashMapLabel(cell.bits, bitSize);
+    const suffix = deserHashMapLabel(cell.bits, bitSize);
     let new_prefix = new BitString(prefix.length + suffix.length);
     new_prefix.writeBitString(prefix); new_prefix.writeBitString(suffix);
+    new_prefix.dropMode();
     const m = bitSize - suffix.length;
-    deserHashMapNode(cell, m, resultDict, new_prefix, maxElements);
+    deserHashMapNode(cell, m, resultDict, new_prefix, maxElements, indexWrapper);
 }
 
-function parseDict(cell, type, maxElements = 10000) {
+function parseDict(cell, type, maxElements = 10000, bn = false) {
+    dropCellCursors(cell);
     const _type = type.split("int");
     const unsigned = _type[0] == "u";
-    const bitSize = _type[1];
+    const bitSize = parseInt(_type[1]);
     const tempDict = {};
-    parseHashMap(cell, bitSize, tempDict, new BitString(0), maxElements);
-    const resultDict = {};
-    for (const [key, value] of Object.entries(tempDict)) {
-          let _key = unsigned? key.readUint(bitSize) : key.readInt(bitSize);
-          resultDict[_key] = value;
-      }
-    return resultDict;
+    const indexWrapper = bn?
+                           unsigned? key => key.readUint(bitSize) : key => key.readInt(bitSize) 
+                           :
+                           unsigned? key => key.readUint(bitSize).toNumber() : key => key.readInt(bitSize).toNumber();
+    parseHashMap(cell, bitSize, tempDict, new BitString(0), maxElements, indexWrapper);
+    return tempDict;
 }
 
 module.exports = {parseDict};

@@ -374,6 +374,7 @@ class Cell {
             const refcell_ser = await cell_info[1].serializeForBoc(cellsIndex, s_bytes);
             serialization.writeBytes(refcell_ser);
         }
+        serialization.length = serialization.cursor;
         let ser_arr = serialization.getTopUppedArray();
         if (hash_crc32) {
             ser_arr = concatBytes(ser_arr, crc32c(ser_arr));
@@ -435,11 +436,12 @@ class Cell {
     clone() {
       let result = new Cell();
       result.bits = this.bits.clone();
-      for(subcell of refs)
-        result.push(subcell.clone());
+      for(let subcell of this.refs)
+        result.refs.push(subcell.clone());
       result.level = this.level;
       result.isExotic = this.isExotic;
       result.exoticType = this.exoticType;
+      return result;
     }
 }
 
@@ -562,7 +564,7 @@ function deserializeCellData(cellData, referenceIndexSize) {
     cell.isExotic = isExotic;
     cell.level = level;
     if (cellData.length < dataBytesize + referenceIndexSize * refNum)
-        throw "Not enough bytes to encode cell data";
+        throw "Not enough bytes to encode cell data"+cellData.length+"<"+dataBytesize+"+"+referenceIndexSize +"*"+ refNum;
     cell.bits.setTopUppedArray(cellData.slice(0, dataBytesize), fullfilledBytes);
     cellData = cellData.slice(dataBytesize);
     for (let r = 0; r < refNum; r++) {
