@@ -8,6 +8,7 @@ class BitString {
         this.array = Uint8Array.from({length: Math.ceil(length / 8)}, () => 0);
         this.cursor = 0;
         this.length = length;
+        this.mode = undefined; //"reading"/"writing"/undefined
     }
 
     /**
@@ -81,7 +82,7 @@ class BitString {
      * @param callback  {function(boolean): void}
      */
     forEach(callback) {
-        const max = this.cursor;
+        const max = this.length;
         for (let x = 0; x < max; x++) {
             callback(this.get(x));
         }
@@ -92,6 +93,9 @@ class BitString {
      * @param b  {boolean | number}
      */
     writeBit(b) {
+        if(this.mode && this.mode!="writing")
+          throw Error("Try write to bitstring in " + this.mode+ " mode");
+        this.mode = "writing";
         if (b && b > 0) {
             this.on(this.cursor);
         } else {
@@ -228,7 +232,7 @@ class BitString {
     }
 
     clone() {
-        const result = new BitString(0);
+        const result = new BitString(this.length);
         result.array = this.array.slice(0);
         result.length = this.length
         result.cursor = this.cursor;
@@ -247,7 +251,8 @@ class BitString {
      */
     getTopUppedArray() {
         const ret = this.clone();
-
+        ret.cursor = ret.length;
+        ret.length += 8 - (ret.length % 8);
         let tu = Math.ceil(ret.cursor / 8) * 8 - ret.cursor;
         if (tu > 0) {
             tu = tu - 1;
@@ -266,15 +271,17 @@ class BitString {
      * @return {string}
      */
     toHex() {
-        if (this.cursor % 4 === 0) {
-            const s = bytesToHex(this.array.slice(0, Math.ceil(this.cursor / 8))).toUpperCase();
-            if (this.cursor % 8 === 0) {
+        if (this.length % 4 === 0) {
+            const s = bytesToHex(this.array.slice(0, Math.ceil(this.length / 8))).toUpperCase();
+            if (this.length % 8 === 0) {
                 return s;
             } else {
                 return s.substr(0, s.length - 1);
             }
         } else {
             const temp = this.clone();
+            temp.cursor = temp.length;
+            temp.length += 4 - (temp.length % 4);
             temp.writeBit(1);
             while (temp.cursor % 4 !== 0) {
                 temp.writeBit(0);
@@ -305,12 +312,96 @@ class BitString {
                     break;
                 }
             }
+            this.length = this.cursor;
             if (!foundEndBit) {
                 console.log(array, fullfilledBytes);
                 throw new Error("Incorrect TopUppedArray");
             }
         }
     }
+
+    /**
+     * set cursor to 0 and drop read/write mode
+     */
+    dropMode() {
+      this.cursor = 0;
+      delete this.mode;
+    }
+
+
+    /**
+     * read next bit from bitString and return it
+     * @return {boolean}
+     */
+    readBit() {
+        if(this.mode && this.mode!="reading")
+          throw Error("Try read to bitstring in " + this.mode+ " mode");
+        this.mode="reading";
+        const result = this.get(this.cursor);
+        this.cursor = this.cursor + 1;
+        return result;
+    }
+
+    /**
+     * Read unsigned int and move cursor
+     * @param bitLength  {number}  size of int in bits
+     * @return {number | BN}
+     */
+    readUint(bitLength) {
+      let result = new BN(0);
+      const b = new BN(2);
+      for(let i=0; i<bitLength; i++) {
+        let nextBit = this.readBit() | 0;
+        result = result.mul(b).add(new BN(nextBit));
+      }
+      return result;
+    }
+
+    /**
+     * Read signed int and move cursor
+     * @param bitLength  {number}  size of int in bits
+     * @return {number | BN}
+     */
+    readInt(bitLength) {
+      const b = new BN(2);
+      const threshold = b.pow(new BN(bitLength-1));
+      let result = this.readUint(bitLength);
+      if(result>=threshold){
+        result = result.sub(threshold).sub(threshold);
+      }
+      return result;
+    }
+
+    /**
+     * return part of this bitstring
+     * @param [start=0]  {number}
+     * @param [end=bitstring.length]  {number}
+     * @returns {BitString} - slice of the bitstring (cursor at 0, no mode set)
+     */
+    slice(start = 0, end = this.length) {
+        if(this.mode && this.mode!="reading")
+          throw Error("Try slice bitstring in " + this.mode+ " mode");
+        if(start < 0 || end<start || end > this.length)
+          throw Error("Wrong indicies during slice creation: "+ String(start)+" "+String(end));
+        const result = new BitString(end-start);
+        for (let x = start; x < end; x++) {
+            if(this.get(x))
+              result.on(x-start);
+        }
+        return result;
+    }
+
+    /**
+     * Read array of bits and return them as bitstring
+     * @param bitLength  {number}
+     * @returns {BitString} - slice of the bitstring (cursor at 0, no mode set)
+     */
+    readBitstring(bitLength) {
+        let result = this.slice(this.cursor, this.cursor+bitLength);
+        this.cursor = this.cursor + bitLength;
+        return result;
+    }
+
 }
 
 module.exports = {BitString};
