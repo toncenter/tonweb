@@ -67,6 +67,10 @@ class WalletContract extends Contract {
         }
     }
 
+    getName() {
+        throw new Error('override me');
+    }
+
     /**
      * @override
      * @private
@@ -160,6 +164,10 @@ class SimpleWalletContract extends WalletContract {
         options.code = hexToBytes("FF0020DDA4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED54");
         super(provider, options);
     }
+
+    getName() {
+        return 'simple';
+    }
 }
 
 class StandardWalletContract extends WalletContract {
@@ -168,8 +176,35 @@ class StandardWalletContract extends WalletContract {
      * @param options? {any}
      */
     constructor(provider, options) {
-        options.code = hexToBytes("FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED54");
+        options.code = hexToBytes("FF0020DD2082014C97BA218201339CBAB19C71B0ED44D0D31FD70BFFE304E0A4F2608308D71820D31FD31F01F823BBF263ED44D0D31FD3FFD15131BAF2A103F901541042F910F2A2F800029320D74A96D307D402FB00E8D1A4C8CB1FCBFFC9ED54");
         super(provider, options);
+    }
+
+    getName() {
+        return 'v2';
+    }
+
+    /**
+     * @override
+     * @private
+     * @param   seqno?   {number}
+     * @return {Cell}
+     */
+    createSigningMessage(seqno) {
+        seqno = seqno || 0;
+        const message = new Cell();
+        message.bits.writeUint(seqno, 32);
+        if (seqno === 0) {
+            // message.bits.writeInt(-1, 32);// todo: dont work
+            for (let i = 0; i < 32; i++) {
+                message.bits.writeBit(1);
+            }
+        } else {
+            const date = new Date();
+            const timestamp = Math.floor(date.getTime() / 1e3);
+            message.bits.writeUint(timestamp + 60, 32);
+        }
+        return message;
     }
 }
 
@@ -182,6 +217,10 @@ class WalletV3Contract extends WalletContract {
         options.code = hexToBytes("FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F2608308D71820D31FD31FD31FF82313BBF263ED44D0D31FD31FD3FFD15132BAF2A15144BAF2A204F901541055F910F2A3F8009320D74A96D307D402FB00E8D101A4C8CB1FCB1FCBFFC9ED54");
         if (!options.walletId) options.walletId = 698983191;
         super(provider, options);
+    }
+
+    getName() {
+        return 'v3';
     }
 
     /**
@@ -229,7 +268,7 @@ class Wallets {
      */
     constructor(provider) {
         this.provider = provider;
-        this.all = {SimpleWalletContract, StandardWalletContract, WalletV3Contract};
+        this.all = [SimpleWalletContract, StandardWalletContract, WalletV3Contract];
         this.default = WalletV3Contract;
     }
 
