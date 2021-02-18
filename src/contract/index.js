@@ -62,9 +62,7 @@ class Contract {
      */
     createCodeCell() {
         if (!this.options.code) throw new Error('Contract: options.code is not defined')
-        const cell = new Cell();
-        cell.bits.writeBytes(this.options.code);
-        return cell;
+        return this.options.code;
     }
 
     /**
