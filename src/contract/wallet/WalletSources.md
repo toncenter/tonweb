@@ -34,7 +34,7 @@ That gives:
 * In serialized form `B5EE9C72410101010044000084FF0020DDA4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED5441FDF089`
 
 ## revision 2
-In this revision additional `seqno` was introduced https://github.com/newton-blockchain/ton/blob/bce33f588afe63aae8fedf1163fbe3993e128400/crypto/smartcont/new-wallet.fif:
+In this revision additional `seqno` was introduced https://github.com/newton-blockchain/ton/blob/47814dca3d4d7d253f0dcbb2ef176f45aafc6871/crypto/smartcont/new-wallet.fif:
 ```
 #!/usr/bin/fift -s
 "TonUtil.fif" include
@@ -107,6 +107,13 @@ That gives:
 * In serialized form `B5EE9C7241010101005F0000BAFF0020DD2082014C97BA218201339CBAB19C71B0ED44D0D31FD70BFFE304E0A4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED54B5B86E42`
 
 # V2 wallet
+
+## revision 1
+
+TODO: version 28.09.2019 fd7a8de9708c9ece8d802890519735b55bc99a8e
+
+## revision 2
+
 Fift-ASM for v2 may be found here  https://github.com/newton-blockchain/ton/blob/master/crypto/smartcont/new-wallet-v2.fif :
 
 ```
@@ -144,7 +151,7 @@ That gives:
 * In serialized form `B5EE9C724101010100630000C2FF0020DD2082014C97BA218201339CBAB19C71B0ED44D0D31FD70BFFE304E0A4F2608308D71820D31FD31F01F823BBF263ED44D0D31FD3FFD15131BAF2A103F901541042F910F2A2F800029320D74A96D307D402FB00E8D1A4C8CB1FCBFFC9ED54044CD7A1`
 
 # V3 wallet
-Fift-ASM for v3 may be found here  https://github.com/newton-blockchain/ton/blob/master/crypto/smartcont/wallet-v3-code.fif :
+Fift-ASM for v3 may be found here  https://github.com/newton-blockchain/ton/blob/3002321eb779e9936243e3b5f00be7579fb07654/crypto/smartcont/new-wallet-v3.fif :
 
 ```
 "TonUtil.fif" include

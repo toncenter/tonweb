@@ -155,21 +155,6 @@ class WalletContract extends Contract {
     }
 }
 
-class SimpleWalletContract extends WalletContract {
-    /**
-     * @param provider    {HttpProvider}
-     * @param options? {any}
-     */
-    constructor(provider, options) {
-        options.code = Cell.fromBoc(hexToBytes("B5EE9C72410101010044000084FF0020DDA4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED5441FDF089"));
-        super(provider, options);
-    }
-
-    getName() {
-        return 'simple';
-    }
-}
-
 class SimpleWalletContractR2 extends WalletContract {
     /**
      * @param provider    {HttpProvider}
@@ -199,7 +184,8 @@ class SimpleWalletContractR3 extends WalletContract {
         return 'simpleR3';
     }
 }
-class StandardWalletContract extends WalletContract {
+
+class WalletV2ContractR2 extends WalletContract {
     /**
      * @param provider    {HttpProvider}
      * @param options? {any}
@@ -210,7 +196,7 @@ class StandardWalletContract extends WalletContract {
     }
 
     getName() {
-        return 'v2';
+        return 'v2R2';
     }
 
     /**
@@ -276,7 +262,7 @@ class WalletV3ContractBase extends WalletContract {
     }
 }
 
-class WalletV3Contract extends WalletV3ContractBase {
+class WalletV3ContractR1 extends WalletV3ContractBase {
     /**
      * @param provider    {HttpProvider}
      * @param options? {any}
@@ -288,9 +274,10 @@ class WalletV3Contract extends WalletV3ContractBase {
     }
 
     getName() {
-        return 'v3';
+        return 'v3R1';
     }
 }
+
 class WalletV3ContractR2 extends WalletV3ContractBase {
     /**
      * @param provider    {HttpProvider}
@@ -307,17 +294,15 @@ class WalletV3ContractR2 extends WalletV3ContractBase {
     }
 }
 
-
-//There are two versions of standart wallet for now (14.01.2020):
-//simple-wallet-code.fc and wallet-code.fc (the one with seqno() method)
 class Wallets {
     /**
      * @param provider    {HttpProvider}
      */
     constructor(provider) {
         this.provider = provider;
-        this.all = [SimpleWalletContract, StandardWalletContract, WalletV3Contract];
-        this.default = WalletV3Contract;
+        this.all = {SimpleWalletContractR2, SimpleWalletContractR3, WalletV2ContractR2, WalletV3ContractR1, WalletV3ContractR2};
+        this.list = [SimpleWalletContractR2, SimpleWalletContractR3, WalletV2ContractR2, WalletV3ContractR1, WalletV3ContractR2];
+        this.default = WalletV3ContractR1;
     }
 
     create(options) {
