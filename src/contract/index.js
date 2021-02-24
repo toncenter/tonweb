@@ -4,7 +4,7 @@ const {Address, bytesToBase64, bytesToHex, nacl} = require("../utils");
 class Contract {
     /**
      * @param provider    {HttpProvider}
-     * @param options    {{code?: Uint8Array, address?: Address, wc?: number}}
+     * @param options    {{code?: Cell, address?: Address, wc?: number}}
      */
     constructor(provider, options) {
         this.provider = provider;
