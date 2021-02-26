@@ -3,9 +3,7 @@ const {Address, BN, toNano, bytesToHex, hexToBytes, nacl, stringToBytes, bytesTo
 const {Contract} = require("../index.js");
 
 function createCell(code) {
-    const cell = new Cell();
-    cell.bits.writeBytes(hexToBytes(code));
-    return cell;
+    return Cell.fromBoc(hexToBytes(code))[0];
 }
 
 /**
@@ -161,13 +159,31 @@ class WalletContract extends Contract {
     }
 }
 
+// SIMPLE WALLET
+
+// attention: no seqno get-method in this wallet
+class SimpleWalletContractR1 extends WalletContract {
+    /**
+     * @param provider    {HttpProvider}
+     * @param options? {any}
+     */
+    constructor(provider, options) {
+        options.code = createCell("B5EE9C72410101010044000084FF0020DDA4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED5441FDF089");
+        super(provider, options);
+    }
+
+    getName() {
+        return 'simpleR1';
+    }
+}
+
 class SimpleWalletContractR2 extends WalletContract {
     /**
      * @param provider    {HttpProvider}
      * @param options? {any}
      */
     constructor(provider, options) {
-        options.code = createCell("FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED54");
+        options.code = createCell("B5EE9C724101010100530000A2FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED54D0E2786F");
         super(provider, options);
     }
 
@@ -182,7 +198,7 @@ class SimpleWalletContractR3 extends WalletContract {
      * @param options? {any}
      */
     constructor(provider, options) {
-        options.code = createCell("FF0020DD2082014C97BA218201339CBAB19C71B0ED44D0D31FD70BFFE304E0A4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED54");
+        options.code = createCell("B5EE9C7241010101005F0000BAFF0020DD2082014C97BA218201339CBAB19C71B0ED44D0D31FD70BFFE304E0A4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED54B5B86E42");
         super(provider, options);
     }
 
@@ -191,20 +207,9 @@ class SimpleWalletContractR3 extends WalletContract {
     }
 }
 
-class WalletV2ContractR2 extends WalletContract {
-    /**
-     * @param provider    {HttpProvider}
-     * @param options? {any}
-     */
-    constructor(provider, options) {
-        options.code = createCell("FF0020DD2082014C97BA218201339CBAB19C71B0ED44D0D31FD70BFFE304E0A4F2608308D71820D31FD31F01F823BBF263ED44D0D31FD3FFD15131BAF2A103F901541042F910F2A2F800029320D74A96D307D402FB00E8D1A4C8CB1FCBFFC9ED54");
-        super(provider, options);
-    }
+// WALLET V2
 
-    getName() {
-        return 'v2R2';
-    }
-
+class WalletV2ContractBase extends WalletContract {
     /**
      * @override
      * @private
@@ -228,6 +233,38 @@ class WalletV2ContractR2 extends WalletContract {
         return message;
     }
 }
+
+class WalletV2ContractR1 extends WalletV2ContractBase {
+    /**
+     * @param provider    {HttpProvider}
+     * @param options? {any}
+     */
+    constructor(provider, options) {
+        options.code = createCell("B5EE9C724101010100570000AAFF0020DD2082014C97BA9730ED44D0D70B1FE0A4F2608308D71820D31FD31F01F823BBF263ED44D0D31FD3FFD15131BAF2A103F901541042F910F2A2F800029320D74A96D307D402FB00E8D1A4C8CB1FCBFFC9ED54A1370BB6");
+        super(provider, options);
+    }
+
+    getName() {
+        return 'v2R1';
+    }
+}
+
+class WalletV2ContractR2 extends WalletV2ContractBase {
+    /**
+     * @param provider    {HttpProvider}
+     * @param options? {any}
+     */
+    constructor(provider, options) {
+        options.code = createCell("B5EE9C724101010100630000C2FF0020DD2082014C97BA218201339CBAB19C71B0ED44D0D31FD70BFFE304E0A4F2608308D71820D31FD31F01F823BBF263ED44D0D31FD3FFD15131BAF2A103F901541042F910F2A2F800029320D74A96D307D402FB00E8D1A4C8CB1FCBFFC9ED54044CD7A1");
+        super(provider, options);
+    }
+
+    getName() {
+        return 'v2R2';
+    }
+}
+
+// WALLET V3
 
 class WalletV3ContractBase extends WalletContract {
 
@@ -274,7 +311,7 @@ class WalletV3ContractR1 extends WalletV3ContractBase {
      * @param options? {any}
      */
     constructor(provider, options) {
-        options.code = createCell("FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F2608308D71820D31FD31FD31FF82313BBF263ED44D0D31FD31FD3FFD15132BAF2A15144BAF2A204F901541055F910F2A3F8009320D74A96D307D402FB00E8D101A4C8CB1FCB1FCBFFC9ED54");
+        options.code = createCell("B5EE9C724101010100620000C0FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F2608308D71820D31FD31FD31FF82313BBF263ED44D0D31FD31FD3FFD15132BAF2A15144BAF2A204F901541055F910F2A3F8009320D74A96D307D402FB00E8D101A4C8CB1FCB1FCBFFC9ED543FBE6EE0");
         if (!options.walletId) options.walletId = 698983191 + options.wc;
         super(provider, options);
     }
@@ -290,7 +327,7 @@ class WalletV3ContractR2 extends WalletV3ContractBase {
      * @param options? {any}
      */
     constructor(provider, options) {
-        options.code = createCell("FF0020DD2082014C97BA218201339CBAB19F71B0ED44D0D31FD31F31D70BFFE304E0A4F2608308D71820D31FD31FD31FF82313BBF263ED44D0D31FD31FD3FFD15132BAF2A15144BAF2A204F901541055F910F2A3F8009320D74A96D307D402FB00E8D101A4C8CB1FCB1FCBFFC9ED54");
+        options.code = createCell("B5EE9C724101010100710000DEFF0020DD2082014C97BA218201339CBAB19F71B0ED44D0D31FD31F31D70BFFE304E0A4F2608308D71820D31FD31FD31FF82313BBF263ED44D0D31FD31FD3FFD15132BAF2A15144BAF2A204F901541055F910F2A3F8009320D74A96D307D402FB00E8D101A4C8CB1FCB1FCBFFC9ED5410BD6DAD");
         if (!options.walletId) options.walletId = 698983191 + options.wc;
         super(provider, options);
     }
@@ -300,14 +337,16 @@ class WalletV3ContractR2 extends WalletV3ContractBase {
     }
 }
 
+// WALLETS
+
 class Wallets {
     /**
      * @param provider    {HttpProvider}
      */
     constructor(provider) {
         this.provider = provider;
-        this.all = {SimpleWalletContractR2, SimpleWalletContractR3, WalletV2ContractR2, WalletV3ContractR1, WalletV3ContractR2};
-        this.list = [SimpleWalletContractR2, SimpleWalletContractR3, WalletV2ContractR2, WalletV3ContractR1, WalletV3ContractR2];
+        this.all = {SimpleWalletContractR1, SimpleWalletContractR2, SimpleWalletContractR3, WalletV2ContractR1, WalletV2ContractR2, WalletV3ContractR1, WalletV3ContractR2};
+        this.list = [SimpleWalletContractR1, SimpleWalletContractR2, SimpleWalletContractR3, WalletV2ContractR1, WalletV2ContractR2, WalletV3ContractR1, WalletV3ContractR2];
         this.default = WalletV3ContractR1;
     }
 
