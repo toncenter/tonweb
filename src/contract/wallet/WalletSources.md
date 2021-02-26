@@ -110,11 +110,45 @@ That gives:
 
 ## revision 1
 
-TODO: version 28.09.2019 fd7a8de9708c9ece8d802890519735b55bc99a8e
+Fift-ASM for v2 r1 may be found here https://github.com/newton-blockchain/ton/blob/fd7a8de9708c9ece8d802890519735b55bc99a8e/crypto/smartcont/new-wallet-v2.fif
 
+```
+"TonUtil.fif" include
+"Asm.fif" include
+<{ SETCP0 DUP IFNOTRET // return if recv_internal
+   DUP 85143 INT EQUAL IFJMP:<{ // "seqno" get-method
+     DROP c4 PUSHCTR CTOS 32 PLDU  // cnt
+   }>
+   INC 32 THROWIF	// fail unless recv_external
+   9 PUSHPOW2 LDSLICEX DUP 32 LDU 32 LDU	//  signature in_msg msg_seqno valid_until cs
+   SWAP NOW LEQ 35 THROWIF	//  signature in_msg msg_seqno cs
+   c4 PUSH CTOS 32 LDU 256 LDU ENDS	//  signature in_msg msg_seqno cs stored_seqno public_key
+   s3 s1 XCPU	//  signature in_msg public_key cs stored_seqno msg_seqno stored_seqno
+   EQUAL 33 THROWIFNOT	//  signature in_msg public_key cs stored_seqno
+   s0 s3 XCHG HASHSU	//  signature stored_seqno public_key cs hash
+   s0 s4 s2 XC2PU CHKSIGNU 34 THROWIFNOT	//  cs stored_seqno public_key
+   ACCEPT
+   s0 s2 XCHG	//  public_key stored_seqno cs
+   WHILE:<{
+     DUP SREFS	//  public_key stored_seqno cs _40
+   }>DO<{	//  public_key stored_seqno cs
+     // 3 INT 35 LSHIFT# 3 INT RAWRESERVE    // reserve all but 103 Grams from the balance
+     8 LDU LDREF s0 s2 XCHG	//  public_key stored_seqno cs _45 mode
+     SENDRAWMSG	//  public_key stored_seqno cs
+   }>
+   ENDS INC	//  public_key seqno'
+   NEWC 32 STU 256 STU ENDC c4 POP
+}>c
+dup <s csr.
+2 boc+>B Bx. cr
+```
+
+That gives:
+* Cell `x{FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F2608308D71820D31FD31F01F823BBF263ED44D0D31FD3FFD15131BAF2A103F901541042F910F2A2F800029320D74A96D307D402FB00E8D1A4C8CB1FCBFFC9ED54}`
+* In serialized form `B5EE9C724101010100570000AAFF0020DD2082014C97BA9730ED44D0D70B1FE0A4F2608308D71820D31FD31F01F823BBF263ED44D0D31FD3FFD15131BAF2A103F901541042F910F2A2F800029320D74A96D307D402FB00E8D1A4C8CB1FCBFFC9ED54A1370BB6`
 ## revision 2
 
-Fift-ASM for v2 may be found here  https://github.com/newton-blockchain/ton/blob/master/crypto/smartcont/new-wallet-v2.fif :
+Fift-ASM for v2 r2 may be found here  https://github.com/newton-blockchain/ton/blob/master/crypto/smartcont/new-wallet-v2.fif :
 
 ```
 "TonUtil.fif" include
