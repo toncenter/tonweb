@@ -31,9 +31,3 @@ Root of [TonWeb](https://github.com/toncenter/tonweb).
 * tonweb.provider.getExtendedAddressInfo(address: string) - Similar to previous one but tries to parse additional information for known contract types. This method is based on generic.getAccountState thus number of recognizable contracts may grow. For wallets we recommend to use getWalletInformation.
 
 * tonweb.provider.getWalletInfo(address: string) - Use this method to retrieve wallet information, this method parse contract state and currently supports more wallet types than getExtendedAddressInformation: simple wallet, stadart wallet and v3 wallet.
-
-## Authors
-
-[Emelyanenko Kirill](https://github.com/EmelyanenkoK), mail: emelyanenko.kirill@gmail.com
- 
-[Anatoliy Makosov](https://github.com/tolya-yanot), mail: info@coding.studio

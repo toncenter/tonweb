@@ -75,9 +75,3 @@ const simpleWallet = new tonweb.wallet.all.SimpleWalletContract({publicKey})
 [Comparison with new-wallet.fif](https://github.com/toncenter/tonweb/blob/master/test/test-new-wallet-fif.html)
 
 [Comparison with wallet.fif](https://github.com/toncenter/tonweb/blob/master/test/test-wallet-fif.html)
-
-## Authors
-
-[Emelyanenko Kirill](https://github.com/EmelyanenkoK), mail: emelyanenko.kirill@gmail.com
- 
-[Anatoliy Makosov](https://github.com/tolya-yanot), mail: info@coding.studio

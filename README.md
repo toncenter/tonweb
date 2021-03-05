@@ -1,4 +1,4 @@
-# TonWeb - JavaScript API for TON (Telegram Open Network)
+# TonWeb - JavaScript API for TON blockchain
 
 [![NPM](https://img.shields.io/npm/v/tonweb.svg)](https://www.npmjs.org/package/tonweb)
 
@@ -6,7 +6,7 @@ TonWeb interface is close as possible to the web3.js.
 
 TonWeb has only 3 external dependencies (BN.js, tweetnacl, ethjs-unit) and is not too big (~200kb).
 
-Used by [gram-wallet.org](https://gram-wallet.org) and [gram-wallet plugin](https://gram-wallet.org/plugin).
+Used by [tonwallet.me](https://tonwallet.me) and [ton-wallet plugin](https://tonwallet.me/plugin).
 
 ## Install Web
 
@@ -94,9 +94,3 @@ npm install
 
 npx webpack --mode=none
 ```
-
-## Authors
-
-[Emelyanenko Kirill](https://github.com/EmelyanenkoK), mail: emelyanenko.kirill@gmail.com
- 
-[Anatoliy Makosov](https://github.com/tolya-yanot), mail: info@coding.studio
