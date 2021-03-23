@@ -89,8 +89,33 @@ Each part is documented separately:
 
 ## Build
 
-```
+```bash
 npm install 
 
 npx webpack --mode=none
+```
+
+## Use as alternative to Fift for building binary messages to smart-contracts
+
+```bash
+npm install -g tonweb
+
+export NODE_PATH=$(npm root --quiet -g)
+```
+
+Then create your_script.js 
+
+```
+const TonWeb = require('tonweb');
+
+const tonweb = new TonWeb();
+
+. . .
+
+```
+
+run script 
+
+```bash
+node your_script.js
 ```

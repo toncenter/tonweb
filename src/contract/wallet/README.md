@@ -20,7 +20,7 @@ const tonweb = new TonWeb();
 
 const keyPair = nacl.sign.keyPair(); // create new random key pair
 
-let wallet = tonweb.wallet.create({publicKey: keyPair.publicKey}); // create interface to wallet smart contract (wallet v3 by default)
+let wallet = tonweb.wallet.create({publicKey: keyPair.publicKey, wc: 0}); // create interface to wallet smart contract (wallet v3 by default)
 
 OR
 
