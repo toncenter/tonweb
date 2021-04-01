@@ -1,6 +1,6 @@
 {
   "name": "tonweb",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "TonWeb - JavaScript API for TON blockchain",
   "main": "src/index.js",
   "scripts": {
@@ -30,7 +30,10 @@
     "bn.js": "^5.1.1",
     "tweetnacl": "^1.0.3",
     "ethjs-unit": "^0.1.6",
-    "xmlhttprequest": "^1.8.0"
+    "xmlhttprequest": "^1.8.0",
+    "@ledgerhq/hw-transport-webusb": "^5.46.0",
+    "@ledgerhq/hw-transport-webhid": "^5.46.0",
+    "@ledgerhq/hw-transport-web-ble": "^5.46.0"
   },
   "devDependencies": {
     "webpack": "^4.42.1",

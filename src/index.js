@@ -2,10 +2,14 @@ const utils = require("./utils");
 const Address = require("./utils/Address").default;
 utils.Address = Address;
 const boc = require("./boc");
+const AppTon = require("./ledger/AppTon");
 const HttpProvider = require("./providers").default;
 const {Contract} = require("./contract");
 const Wallets = require("./contract/wallet").default;
-const version = '0.0.9';
+const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
+const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
+const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
+const version = '0.0.13';
 
 class TonWeb {
     constructor(provider) {
@@ -63,6 +67,12 @@ TonWeb.boc = boc;
 TonWeb.HttpProvider = HttpProvider;
 TonWeb.Contract = Contract;
 TonWeb.Wallets = Wallets;
+TonWeb.ledger = {
+    TransportWebUSB,
+    TransportWebHID,
+    BluetoothTransport,
+    AppTon,
+};
 
 if (typeof window !== 'undefined') {
     window.TonWeb = TonWeb;
