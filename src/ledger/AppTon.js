@@ -1,4 +1,6 @@
-const {TonWeb} = require("../index.js");
+const {Cell} = require("../boc");
+const {Address, BN, toNano, bytesToHex, hexToBytes, nacl, stringToBytes, bytesToBase64} = require("../utils");
+const {Contract} = require("../contract");
 
 /**
  * Copy-paste from TonWeb.WalletContract
@@ -23,7 +25,7 @@ const createTransferResult = async (query, provider) => {
         },
         send: async () => {
             const query = promise.query;
-            const boc = TonWeb.utils.bytesToBase64(await query.message.toBoc(false));
+            const boc = bytesToBase64(await query.message.toBoc(false));
             return provider.sendBoc(boc);
         },
         estimateFee: async () => {
@@ -58,7 +60,7 @@ const createDeployResult = async (query, provider) => {
         },
         send: async () => {
             const query = promise.query;
-            const boc = TonWeb.utils.bytesToBase64(await query.message.toBoc(false));
+            const boc = bytesToBase64(await query.message.toBoc(false));
             return provider.sendBoc(boc);
         },
         estimateFee: async () => {
@@ -191,11 +193,11 @@ class AppTon {
         const signatureBuffer = response.slice(1, 1 + len);
         const signature = new Uint8Array(signatureBuffer);
 
-        const body = new TonWeb.boc.Cell();
+        const body = new Cell();
         body.bits.writeBytes(signature);
         body.writeCell(query.signingMessage);
-        const header = TonWeb.Contract.createExternalMessageHeader(selfAddress);
-        const resultMessage = TonWeb.Contract.createCommonMsgInfo(header, null, body);
+        const header = Contract.createExternalMessageHeader(selfAddress);
+        const resultMessage = Contract.createCommonMsgInfo(header, null, body);
 
         return createTransferResult(
             {
@@ -221,12 +223,12 @@ class AppTon {
         const signResult = await this.sign(accountNumber, await signingMessage.hash());
         const signature = new Uint8Array(signResult.signature);
 
-        const body = new TonWeb.boc.Cell();
+        const body = new Cell();
         body.bits.writeBytes(signature);
         body.writeCell(signingMessage);
 
-        const header = TonWeb.Contract.createExternalMessageHeader(address);
-        const externalMessage = TonWeb.Contract.createCommonMsgInfo(header, stateInit, body);
+        const header = Contract.createExternalMessageHeader(address);
+        const externalMessage = Contract.createCommonMsgInfo(header, stateInit, body);
 
         return createDeployResult(
             {
