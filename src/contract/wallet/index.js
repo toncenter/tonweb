@@ -228,7 +228,7 @@ class WalletV2ContractBase extends WalletContract {
         } else {
             const date = new Date();
             const timestamp = Math.floor(date.getTime() / 1e3);
-            message.bits.writeUint(timestamp + 60, 32);
+            message.bits.writeUint(timestamp + 5 * 60, 32);
         }
         return message;
     }
@@ -286,7 +286,7 @@ class WalletV3ContractBase extends WalletContract {
         } else {
             const date = new Date();
             const timestamp = Math.floor(date.getTime() / 1e3);
-            message.bits.writeUint(timestamp + 60, 32);
+            message.bits.writeUint(timestamp + 5 * 60, 32);
         }
         message.bits.writeUint(seqno, 32);
         return message;
