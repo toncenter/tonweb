@@ -36,6 +36,7 @@ const createTransferResult = async (query, provider) => {
 }
 
 /**
+ * @deprecated
  * Copy-paste from TonWeb.Contract
  * @param query     result of wallet.createInitExternalMessage
  * @param provider  TonWeb provider
@@ -80,6 +81,12 @@ class AppTon {
         this.transport = transport;
         this.ton = ton;
 
+        this.ADDRESS_FORMAT_HEX = 0;
+        this.ADDRESS_FORMAT_USER_FRIENDLY = 1;
+        this.ADDRESS_FORMAT_URL_SAFE = 2;
+        this.ADDRESS_FORMAT_BOUNCEABLE = 4;
+        this.ADDRESS_FORMAT_TEST_ONLY = 8;
+
         // todo: узнать зачем вызывается decorateAppAPIMethods
         // const scrambleKey = "w0w";
         // transport.decorateAppAPIMethods(
@@ -106,12 +113,12 @@ class AppTon {
     }
 
     /**
-     * This command returns a wallet address and public key for the given account number
+     * This command returns a public key for the given account number
      * @param accountNumber {number}
      * @param isDisplay {boolean} display public key and confirm before returning
-     * @return {{publicKey: Uint8Array, address: Address, wallet: WalletContract}}
+     * @return {{publicKey: Uint8Array}}
      */
-    async getAddress(accountNumber, isDisplay) {
+    async getPublicKey(accountNumber, isDisplay) {
         const buffer = Buffer.alloc(4);
         buffer.writeInt32BE(accountNumber);
 
@@ -125,14 +132,34 @@ class AppTon {
             );
         const len = response[0];
         const publicKey = new Uint8Array(response.slice(1, 1 + len));
+        return {publicKey};
+    }
 
-        const WalletClass = this.ton.wallet.all['v3R1'];
-        const wallet = new WalletClass(this.ton.provider, {
-            publicKey: publicKey,
-            wc: 0
-        });
-        const address = await wallet.getAddress();
-        return {publicKey, address, wallet};
+    /**
+     * This command returns a wallet v3R1 address for the given account number
+     * @param accountNumber {number}
+     * @param wc {number}   workchain
+     * @param isDisplay {boolean} display address and confirm before returning
+     * @param addressFormat {number} display address format (use sum of ADDRESS_FORMAT_ constants)
+     * @return {{address: Address}}
+     */
+    async getAddress(accountNumber, wc, isDisplay, addressFormat) {
+        const buffer = Buffer.alloc(5);
+        buffer.writeInt32BE(accountNumber);
+        buffer.writeInt8(wc, 4);
+
+        const response = await this.transport
+            .send(
+                0xe0,
+                0x05,
+                isDisplay ? 0x01 : 0x00,
+                addressFormat,
+                buffer
+            );
+        const len = response[0];
+        const addressHex = new Uint8Array(response.slice(1, 1 + len));
+        const address = new Address(wc + ':' + bytesToHex(addressHex));
+        return {address};
     }
 
     /**
@@ -155,10 +182,9 @@ class AppTon {
                 signBuffer
             );
 
-        const result = {};
         const len = response[0];
-        result.signature = response.slice(1, 1 + len);
-        return result;
+        const signature = response.slice(1, 1 + len);
+        return {signature};
     }
 
     /**
@@ -168,9 +194,10 @@ class AppTon {
      * @param toAddress {String | Address}  Destination address in any format
      * @param amount    {BN | number}  Transfer value in nanograms
      * @param seqno {number}
+     * @param addressFormat {number} display address format (use sum of ADDRESS_FORMAT_ constants, bounceable flag will be taken from the message body)
      * @return
      */
-    async transfer(accountNumber, wallet, toAddress, amount, seqno) {
+    async transfer(accountNumber, wallet, toAddress, amount, seqno, addressFormat) {
         const selfAddress = await wallet.getAddress();
         const sendMode = 3;
 
@@ -184,7 +211,7 @@ class AppTon {
             .send(
                 0xe0,
                 0x04,
-                0x00,
+                addressFormat,
                 0x00,
                 msgBuffer
             );
@@ -213,6 +240,7 @@ class AppTon {
     }
 
     /**
+     * @deprecated
      * Same with TonWeb.Contract.createInitExternalMessage
      * @param accountNumber {number}
      * @param wallet {WalletContract}  Sender wallet
