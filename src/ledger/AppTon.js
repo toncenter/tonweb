@@ -9,63 +9,26 @@ const {Contract} = require("../contract");
  * @return {Promise<{estimateFee: function, send: function, getQuery: function}>}
  */
 const createTransferResult = async (query, provider) => {
-    const createQuery = () => {
-        const legacyQuery = {
-            address: query.address.toString(true, true, true),
-            body: query.body.toObject(),
-        }
-        return {query, legacyQuery};
-    }
-
-    const promise = createQuery();
-
     return {
         getQuery: async () => {
-            return promise.query.message;
+            return query.message;
         },
         send: async () => {
-            const query = promise.query;
             const boc = bytesToBase64(await query.message.toBoc(false));
             return provider.sendBoc(boc);
         },
         estimateFee: async () => {
-            const legacyQuery = promise.legacyQuery;
-            return provider.getEstimateFee(legacyQuery); // todo: get fee by boc
-        }
-    }
-}
+            const legacyQuery = query.code ? // deploy
+                {
+                    address: query.address.toString(true, true, false),
+                    body: query.body.toObject(),
+                    init_code: query.code.toObject(),
+                    init_data: query.data.toObject(),
+                } : {
+                    address: query.address.toString(true, true, true),
+                    body: query.body.toObject(),
+                }
 
-/**
- * @deprecated
- * Copy-paste from TonWeb.Contract
- * @param query     result of wallet.createInitExternalMessage
- * @param provider  TonWeb provider
- * @return {Promise<{estimateFee: function, send: function, getQuery: function}>}
- */
-const createDeployResult = async (query, provider) => {
-    const createQuery = () => {
-        const legacyQuery = {
-            address: query.address.toString(true, true, false),
-            body: query.body.toObject(),
-            init_code: query.code.toObject(),
-            init_data: query.data.toObject(),
-        }
-        return {query, legacyQuery};
-    }
-
-    const promise = createQuery();
-
-    return {
-        getQuery: async () => {
-            return promise.query.message;
-        },
-        send: async () => {
-            const query = promise.query;
-            const boc = bytesToBase64(await query.message.toBoc(false));
-            return provider.sendBoc(boc);
-        },
-        estimateFee: async () => {
-            const legacyQuery = promise.legacyQuery;
             return provider.getEstimateFee(legacyQuery); // todo: get fee by boc
         }
     }
@@ -138,12 +101,13 @@ class AppTon {
     /**
      * This command returns a wallet v3R1 address for the given account number
      * @param accountNumber {number}
-     * @param wc {number}   workchain
      * @param isDisplay {boolean} display address and confirm before returning
      * @param addressFormat {number} display address format (use sum of ADDRESS_FORMAT_ constants)
      * @return {{address: Address}}
      */
-    async getAddress(accountNumber, wc, isDisplay, addressFormat) {
+    async getAddress(accountNumber, isDisplay, addressFormat) {
+        const wc = 0;
+
         const buffer = Buffer.alloc(5);
         buffer.writeInt32BE(accountNumber);
         buffer.writeInt8(wc, 4);
@@ -188,17 +152,17 @@ class AppTon {
     }
 
     /**
-     * Same with TonWeb.WalletContract.createTransferMessage
+     * Sign a transfer coins message (same with TonWeb.WalletContract.createTransferMessage)
+     * if seqno === 0 it will be deploy wallet + transfer coins message
      * @param accountNumber {number}
      * @param wallet {WalletContract}  Sender wallet
      * @param toAddress {String | Address}  Destination address in any format
      * @param amount    {BN | number}  Transfer value in nanograms
      * @param seqno {number}
-     * @param addressFormat {number} display address format (use sum of ADDRESS_FORMAT_ constants, bounceable flag will be taken from the message body)
+     * @param addressFormat {number} display address format (use sum of ADDRESS_FORMAT_ constants)
      * @return
      */
     async transfer(accountNumber, wallet, toAddress, amount, seqno, addressFormat) {
-        const selfAddress = await wallet.getAddress();
         const sendMode = 3;
 
         const query = await wallet.createTransferMessage(null, toAddress, amount, seqno, null, sendMode, true);
@@ -223,8 +187,19 @@ class AppTon {
         const body = new Cell();
         body.bits.writeBytes(signature);
         body.writeCell(query.signingMessage);
+
+        let stateInit = null, code = null, data = null;
+
+        if (seqno === 0) {
+            const deploy = await wallet.createStateInit();
+            stateInit = deploy.stateInit;
+            code = deploy.code;
+            data = deploy.data;
+        }
+
+        const selfAddress = await wallet.getAddress();
         const header = Contract.createExternalMessageHeader(selfAddress);
-        const resultMessage = Contract.createCommonMsgInfo(header, null, body);
+        const resultMessage = Contract.createCommonMsgInfo(header, stateInit, body);
 
         return createTransferResult(
             {
@@ -234,37 +209,7 @@ class AppTon {
                 body: body,
                 signature: signature,
                 signingMessage: query.signingMessage,
-            },
-            this.ton.provider
-        );
-    }
 
-    /**
-     * @deprecated
-     * Same with TonWeb.Contract.createInitExternalMessage
-     * @param accountNumber {number}
-     * @param wallet {WalletContract}  Sender wallet
-     */
-    async deploy(accountNumber, wallet) {
-        const {stateInit, address, code, data} = await wallet.createStateInit();
-        const signingMessage = wallet.createSigningMessage();
-        const signResult = await this.sign(accountNumber, await signingMessage.hash());
-        const signature = new Uint8Array(signResult.signature);
-
-        const body = new Cell();
-        body.bits.writeBytes(signature);
-        body.writeCell(signingMessage);
-
-        const header = Contract.createExternalMessageHeader(address);
-        const externalMessage = Contract.createCommonMsgInfo(header, stateInit, body);
-
-        return createDeployResult(
-            {
-                address: address,
-                message: externalMessage,
-
-                body,
-                signingMessage,
                 stateInit,
                 code,
                 data,
@@ -272,7 +217,6 @@ class AppTon {
             this.ton.provider
         );
     }
-
 }
 
 module.exports = AppTon;

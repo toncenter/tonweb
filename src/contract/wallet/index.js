@@ -26,10 +26,17 @@ class WalletContract extends Contract {
 
                 const createQuery = async () => {
                     const query = await this.createTransferMessage(params.secretKey, params.toAddress, params.amount, params.seqno, params.payload, params.sendMode, !Boolean(params.secretKey));
-                    const legacyQuery = {
-                        address: query.address.toString(true, true, true),
-                        body: query.body.toObject(),
-                    }
+                    const legacyQuery = query.code ? // deploy
+                        {
+                            address: query.address.toString(true, true, false),
+                            body: query.body.toObject(),
+                            init_code: query.code.toObject(),
+                            init_data: query.data.toObject(),
+                        } : {
+                            address: query.address.toString(true, true, true),
+                            body: query.body.toObject(),
+                        }
+
                     return {query, legacyQuery};
                 }
 
@@ -138,15 +145,28 @@ class WalletContract extends Contract {
         signingMessage.bits.writeUint8(sendMode);
         signingMessage.refs.push(order);
 
-        const selfAddress = await this.getAddress();
         const signature = dummySignature ? new Uint8Array(64) : nacl.sign.detached(await signingMessage.hash(), secretKey);
+
         const body = new Cell();
         body.bits.writeBytes(signature);
         body.writeCell(signingMessage);
 
-        const header = Contract.createExternalMessageHeader(selfAddress);
+        let stateInit = null, code = null, data = null;
 
-        const resultMessage = Contract.createCommonMsgInfo(header, null, body);
+        if (seqno === 0) {
+            if (!this.options.publicKey) {
+                const keyPair = nacl.sign.keyPair.fromSecretKey(secretKey)
+                this.options.publicKey = keyPair.publicKey;
+            }
+            const deploy = await this.createStateInit();
+            stateInit = deploy.stateInit;
+            code = deploy.code;
+            data = deploy.data;
+        }
+
+        const selfAddress = await this.getAddress();
+        const header = Contract.createExternalMessageHeader(selfAddress);
+        const resultMessage = Contract.createCommonMsgInfo(header, stateInit, body);
 
         return {
             address: selfAddress,
@@ -155,6 +175,10 @@ class WalletContract extends Contract {
             body: body,
             signature: signature,
             signingMessage: signingMessage,
+
+            stateInit,
+            code,
+            data,
         };
     }
 }
