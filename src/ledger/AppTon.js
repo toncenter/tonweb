@@ -106,11 +106,8 @@ class AppTon {
      * @return {{address: Address}}
      */
     async getAddress(accountNumber, isDisplay, addressFormat) {
-        const wc = 0;
-
-        const buffer = Buffer.alloc(5);
+        const buffer = Buffer.alloc(4);
         buffer.writeInt32BE(accountNumber);
-        buffer.writeInt8(wc, 4);
 
         const response = await this.transport
             .send(

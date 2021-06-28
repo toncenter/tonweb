@@ -1,6 +1,6 @@
 {
   "name": "tonweb",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "TonWeb - JavaScript API for TON blockchain",
   "main": "src/index.js",
   "scripts": {
