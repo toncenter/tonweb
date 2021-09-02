@@ -27,10 +27,13 @@ class TonWeb {
      * Use this method to get transaction history of a given address.
      * @param address   {Address | string}
      * @param limit?    {number}
+     * @param lt?    {number}
+     * @param txhash?    {string}
+     * @param to_lt?    {number}
      * @return array of transaction objects
      */
-    async getTransactions(address, limit = 20) {
-        return this.provider.getTransactions(address.toString(), limit);
+    async getTransactions(address, limit = 20, lt = null, txhash = null, to_lt = null) {
+        return this.provider.getTransactions(address.toString(), limit, lt, txhash, to_lt);
     };
 
     /**
