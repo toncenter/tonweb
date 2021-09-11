@@ -16,7 +16,14 @@ Root of [TonWeb](https://github.com/toncenter/tonweb).
 
 * tonweb.wallet - [wallets object](https://github.com/toncenter/tonweb/blob/master/src/contract/wallet/README.md)
 
-* tonweb.getTransactions(address: Address | string, limit?: number) - Use this method to get transaction history of a given address.
+* tonweb.getTransactions(address: Address | string, limit?: number, lt?: number, ,txhash?: string, ,lt_to?: number) - Use this method to get transaction history of a given address.
+⋅⋅⋅| Parameter  | Required  | Description                                                                                     |
+⋅⋅⋅| ---------- |:---------:| ------------------------------------------------------------------------------------------------|
+⋅⋅⋅| address    | Yes       | Identifier of target account in TON                                                             |
+⋅⋅⋅| limit      | Optional  | Amount of transactions                                                                          |
+⋅⋅⋅| lt         | Optional  | Logical time of transaction to start with, must be sent with hash                               |
+⋅⋅⋅| txhash     | Optional  | Hash of transaction to start with, must be sent with lt                                         |
+⋅⋅⋅| to_lt      | Optional  | Logical time of transaction to finish with (that way it is possible to get tx from lt to to_lt) |
 
 * tonweb.getBalance(address: Address | string) - The current balance for the given address in nanograms.
 
