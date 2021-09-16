@@ -9,7 +9,7 @@ const Wallets = require("./contract/wallet").default;
 const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
 const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
 const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
-const version = '0.0.19';
+const version = '0.0.20';
 
 class TonWeb {
     constructor(provider) {
@@ -32,7 +32,7 @@ class TonWeb {
      * @param to_lt?    {number}
      * @return array of transaction objects
      */
-    async getTransactions(address, limit = 20, lt = null, txhash = null, to_lt = null) {
+    async getTransactions(address, limit = 20, lt = undefined, txhash = undefined, to_lt = undefined) {
         return this.provider.getTransactions(address.toString(), limit, lt, txhash, to_lt);
     };
 
