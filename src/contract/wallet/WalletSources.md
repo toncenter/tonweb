@@ -1,5 +1,5 @@
 # Wallets
-There is a bunch contracts developed by original TON team for managing grams. Tonweb provide access for most popular ones, here is the way how to rebuild and check them.
+There is a bunch contracts developed by original TON team for managing TON Coins. Tonweb provide access for most popular ones, here is the way how to rebuild and check them.
 # V1 wallet
 Fift-ASM for v1 may be found here https://github.com/newton-blockchain/ton/blob/c2da007f4065e2520e0d948b146e0fb12fa75751/crypto/smartcont/new-wallet.fif :
 

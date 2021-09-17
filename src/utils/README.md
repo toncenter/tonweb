@@ -2,7 +2,7 @@
 
 Part of [TonWeb](https://github.com/toncenter/tonweb).
 
-This contains useful utility functions for Dapp developers: work with TON Addresses, gram values, byte arrays, hex, hash functions.
+This contains useful utility functions for Dapp developers: work with TON Addresses, coin values, byte arrays, hex, hash functions.
 
 ## Address Class
 ```js
