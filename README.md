@@ -70,13 +70,6 @@ tonweb.sendBoc(bocBytes);
 
 ```
 
-## Usage with NEWTON
-
-```
-const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/newton_test/v2/jsonRPC'));
-```
-
-
 ## Documentation
 
 Each part is documented separately:
