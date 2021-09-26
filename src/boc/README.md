@@ -93,9 +93,3 @@ c1.refs.push(c3);
 const deC1 = TonWeb.boc.Cell.fromBoc(await c1.toBoc());
 (await deC1.hash()).toString() === (await c1.hash()).toString();
 ```
- 
-## Authors
-
-[Emelyanenko Kirill](https://github.com/EmelyanenkoK), mail: emelyanenko.kirill@gmail.com
- 
-[Anatoliy Makosov](https://github.com/tolya-yanot), mail: info@coding.studio

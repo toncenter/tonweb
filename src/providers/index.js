@@ -86,10 +86,13 @@ class HttpProvider {
      * Use this method to get transaction history of a given address.
      * @param address   {string}
      * @param limit?    {number}
+     * @param lt?    {number}
+     * @param txhash?    {string}
+     * @param to_lt?    {number}
      * @return array of transaction object
      */
-    async getTransactions(address, limit = 20) {
-        return this.send("getTransactions", {address, limit});
+    async getTransactions(address, limit = 20, lt = undefined, txhash = undefined, to_lt = undefined) {
+        return this.send("getTransactions", {address, limit, lt, txhash, to_lt});
     };
 
     /**

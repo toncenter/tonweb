@@ -1,7 +1,7 @@
 {
   "name": "tonweb",
-  "version": "0.0.9",
-  "description": "TonWeb - JavaScript API for TON (Telegram Open Network)",
+  "version": "0.0.20",
+  "description": "TonWeb - JavaScript API for TON blockchain",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,20 +9,15 @@
   },
   "keywords": [
     "TON",
-    "Telegram Open Network",
     "Blockchain",
     "API"
   ],
   "authors": [
     {
-      "name": "Emelyanenko Kirill",
-      "email": "emelyanenko.kirill@gmail.com",
-      "url": "https://github.com/EmelyanenkoK"
+      "name": "rulon"
     },
     {
-      "name": "Anatoliy Makosov",
-      "email": "info@coding.studio",
-      "url": "https://github.com/tolya-yanot"
+      "name": "tolya-yanot"
     }
   ],
   "license": "GPL-3.0",
@@ -35,7 +30,10 @@
     "bn.js": "^5.1.1",
     "tweetnacl": "^1.0.3",
     "ethjs-unit": "^0.1.6",
-    "xmlhttprequest": "^1.8.0"
+    "xmlhttprequest": "^1.8.0",
+    "@ledgerhq/hw-transport-webusb": "^5.46.0",
+    "@ledgerhq/hw-transport-webhid": "^5.46.0",
+    "@ledgerhq/hw-transport-web-ble": "^5.46.0"
   },
   "devDependencies": {
     "webpack": "^4.42.1",

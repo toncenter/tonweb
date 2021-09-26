@@ -20,7 +20,7 @@ const tonweb = new TonWeb();
 
 const keyPair = nacl.sign.keyPair(); // create new random key pair
 
-let wallet = tonweb.wallet.create({publicKey: keyPair.publicKey}); // create interface to wallet smart contract (wallet v3 by default)
+let wallet = tonweb.wallet.create({publicKey: keyPair.publicKey, wc: 0}); // create interface to wallet smart contract (wallet v3 by default)
 
 OR
 
@@ -41,12 +41,12 @@ const deploySended = await deploy.send() // deploy wallet contract to blockchain
 
 const deployQuery = await deploy.getQuery();   // get deploy query Cell 
 
-// TRANSFER GRAMS
+// TRANSFER TON COINS
 
 const transfer = wallet.methods.transfer({
     secretKey: keyPair.secretKey,
     toAddress: 'EQDjVXa_oltdBP64Nc__p397xLCvGm2IcZ1ba7anSW0NAkeP',
-    amount: TonWeb.utils.toNano(0.01), // 0.01 Gram
+    amount: TonWeb.utils.toNano(0.01), // 0.01 TON
     seqno: seqno,
     payload: 'Hello',
     sendMode: 3,
@@ -75,9 +75,3 @@ const simpleWallet = new tonweb.wallet.all.SimpleWalletContract({publicKey})
 [Comparison with new-wallet.fif](https://github.com/toncenter/tonweb/blob/master/test/test-new-wallet-fif.html)
 
 [Comparison with wallet.fif](https://github.com/toncenter/tonweb/blob/master/test/test-wallet-fif.html)
-
-## Authors
-
-[Emelyanenko Kirill](https://github.com/EmelyanenkoK), mail: emelyanenko.kirill@gmail.com
- 
-[Anatoliy Makosov](https://github.com/tolya-yanot), mail: info@coding.studio

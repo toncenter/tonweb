@@ -2,10 +2,14 @@ const utils = require("./utils");
 const Address = require("./utils/Address").default;
 utils.Address = Address;
 const boc = require("./boc");
+const AppTon = require("./ledger/AppTon");
 const HttpProvider = require("./providers").default;
 const {Contract} = require("./contract");
 const Wallets = require("./contract/wallet").default;
-const version = '0.0.9';
+const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
+const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
+const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
+const version = '0.0.20';
 
 class TonWeb {
     constructor(provider) {
@@ -23,10 +27,13 @@ class TonWeb {
      * Use this method to get transaction history of a given address.
      * @param address   {Address | string}
      * @param limit?    {number}
+     * @param lt?    {number}
+     * @param txhash?    {string}   in HEX
+     * @param to_lt?    {number}
      * @return array of transaction objects
      */
-    async getTransactions(address, limit = 20) {
-        return this.provider.getTransactions(address.toString(), limit);
+    async getTransactions(address, limit = 20, lt = undefined, txhash = undefined, to_lt = undefined) {
+        return this.provider.getTransactions(address.toString(), limit, lt, txhash, to_lt);
     };
 
     /**
@@ -63,6 +70,12 @@ TonWeb.boc = boc;
 TonWeb.HttpProvider = HttpProvider;
 TonWeb.Contract = Contract;
 TonWeb.Wallets = Wallets;
+TonWeb.ledger = {
+    TransportWebUSB,
+    TransportWebHID,
+    BluetoothTransport,
+    AppTon,
+};
 
 if (typeof window !== 'undefined') {
     window.TonWeb = TonWeb;

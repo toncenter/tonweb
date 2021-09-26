@@ -4,7 +4,7 @@ const {Address, bytesToBase64, bytesToHex, nacl} = require("../utils");
 class Contract {
     /**
      * @param provider    {HttpProvider}
-     * @param options    {{code?: Uint8Array, address?: Address, wc?: number}}
+     * @param options    {{code?: Cell, address?: Address, wc?: number}}
      */
     constructor(provider, options) {
         this.provider = provider;
@@ -62,9 +62,7 @@ class Contract {
      */
     createCodeCell() {
         if (!this.options.code) throw new Error('Contract: options.code is not defined')
-        const cell = new Cell();
-        cell.bits.writeBytes(this.options.code);
-        return cell;
+        return this.options.code;
     }
 
     /**
