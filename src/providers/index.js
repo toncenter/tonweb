@@ -132,6 +132,7 @@ class HttpProvider {
 
     /**
      * Invoke get-method of smart contract
+     * todo: think about throw error if result.exit_code !== 0 (the change breaks backward compatibility)
      * @param address   {string}    contract address
      * @param method   {string | number}        method name or method id
      * @param params?   Array of stack elements: [['num',3], ['cell', cell_object], ['slice', slice_object]]

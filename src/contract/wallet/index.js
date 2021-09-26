@@ -67,6 +67,7 @@ class WalletContract extends Contract {
                         const result = await provider.call(address.toString(false), 'seqno', []);
                         let n = null;
                         try {
+                            if (result.exit_code !== 0 ) throw new Error(result);
                             n = parseInt(result.stack[0][1], 16);
                         } catch (e) {
 
@@ -332,12 +333,12 @@ class WalletV3ContractBase extends WalletContract {
 class WalletV3ContractR1 extends WalletV3ContractBase {
     /**
      * @param provider    {HttpProvider}
-     * @param options? {any}
+     * @param options {any}
      */
     constructor(provider, options) {
         options.code = createCell("B5EE9C724101010100620000C0FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F2608308D71820D31FD31FD31FF82313BBF263ED44D0D31FD31FD3FFD15132BAF2A15144BAF2A204F901541055F910F2A3F8009320D74A96D307D402FB00E8D101A4C8CB1FCB1FCBFFC9ED543FBE6EE0");
-        if (!options.walletId) options.walletId = 698983191 + options.wc;
         super(provider, options);
+        if (!this.options.walletId) this.options.walletId = 698983191 + this.options.wc;
     }
 
     getName() {
@@ -348,12 +349,12 @@ class WalletV3ContractR1 extends WalletV3ContractBase {
 class WalletV3ContractR2 extends WalletV3ContractBase {
     /**
      * @param provider    {HttpProvider}
-     * @param options? {any}
+     * @param options {any}
      */
     constructor(provider, options) {
         options.code = createCell("B5EE9C724101010100710000DEFF0020DD2082014C97BA218201339CBAB19F71B0ED44D0D31FD31F31D70BFFE304E0A4F2608308D71820D31FD31FD31FF82313BBF263ED44D0D31FD31FD3FFD15132BAF2A15144BAF2A204F901541055F910F2A3F8009320D74A96D307D402FB00E8D101A4C8CB1FCB1FCBFFC9ED5410BD6DAD");
-        if (!options.walletId) options.walletId = 698983191 + options.wc;
         super(provider, options);
+        if (!this.options.walletId) this.options.walletId = 698983191 + this.options.wc;
     }
 
     getName() {
