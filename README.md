@@ -1,4 +1,4 @@
-# TonWeb - JavaScript API for TON blockchain
+# TonWeb - JavaScript API for TON (Telegram Open Network)
 
 [![NPM](https://img.shields.io/npm/v/tonweb.svg)](https://www.npmjs.org/package/tonweb)
 
@@ -6,7 +6,7 @@ TonWeb interface is close as possible to the web3.js.
 
 TonWeb has only 3 external dependencies (BN.js, tweetnacl, ethjs-unit) and is not too big (~200kb).
 
-Used by [tonwallet.me](https://tonwallet.me) and [ton-wallet plugin](https://tonwallet.me/plugin).
+Used by [gram-wallet.org](https://gram-wallet.org) and [gram-wallet plugin](https://gram-wallet.org/plugin).
 
 ## Install Web
 
@@ -48,7 +48,7 @@ await wallet.deploy(secretKey).send(); // deploy wallet to blockchain
 const fee = await wallet.methods.transfer({
     secretKey,
     toAddress: 'EQDjVXa_oltdBP64Nc__p397xLCvGm2IcZ1ba7anSW0NAkeP',
-    amount: TonWeb.utils.toNano(0.01), // 0.01 TON
+    amount: TonWeb.utils.toNano(0.01), // 0.01 Gram
     seqno: seqno,
     payload: 'Hello',
     sendMode: 3,
@@ -82,40 +82,21 @@ Each part is documented separately:
 
 [tonweb-boc](https://github.com/toncenter/tonweb/blob/master/src/boc/README.md) - serializations of Cell and BitString
 
-[tonweb-utils](https://github.com/toncenter/tonweb/blob/master/src/utils/README.md) - work with TON Addresses, coin values, byte arrays, hex, hash functions.
+[tonweb-utils](https://github.com/toncenter/tonweb/blob/master/src/utils/README.md) - work with TON Addresses, gram values, byte arrays, hex, hash functions.
 
 
 **Also we use JSDoc in code** 
 
 ## Build
 
-```bash
+```
 npm install 
 
 npx webpack --mode=none
 ```
 
-## Use as alternative to Fift for building binary messages to smart-contracts
+## Authors
 
-```bash
-npm install -g tonweb
-
-export NODE_PATH=$(npm root --quiet -g)
-```
-
-Then create your_script.js 
-
-```
-const TonWeb = require('tonweb');
-
-const tonweb = new TonWeb();
-
-. . .
-
-```
-
-run script 
-
-```bash
-node your_script.js
-```
+[Emelyanenko Kirill](https://github.com/EmelyanenkoK), mail: emelyanenko.kirill@gmail.com
+ 
+[Anatoliy Makosov](https://github.com/tolya-yanot), mail: info@coding.studio

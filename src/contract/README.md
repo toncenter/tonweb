@@ -82,3 +82,9 @@ const myGetMethod = contract.methods.myGetMethod(myParams);
 const result = await myGetMethod.call(); // invoke get-method of this smart contract
 
 ```
+
+## Authors
+
+[Emelyanenko Kirill](https://github.com/EmelyanenkoK), mail: emelyanenko.kirill@gmail.com
+ 
+[Anatoliy Makosov](https://github.com/tolya-yanot), mail: info@coding.studio

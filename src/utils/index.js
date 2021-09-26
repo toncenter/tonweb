@@ -20,7 +20,7 @@ function sha256(bytes) {
 }
 
 /**
- * from coins to nanocoins
+ * from grams to nanograms
  * @param amount {number | BN | string}
  * @return {BN}
  */
@@ -29,7 +29,7 @@ function toNano(amount) {
 }
 
 /**
- * from nanocoins to coins
+ * from nanograms to grams
  * @param amount  {number | BN | string}
  * @return {string}
  */
