@@ -4,12 +4,20 @@ const {bytesToBase64, compareBytes, concatBytes, crc32c, hexToBytes, readNBytesU
 const reachBocMagicPrefix = hexToBytes('B5EE9C72');
 const leanBocMagicPrefix = hexToBytes('68ff65f3');
 const leanBocMagicPrefixCRC = hexToBytes('acc3a728');
+const cellTypes = {0:"Ordinary", 1:"Pruned", 2:"Library", 3:"MerkleProof", 4:"MerkleUpdate"};
+const infinity = 5; // max hash/depth level
 
 class Cell {
     constructor() {
+        //TODO instead of explicitly storing cells in refs we shoud store
+        // only hashes, while keeping hashmap with hash -> cell
+        // that way we can effectively handle cells with near infinite
+        // number of identical leafs
         this.bits = new BitString(1023);
         this.refs = [];
+        this.level = undefined;
         this.isExotic = false;
+        this.exoticType = undefined;
     }
 
     /**
@@ -33,16 +41,68 @@ class Cell {
     /**
      * @return {number}
      */
-    getMaxLevel() {
-        //TODO level calculation differ for exotic cells
-        let maxLevel = 0;
-        for (let k in this.refs) {
-            const i = this.refs[k];
-            if (i.getMaxLevel() > maxLevel) {
-                maxLevel = i.getMaxLevel();
-            }
+    readExoticType() {
+      return this.bits.array[0];
+    }
+
+    /**
+     * @return {number}
+     */
+    calculateLevel() {
+        if(!this.isExotic) {
+          let maxLevel = 0;
+          for (let k in this.refs) {
+              const i = this.refs[k];
+              if (i.calculateLevel() > maxLevel) {
+                  maxLevel = i.calculateLevel();
+              }
+          }
+          return maxLevel;
+        } else {
+          this.ensureExoticType();
+          if(this.exoticType==1) {
+            return (this.bits.array.length - 4)/32;
+          }
+          if(this.exoticType==2) {
+            return 0;
+          }
+          if(this.exoticType==3) {
+            if(this.refs.length!=1)
+              throw "Incorrect merkle proof cell: wrong reference cells num";
+            if(!this.refs[0].level)
+              this.refs[0].level=this.refs[0].calculateLevel()
+            return this.refs[0].level-1;
+          }
+          if(this.exoticType==4) {
+            if(this.refs.length!=2)
+              throw "Incorrect merkle update cell: wrong reference cells num";
+            if(!this.refs[0].level)
+              this.refs[0].level=this.refs[0].calculateLevel()
+            if(!this.refs[1].level)
+              this.refs[1].level=this.refs[1].calculateLevel()
+            return Math.max(this.refs[0].level-1, this.refs[1].level-1, 0);
+
+          }
         }
-        return maxLevel;
+    }
+
+
+
+    /**
+     *
+     */
+    ensureLevel() {
+      if(!this.level)
+        this.level = this.calculateLevel();
+    }
+
+    /**
+     *
+     */
+    ensureExoticType() {
+      if(!this.exoticType) {
+            this.exoticType = this.readExoticType();
+      }
     }
 
     /**
@@ -55,26 +115,44 @@ class Cell {
     /**
      * @return {number}
      */
-    getMaxDepth() {
+    getDepth() {
+      if(!this.isExotic || this.exoticType==2) {
         let maxDepth = 0;
         if (this.refs.length > 0) {
             for (let k in this.refs) {
                 const i = this.refs[k];
-                if (i.getMaxDepth() > maxDepth) {
-                    maxDepth = i.getMaxDepth();
+                if (i.getDepth() > maxDepth) {
+                    maxDepth = i.getDepth();
                 }
             }
             maxDepth = maxDepth + 1;
         }
         return maxDepth;
+      } else {
+        //Prunned cell contains depth
+        if(this.exoticType==1) { // exoticType, levelMask, level*hash , level*depth
+          //TODO depth also hash level
+          this.ensureLevel();
+          const offset = 1+1+this.level*32;
+          return this.bits.array[offset]*256+this.bits.array[offset+1];
+        }
+        //merkle proof
+        if(this.exoticType==3) // exoticType, hash, depth
+          return this.bits.array[1+32]*256+this.bits.array[1+32+1];
+        //merkle update //TODO check hash/depth order
+        if(this.exoticType==4) // exoticType, hash, hash, depth, depth
+          return Math.max(this.bits.array[1+32+32]*256+this.bits.array[1+32+32+1],
+                          this.bits.array[1+32+32+2]*256+this.bits.array[1+32+32+2+1],
+                         );
+      }
     }
 
     /**
      * @private
      * @return {Uint8Array}
      */
-    getMaxDepthAsArray() {
-        const maxDepth = this.getMaxDepth();
+    getDepthAsArray() {
+        const maxDepth = this.getDepth();
         const d = Uint8Array.from({length: 2}, () => 0);
         d[1] = maxDepth % 256;
         d[0] = Math.floor(maxDepth / 256);
@@ -86,7 +164,8 @@ class Cell {
      */
     getRefsDescriptor() {
         const d1 = Uint8Array.from({length: 1}, () => 0);
-        d1[0] = this.refs.length + this.isExotic * 8 + this.getMaxLevel() * 32;
+        this.ensureLevel();
+        d1[0] = this.refs.length + this.isExotic * 8 + this.level * 32;
         return d1;
     }
 
@@ -112,17 +191,24 @@ class Cell {
     /**
      * @return {Promise<Uint8Array>}
      */
-    async getRepr() {
-        const reprArray = [];
-
-        reprArray.push(this.getDataWithDescriptors());
-        for (let k in this.refs) {
-            const i = this.refs[k];
-            reprArray.push(i.getMaxDepthAsArray());
+    async getRepr(hash_level=infinity) {
+        const reprArray = [this.getRefsDescriptor(), this.getBitsDescriptor()];
+        if(!this.isExotic || this.level==0 || (this.isExotic && this.exoticType==1)) {
+          reprArray.push(this.bits.getTopUppedArray());
+        } else {
+          reprArray.push(await this.hash(this.level-1));
         }
         for (let k in this.refs) {
             const i = this.refs[k];
-            reprArray.push(await i.hash());
+            reprArray.push(i.getDepthAsArray());
+        }
+        for (let k in this.refs) {
+            const i = this.refs[k];
+            if(i.exoticType==3 || i.exoticType==4) {
+              reprArray.push(await i.hash(hash_level+1));
+            } else {
+              reprArray.push(await i.hash(hash_level));
+            }
         }
         let x = new Uint8Array();
         for (let k in reprArray) {
@@ -135,10 +221,44 @@ class Cell {
     /**
      * @return {Promise<Uint8Array>}
      */
-    async hash() {
-        return new Uint8Array(
-            await sha256(await this.getRepr())
-        );
+    async hash(hash_level=infinity) {
+        this.ensureLevel();
+        if(!this.isExotic) {
+          return new Uint8Array(
+              await sha256(await this.getRepr((hash_level>this.level)? infinity : hash_level))
+          );
+        } else {
+          this.ensureExoticType();
+          if(this.exoticType==1) {
+            if(hash_level>this.level) {
+              return new Uint8Array(
+                await sha256(await this.getRepr((hash_level>this.level)? infinity : hash_level))
+              );
+            } else {
+              const offset = 1+1+(this.level-1)*32;
+              return this.bits.array.slice(offset, offset+32);
+            }
+          }
+          if(this.exoticType==2) {
+            const offset = 1+1+(this.level-1)*32;
+            return this.bits.array.slice(offset, offset+32);
+          }
+          if(this.exoticType==3) {
+            if(hash_level==1) {
+              const offset = 1;
+              return this.bits.array.slice(offset, offset+32);
+            } else {
+              return new Uint8Array(
+                await sha256(await this.getRepr(hash_level+1))
+              );
+            }
+          }
+          if(this.exoticType==4) {
+            const offset = 1+32;
+            return this.bits.array.slice(offset, offset+32);
+          }
+        }
+
     }
 
     /**
@@ -168,6 +288,26 @@ class Cell {
         for (let k in this.refs) {
             const i = this.refs[k];
             s += i.print(indent + ' ');
+        }
+        return s;
+    }
+
+    /**
+     * Recursively prints cell's content + adds exotic cell notation
+     * @return  {string}
+     */
+    print_extended(indent) {
+        indent = indent || '';
+        let exotic_placeholder = '';
+        if(this.isExotic){
+          if(!this.exoticType)
+            this.exoticType = this.readExoticType();
+          exotic_placeholder= cellTypes[this.exoticType]+'_';
+        }
+        let s = indent + exotic_placeholder+'x{' + this.bits.toHex() + '}\n';
+        for (let k in this.refs) {
+            const i = this.refs[k];
+            s += i.print_extended(indent + ' '.repeat(1+exotic_placeholder.length));
         }
         return s;
     }
@@ -234,6 +374,7 @@ class Cell {
             const refcell_ser = await cell_info[1].serializeForBoc(cellsIndex, s_bytes);
             serialization.writeBytes(refcell_ser);
         }
+        serialization.length = serialization.cursor;
         let ser_arr = serialization.getTopUppedArray();
         if (hash_crc32) {
             ser_arr = concatBytes(ser_arr, crc32c(ser_arr));
@@ -290,6 +431,17 @@ class Cell {
      */
     async treeWalk() {
         return treeWalk(this, [], {});
+    }
+
+    clone() {
+      let result = new Cell();
+      result.bits = this.bits.clone();
+      for(let subcell of this.refs)
+        result.refs.push(subcell.clone());
+      result.level = this.level;
+      result.isExotic = this.isExotic;
+      result.exoticType = this.exoticType;
+      return result;
     }
 }
 
@@ -403,20 +555,24 @@ function deserializeCellData(cellData, referenceIndexSize) {
         throw "Not enough bytes to encode cell descriptors";
     const d1 = cellData[0], d2 = cellData[1];
     cellData = cellData.slice(2);
-    const level = Math.floor(d1 / 32);
-    const isExotic = d1 & 8;
+    const level = Boolean(d1&32) + 2*Boolean(d1&64);
+    const isExotic = Boolean(d1 & 8);
     const refNum = d1 % 8;
     const dataBytesize = Math.ceil(d2 / 2);
     const fullfilledBytes = !(d2 % 2);
     let cell = new Cell();
     cell.isExotic = isExotic;
+    cell.level = level;
     if (cellData.length < dataBytesize + referenceIndexSize * refNum)
-        throw "Not enough bytes to encode cell data";
+        throw "Not enough bytes to encode cell data"+cellData.length+"<"+dataBytesize+"+"+referenceIndexSize +"*"+ refNum;
     cell.bits.setTopUppedArray(cellData.slice(0, dataBytesize), fullfilledBytes);
     cellData = cellData.slice(dataBytesize);
     for (let r = 0; r < refNum; r++) {
         cell.refs.push(readNBytesUIntFromArray(referenceIndexSize, cellData));
         cellData = cellData.slice(referenceIndexSize);
+    }
+    if(cell.isExotic) {
+      cell.exoticType = cell.readExoticType()
     }
     return {cell: cell, residue: cellData};
 }
