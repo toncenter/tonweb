@@ -1,4 +1,6 @@
-# tonweb-utils
+
+npm i tonweb
+npm i tonweb
 
 Part of [TonWeb](https://github.com/toncenter/tonweb).
 
