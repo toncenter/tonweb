@@ -49,7 +49,11 @@ class Cell {
      * @return {number}
      */
     calculateLevel() {
+<<<<<<< HEAD
         if(!this.isExotic) {
+=======
+        if(!this.exoctic) {
+>>>>>>> 81f7016 (Fix deserialization of exotic cells)
           let maxLevel = 0;
           for (let k in this.refs) {
               const i = this.refs[k];
@@ -59,9 +63,17 @@ class Cell {
           }
           return maxLevel;
         } else {
+<<<<<<< HEAD
           this.ensureExoticType();
           if(this.exoticType==1) {
             return (this.bits.array.length - 4)/32;
+=======
+          if(!this.exoticType) {
+            this.exoticType = this.readExoticType();
+          }
+          if(this.exoticType==1) {
+            return (this.bits.array.length - 3)/32;
+>>>>>>> 81f7016 (Fix deserialization of exotic cells)
           }
           if(this.exoticType==2) {
             return 0;
@@ -81,6 +93,7 @@ class Cell {
             if(!this.refs[1].level)
               this.refs[1].level=this.refs[1].calculateLevel()
             return Math.max(this.refs[0].level-1, this.refs[1].level-1, 0);
+<<<<<<< HEAD
 
           }
         }
@@ -103,6 +116,11 @@ class Cell {
       if(!this.exoticType) {
             this.exoticType = this.readExoticType();
       }
+=======
+           
+          }
+        }
+>>>>>>> 81f7016 (Fix deserialization of exotic cells)
     }
 
     /**
@@ -130,6 +148,7 @@ class Cell {
         return maxDepth;
       } else {
         //Prunned cell contains depth
+<<<<<<< HEAD
         if(this.exoticType==1) { // exoticType, levelMask, level*hash , level*depth
           //TODO depth also hash level
           this.ensureLevel();
@@ -143,6 +162,17 @@ class Cell {
         if(this.exoticType==4) // exoticType, hash, hash, depth, depth
           return Math.max(this.bits.array[1+32+32]*256+this.bits.array[1+32+32+1],
                           this.bits.array[1+32+32+2]*256+this.bits.array[1+32+32+2+1],
+=======
+        if(this.exoticType==1) // exoticType, levelMask, hash, depth 
+          return this.bits.array[1+1+32]*256+this.bits.array[1+1+32+1];
+        //merkle proof
+        if(this.exoticType==3) // exoticType, hash, depth 
+          return this.bits.array[1+32]*256+this.bits.array[1+32+1];
+        //merkle update //TODO check hash/depth order
+        if(this.exoticType==4) // exoticType, hash, depth, hash, depth 
+          return Math.max(this.bits.array[1+32]*256+this.bits.array[1+1+32+1],
+                          this.bits.array[1+32+2+32]*256+this.bits.array[1+32+2+32+1],
+>>>>>>> 81f7016 (Fix deserialization of exotic cells)
                          );
       }
     }
@@ -164,7 +194,12 @@ class Cell {
      */
     getRefsDescriptor() {
         const d1 = Uint8Array.from({length: 1}, () => 0);
+<<<<<<< HEAD
         this.ensureLevel();
+=======
+        if(!this.level)
+          this.level = this.calculateLevel();
+>>>>>>> 81f7016 (Fix deserialization of exotic cells)
         d1[0] = this.refs.length + this.isExotic * 8 + this.level * 32;
         return d1;
     }
@@ -302,7 +337,11 @@ class Cell {
         if(this.isExotic){
           if(!this.exoticType)
             this.exoticType = this.readExoticType();
+<<<<<<< HEAD
           exotic_placeholder= cellTypes[this.exoticType]+'_';
+=======
+          exotic_placeholder='e'+this.exoticType+'_';
+>>>>>>> 81f7016 (Fix deserialization of exotic cells)
         }
         let s = indent + exotic_placeholder+'x{' + this.bits.toHex() + '}\n';
         for (let k in this.refs) {
