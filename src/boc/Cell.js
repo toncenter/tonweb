@@ -5,10 +5,14 @@ const reachBocMagicPrefix = hexToBytes('B5EE9C72');
 const leanBocMagicPrefix = hexToBytes('68ff65f3');
 const leanBocMagicPrefixCRC = hexToBytes('acc3a728');
 const cellTypes = {0:"Ordinary", 1:"Pruned", 2:"Library", 3:"MerkleProof", 4:"MerkleUpdate"};
-const infinity = 5;
+const infinity = 5; // max hash/depth level
 
 class Cell {
     constructor() {
+        //TODO instead of explicitly storing cells in refs we shoud store
+        // only hashes, while keeping hashmap with hash -> cell
+        // that way we can effectively handle cells with near infinite
+        // number of identical leafs
         this.bits = new BitString(1023);
         this.refs = [];
         this.level = undefined;
@@ -40,12 +44,16 @@ class Cell {
     readExoticType() {
       return this.bits.array[0];
     }
-    
+
     /**
      * @return {number}
      */
     calculateLevel() {
+<<<<<<< HEAD
+        if(!this.isExotic) {
+=======
         if(!this.exoctic) {
+>>>>>>> 81f7016 (Fix deserialization of exotic cells)
           let maxLevel = 0;
           for (let k in this.refs) {
               const i = this.refs[k];
@@ -55,9 +63,17 @@ class Cell {
           }
           return maxLevel;
         } else {
+<<<<<<< HEAD
           this.ensureExoticType();
           if(this.exoticType==1) {
+            return (this.bits.array.length - 4)/32;
+=======
+          if(!this.exoticType) {
+            this.exoticType = this.readExoticType();
+          }
+          if(this.exoticType==1) {
             return (this.bits.array.length - 3)/32;
+>>>>>>> 81f7016 (Fix deserialization of exotic cells)
           }
           if(this.exoticType==2) {
             return 0;
@@ -77,28 +93,36 @@ class Cell {
             if(!this.refs[1].level)
               this.refs[1].level=this.refs[1].calculateLevel()
             return Math.max(this.refs[0].level-1, this.refs[1].level-1, 0);
-           
+<<<<<<< HEAD
+
           }
         }
     }
 
+
+
     /**
-     * 
+     *
      */
-    ensureLevel() {    
+    ensureLevel() {
       if(!this.level)
         this.level = this.calculateLevel();
     }
-    
+
     /**
-     * 
+     *
      */
-    ensureExoticType() {    
+    ensureExoticType() {
       if(!this.exoticType) {
             this.exoticType = this.readExoticType();
       }
+=======
+           
+          }
+        }
+>>>>>>> 81f7016 (Fix deserialization of exotic cells)
     }
-    
+
     /**
      * @return {number}
      */
@@ -124,6 +148,7 @@ class Cell {
         return maxDepth;
       } else {
         //Prunned cell contains depth
+<<<<<<< HEAD
         if(this.exoticType==1) { // exoticType, levelMask, level*hash , level*depth
           //TODO depth also hash level
           this.ensureLevel();
@@ -131,12 +156,23 @@ class Cell {
           return this.bits.array[offset]*256+this.bits.array[offset+1];
         }
         //merkle proof
+        if(this.exoticType==3) // exoticType, hash, depth
+          return this.bits.array[1+32]*256+this.bits.array[1+32+1];
+        //merkle update //TODO check hash/depth order
+        if(this.exoticType==4) // exoticType, hash, hash, depth, depth
+          return Math.max(this.bits.array[1+32+32]*256+this.bits.array[1+32+32+1],
+                          this.bits.array[1+32+32+2]*256+this.bits.array[1+32+32+2+1],
+=======
+        if(this.exoticType==1) // exoticType, levelMask, hash, depth 
+          return this.bits.array[1+1+32]*256+this.bits.array[1+1+32+1];
+        //merkle proof
         if(this.exoticType==3) // exoticType, hash, depth 
           return this.bits.array[1+32]*256+this.bits.array[1+32+1];
         //merkle update //TODO check hash/depth order
-        if(this.exoticType==4) // exoticType, hash, hash, depth, depth 
-          return Math.max(this.bits.array[1+32+32]*256+this.bits.array[1+32+32+1],
-                          this.bits.array[1+32+32+2]*256+this.bits.array[1+32+32+2+1],
+        if(this.exoticType==4) // exoticType, hash, depth, hash, depth 
+          return Math.max(this.bits.array[1+32]*256+this.bits.array[1+1+32+1],
+                          this.bits.array[1+32+2+32]*256+this.bits.array[1+32+2+32+1],
+>>>>>>> 81f7016 (Fix deserialization of exotic cells)
                          );
       }
     }
@@ -158,7 +194,12 @@ class Cell {
      */
     getRefsDescriptor() {
         const d1 = Uint8Array.from({length: 1}, () => 0);
+<<<<<<< HEAD
         this.ensureLevel();
+=======
+        if(!this.level)
+          this.level = this.calculateLevel();
+>>>>>>> 81f7016 (Fix deserialization of exotic cells)
         d1[0] = this.refs.length + this.isExotic * 8 + this.level * 32;
         return d1;
     }
@@ -186,16 +227,23 @@ class Cell {
      * @return {Promise<Uint8Array>}
      */
     async getRepr(hash_level=infinity) {
-        const reprArray = [];
-
-        reprArray.push(this.getDataWithDescriptors());
+        const reprArray = [this.getRefsDescriptor(), this.getBitsDescriptor()];
+        if(!this.isExotic || this.level==0 || (this.isExotic && this.exoticType==1)) {
+          reprArray.push(this.bits.getTopUppedArray());
+        } else {
+          reprArray.push(await this.hash(this.level-1));
+        }
         for (let k in this.refs) {
             const i = this.refs[k];
             reprArray.push(i.getDepthAsArray());
         }
         for (let k in this.refs) {
             const i = this.refs[k];
-            reprArray.push(await i.hash(hash_level));
+            if(i.exoticType==3 || i.exoticType==4) {
+              reprArray.push(await i.hash(hash_level+1));
+            } else {
+              reprArray.push(await i.hash(hash_level));
+            }
         }
         let x = new Uint8Array();
         for (let k in reprArray) {
@@ -233,7 +281,7 @@ class Cell {
           if(this.exoticType==3) {
             if(hash_level==1) {
               const offset = 1;
-              return this.bits.array.slice(offset, offset+32);              
+              return this.bits.array.slice(offset, offset+32);
             } else {
               return new Uint8Array(
                 await sha256(await this.getRepr(hash_level+1))
@@ -245,7 +293,7 @@ class Cell {
             return this.bits.array.slice(offset, offset+32);
           }
         }
-        
+
     }
 
     /**
@@ -289,7 +337,11 @@ class Cell {
         if(this.isExotic){
           if(!this.exoticType)
             this.exoticType = this.readExoticType();
+<<<<<<< HEAD
           exotic_placeholder= cellTypes[this.exoticType]+'_';
+=======
+          exotic_placeholder='e'+this.exoticType+'_';
+>>>>>>> 81f7016 (Fix deserialization of exotic cells)
         }
         let s = indent + exotic_placeholder+'x{' + this.bits.toHex() + '}\n';
         for (let k in this.refs) {
@@ -361,6 +413,7 @@ class Cell {
             const refcell_ser = await cell_info[1].serializeForBoc(cellsIndex, s_bytes);
             serialization.writeBytes(refcell_ser);
         }
+        serialization.length = serialization.cursor;
         let ser_arr = serialization.getTopUppedArray();
         if (hash_crc32) {
             ser_arr = concatBytes(ser_arr, crc32c(ser_arr));
@@ -417,6 +470,17 @@ class Cell {
      */
     async treeWalk() {
         return treeWalk(this, [], {});
+    }
+
+    clone() {
+      let result = new Cell();
+      result.bits = this.bits.clone();
+      for(let subcell of this.refs)
+        result.refs.push(subcell.clone());
+      result.level = this.level;
+      result.isExotic = this.isExotic;
+      result.exoticType = this.exoticType;
+      return result;
     }
 }
 
@@ -539,7 +603,7 @@ function deserializeCellData(cellData, referenceIndexSize) {
     cell.isExotic = isExotic;
     cell.level = level;
     if (cellData.length < dataBytesize + referenceIndexSize * refNum)
-        throw "Not enough bytes to encode cell data";
+        throw "Not enough bytes to encode cell data"+cellData.length+"<"+dataBytesize+"+"+referenceIndexSize +"*"+ refNum;
     cell.bits.setTopUppedArray(cellData.slice(0, dataBytesize), fullfilledBytes);
     cellData = cellData.slice(dataBytesize);
     for (let r = 0; r < refNum; r++) {
