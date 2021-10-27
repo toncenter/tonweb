@@ -144,6 +144,73 @@ class HttpProvider {
             stack: params,
         });
     }
+
+    /**
+     * Returns ID's of last and init block of masterchain
+     */
+    async getMasterchainInfo() {
+        return this.send('getMasterchainInfo', {});
+    }
+
+    /**
+     * Returns ID's of shardchain blocks included in this masterchain block
+     * @param masterchainBlockNumber {number}
+     */
+    async getBlockShards(masterchainBlockNumber) {
+        return this.send('shards', {
+            seqno: masterchainBlockNumber
+        });
+    }
+
+    /**
+     * Returns transactions hashes included in this masterhcain block
+     * @param masterchainBlockNumber  {number}
+     */
+    async getMasterchainBlockTransactions(masterchainBlockNumber) {
+        return this.send('getBlockTransactions', {
+            workchain: -1,
+            shard: '-9223372036854775808', // masterchain's shardAll = 0x8000000000000000
+            seqno: masterchainBlockNumber
+        });
+    }
+
+    /**
+     * Returns transactions hashes included in this shardchain block
+     * @param shardId   {string}
+     * @param shardBlockNumber  {number}
+     */
+    async getShardBlockTransactions(shardId, shardBlockNumber) {
+        return this.send('getBlockTransactions', {
+            workchain: 0,
+            shard: shardId,
+            seqno: shardBlockNumber
+        });
+    }
+
+    /**
+     * Returns shardchain block header and his previous blocks ID's
+     * @param shardId   {string}
+     * @param shardBlockNumber  {number}
+     */
+    async getShardBlockHeader(shardId, shardBlockNumber) {
+        return this.send('getBlockHeader', {
+            workchain: 0,
+            shard: shardId,
+            seqno: shardBlockNumber
+        });
+    }
+
+    /**
+     * Returns masterchain block header and his previous block ID
+     * @param masterchainBlockNumber  {number}
+     */
+    async getMasterchainBlockHeader(masterchainBlockNumber) {
+        return this.send('getBlockHeader', {
+            workchain: -1,
+            shard: '-9223372036854775808', // masterchain's shardAll = 0x8000000000000000
+            seqno: masterchainBlockNumber
+        });
+    }
 }
 
 module.exports.default = HttpProvider;
