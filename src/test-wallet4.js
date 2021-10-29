@@ -27,7 +27,7 @@ async function init() {
     // console.log(
     //     await wallet.methods.installPlugin({
     //         secretKey: keyPair.secretKey,
-    //         seqno: 2,
+    //         seqno: 1,
     //         pluginAddress: 'EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG'
     //     }).send()
     // );
@@ -41,7 +41,7 @@ async function init() {
     // );
 
     console.log('publicKey', await wallet.methods.getPublicKey())
-    // console.log('pluginList', await wallet.methods.getPluginsList())
+    console.log('pluginList', await wallet.methods.getPluginsList())
     console.log('isPluginInstalled', await wallet.methods.isPluginInstalled('EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG'))
 }
 
