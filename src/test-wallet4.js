@@ -54,7 +54,8 @@ async function init() {
     });
     const subscriptionAddress = await subscription.getAddress();
     console.log('subscriptionAddress=', subscriptionAddress.toString(true, true,true))
-    console.log('', await subscription.getSubscriptionData());
+    console.log('', await subscription.methods.getSubscriptionData());
+    console.log('', await subscription.methods.pay().send());
 
 
     // console.log(
