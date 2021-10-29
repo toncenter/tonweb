@@ -15,6 +15,9 @@ async function init() {
     const walletAddress = await wallet.getAddress();
     console.log('walletAddress=', walletAddress.toString(true, true, true));
 
+    const seqno = await wallet.methods.seqno().call();
+    console.log({seqno})
+
     // console.log(
     //     await wallet.methods.transfer({
     //         secretKey: keyPair.secretKey,
@@ -33,12 +36,12 @@ async function init() {
     //         pluginAddress: 'EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG'
     //     }).send()
     // );
-
+    //
     // console.log(
     //     await wallet.methods.removePlugin({
     //         secretKey: keyPair.secretKey,
-    //         seqno: 3,
-    //         pluginAddress: 'EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG'
+    //         seqno: seqno,
+    //         pluginAddress: 'EQCdDJ5eaWGsoTWEpXLFACG7EQ4BwFfGhCf7wGpNl-Ywc59c'
     //     }).send()
     // );
 
@@ -52,13 +55,13 @@ async function init() {
     const subscriptionAddress = await subscription.getAddress();
     console.log('subscriptionAddress=', subscriptionAddress.toString(true, true,true))
 
-    const seqno = await wallet.methods.seqno().call();
-    console.log({seqno})
+
     console.log(
         await wallet.methods.deployAndInstallPlugin({
             secretKey: keyPair.secretKey,
-            seqno: 1,
+            seqno: seqno,
             pluginWc: 0,
+            amount: TonWeb.utils.toNano(0.1), // 0.1 ton
             stateInit: (await subscription.createStateInit()).stateInit,
             body: subscription.createBody(),
         }).send()
