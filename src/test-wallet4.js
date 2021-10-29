@@ -1,4 +1,5 @@
 const TonWeb = require("./index");
+const {SubscriptionContract} = require("./contract/subscription");
 
 async function init() {
     const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC'));
@@ -11,7 +12,8 @@ async function init() {
         publicKey: keyPair.publicKey,
         wc: 0
     });
-    console.log('address=', (await wallet.getAddress()).toString(true, true, true));
+    const walletAddress = await wallet.getAddress();
+    console.log('walletAddress=', walletAddress.toString(true, true, true));
 
     // console.log(
     //     await wallet.methods.transfer({
@@ -40,9 +42,32 @@ async function init() {
     //     }).send()
     // );
 
-    console.log('publicKey', await wallet.methods.getPublicKey())
-    console.log('pluginList', await wallet.methods.getPluginsList())
-    console.log('isPluginInstalled', await wallet.methods.isPluginInstalled('EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG'))
+    const subscription = new SubscriptionContract(tonweb.provider, {
+        wc: 0,
+        wallet: walletAddress,
+        beneficiary: new TonWeb.utils.Address('EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG'),
+        amount: TonWeb.utils.toNano(0.1), // 0.1 ton
+        period: 60 * 60, // 1 hour
+    });
+    const subscriptionAddress = await subscription.getAddress();
+    console.log('subscriptionAddress=', subscriptionAddress.toString(true, true,true))
+
+    const seqno = await wallet.methods.seqno().call();
+    console.log({seqno})
+    console.log(
+        await wallet.methods.deployAndInstallPlugin({
+            secretKey: keyPair.secretKey,
+            seqno: 1,
+            pluginWc: 0,
+            stateInit: (await subscription.createStateInit()).stateInit,
+            body: subscription.createBody(),
+        }).send()
+    );
+
+    console.log('publicKey', await wallet.methods.getPublicKey());
+    console.log('pluginList', await wallet.methods.getPluginsList());
+    console.log('isPluginInstalled1', await wallet.methods.isPluginInstalled('EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG'))
+    console.log('isPluginInstalled2', await wallet.methods.isPluginInstalled(subscriptionAddress.toString(true, true, true)));
 }
 
 init();

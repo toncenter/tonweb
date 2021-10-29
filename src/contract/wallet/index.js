@@ -425,6 +425,7 @@ class WalletV4ContractR1 extends WalletContract {
         super(provider, options);
         if (!this.options.walletId) this.options.walletId = 698983191 + this.options.wc;
 
+        this.methods.deployAndInstallPlugin = (params) => methodWrapper(provider, queryWrapper(this.deployAndInstallPlugin(params)));
         this.methods.installPlugin = (params) => methodWrapper(provider, queryWrapper(this.installPlugin(params)));
         this.methods.removePlugin = (params) => methodWrapper(provider, queryWrapper(this.removePlugin(params)));
         this.methods.getPublicKey = this.getPublicKey.bind(this);
@@ -477,8 +478,19 @@ class WalletV4ContractR1 extends WalletContract {
         return cell;
     }
 
-    async deployAndInstallPlugin(pluginAddress) {
-        // todo
+    /**
+     * @param   params {{secretKey: Uint8Array, seqno: number, pluginWc: number, amount: BN, stateInit: Cell, body: Cell}}
+     */
+    async deployAndInstallPlugin(params) {
+        const {secretKey, seqno, pluginWc, amount, stateInit, body} = params;
+
+        const signingMessage = this.createSigningMessage(seqno, true);
+        signingMessage.bits.writeUint(1, 8); // op
+        signingMessage.bits.writeInt(pluginWc, 8);
+        signingMessage.bits.writeGrams(amount);
+        signingMessage.refs.push(stateInit);
+        signingMessage.refs.push(body);
+        return this.createExternalMessage(signingMessage, secretKey, seqno, false);
     }
 
     /**
@@ -492,7 +504,7 @@ class WalletV4ContractR1 extends WalletContract {
 
         const signingMessage = this.createSigningMessage(seqno, true);
         signingMessage.bits.writeUint(isInstall ? 2 : 3, 8); // op
-        signingMessage.bits.writeUint(pluginAddress.wc, 8);
+        signingMessage.bits.writeInt(pluginAddress.wc, 8);
         signingMessage.bits.writeBytes(pluginAddress.hashPart);
 
         return this.createExternalMessage(signingMessage, secretKey, seqno, false);
