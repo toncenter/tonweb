@@ -1,6 +1,6 @@
 const {Contract} = require("../index.js");
 const {Cell} = require("../../boc");
-const {hexToBytes} = require("../../utils");
+const {hexToBytes, BN} = require("../../utils");
 
 function createCell(code) {
     return Cell.fromBoc(hexToBytes(code))[0];
@@ -40,6 +40,26 @@ class SubscriptionContract extends Contract {
         const body = new Cell();
         body.bits.writeUint(0x696e6974, 32); // op
         return body;
+    }
+
+
+    async getSubscriptionData() {
+        function parseTuple(x) {
+            const arr = x.elements;
+            return arr[0].number.number + ':' + new BN(arr[1].number.number, 10).toString(16);
+        }
+
+        const result = await this.provider.call((await this.getAddress()).toString(), 'get_subscription_data', []);
+        if (result.exit_code !== 0) throw new Error(result);
+
+        const wallet = parseTuple(result.stack[0][1]);
+        const beneficiary = parseTuple(result.stack[1][1]);
+        const amount = new BN(result.stack[2][1].substr(2), 16).toString();
+        const period = new BN(result.stack[3][1].substr(2), 16).toString();
+        const startAt = new BN(result.stack[4][1].substr(2), 16).toString();
+        const lastTimeSlot = new BN(result.stack[5][1].replace(/0x/, ''), 16).toString();
+
+        return {wallet, beneficiary, amount, period, startAt, lastTimeSlot};
     }
 }
 

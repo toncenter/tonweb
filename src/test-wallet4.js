@@ -54,18 +54,19 @@ async function init() {
     });
     const subscriptionAddress = await subscription.getAddress();
     console.log('subscriptionAddress=', subscriptionAddress.toString(true, true,true))
+    console.log('', await subscription.getSubscriptionData());
 
 
-    console.log(
-        await wallet.methods.deployAndInstallPlugin({
-            secretKey: keyPair.secretKey,
-            seqno: seqno,
-            pluginWc: 0,
-            amount: TonWeb.utils.toNano(0.1), // 0.1 ton
-            stateInit: (await subscription.createStateInit()).stateInit,
-            body: subscription.createBody(),
-        }).send()
-    );
+    // console.log(
+    //     await wallet.methods.deployAndInstallPlugin({
+    //         secretKey: keyPair.secretKey,
+    //         seqno: seqno,
+    //         pluginWc: 0,
+    //         amount: TonWeb.utils.toNano(0.1), // 0.1 ton
+    //         stateInit: (await subscription.createStateInit()).stateInit,
+    //         body: subscription.createBody(),
+    //     }).send()
+    // );
 
     console.log('publicKey', await wallet.methods.getPublicKey());
     console.log('pluginList', await wallet.methods.getPluginsList());
