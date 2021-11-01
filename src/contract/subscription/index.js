@@ -9,7 +9,7 @@ class SubscriptionContract extends Contract {
      * @param options   {{wc: number, wallet: Address, beneficiary: Address, amount: BN, period: number}}
      */
     constructor(provider, options) {
-        options.code = Cell.oneFromBoc('B5EE9C7241020F010001D2000114FF00F4A413F4BCF2C80B0102012002030201480405045EF230DB3C22C00093F82333DEF82323A124A90422A45210BC8E865F07F800DB3CE002A45220BAF29EF800547641DB3C08090A0B045CD032DB3C07D0D303FA40305306C7058F1810785F0801D31F30821064737472BA8E82DB3CE07070DB3CE027C705B308090D060123A0D0C9B678600BF488DE0409F488DE04080B0804808E8810685F087070DB3CE028D749C1208E8810685F087070DB3CE008D31F30841EB0208210706C7567BA0971B019B08E8610575F07DB3CE0278210706C7567BA0D0D0907036E8E8810475F077070DB3CE0278210DE511201BA8E8610575F07DB3CE0078210696E6974BA01C000B08E89F8005513F82359DB3C925F06E20D090E0024ED44D0FA40FA40FA00D31FD31FD21FD31F300216DB3C7F821064737472DB3C0C0D0054708210706C7567218018C8CB055006CF16821005F5E100FA0215CB6A14CB1FCB3F01FA02CB00C973FB000104DB3C0E0018708030C8CB05CB61C972FB00007A21B39982103B9ACA0072FB02DE70F8276F118018C8CB055005CF1621FA0214F40013CB6A22C2009412CB1F019132E283060194308100A0DE01C901FB000030C85007CF165005CF165003FA02CB1FCB1FCA1FCB1FC9ED54B079008B');
+        options.code = Cell.oneFromBoc('B5EE9C7241021001000205000114FF00F4A413F4BCF2C80B01020120020302014804050350F230DB3C5324A126A904F82326A127A90401BC5124A0F823B912B0F29EF8005375DB3CF82301DB3C0D0E0F0468D0DB3C0AD0D303FA40305308C7058F1E5F083333D31F30821064737472BA8E8330DB3CE031708210756E6B77DB3CE05309C705B30D060C070121A0D0C9B67811F488DE040FF488DE040E110D004CF825821064737472708018C8CB055004CF16821005F5E100FA0213CB6A12CB1FCB3FC973FB0004868E8D108C5F0C708210756E6B77DB3CE02AD749C1208E8D108C5F0C708210756E6B77DB3CE00AD31F30841EB0208210706C7567BAE302395F076C2232821064737472BA0C0C080902783009FA44300971B0B309A619F833D078D721D70B3F5260A11BBC18B08E8E36F82324708210706C7567DB3C06DE21B393F82332DE105810475523DB3C0C0F010C8E82DB3CE0300A0216DB3C7F821064737472DB3C0B0C0018708030C8CB05CB61C972FB00006821B39982103B9ACA0072FB02DE70F8276F118018C8CB055005CF1621FA0214F40013CB6A12CB1F830602948100A032DEC901FB00002CED44D0FA40FA40FA00D31FD31FD31FD31FD31FD31F30005A70F8258210706C7567228018C8CB055006CF16821005F5E100FA0215CB6A14CB1F13CB3F01FA02CB00C973FB00003AC85009CF165007CF165005FA0213CB1FCB1FCB1FCB1FCB1FCB1FC9ED54D9CF2586');
         super(provider, options);
 
         this.methods.pay = () => Contract.createMethod(provider, this.createPayExternalMessage());
@@ -42,24 +42,23 @@ class SubscriptionContract extends Contract {
         return body;
     }
 
-
     async getSubscriptionData() {
-        function parseTuple(x) {
-            const arr = x.elements;
-            return arr[0].number.number + ':' + new BN(arr[1].number.number, 10).toString(16);
-        }
+        const parseAddress = tuple => tuple[0].toNumber() + ':' + tuple[1].toString(16);
 
-        const result = await this.provider.call((await this.getAddress()).toString(), 'get_subscription_data', []);
-        if (result.exit_code !== 0) throw new Error(result);
+        const myAddress = await this.getAddress();
+        const result = await this.provider.call2(myAddress.toString(), 'get_subscription_data');
 
-        const wallet = parseTuple(result.stack[0][1]);
-        const beneficiary = parseTuple(result.stack[1][1]);
-        const amount = new BN(result.stack[2][1].substr(2), 16).toString();
-        const period = new BN(result.stack[3][1].substr(2), 16).toString();
-        const startAt = new BN(result.stack[4][1].substr(2), 16).toString();
-        const lastTimeSlot = new BN(result.stack[5][1].replace(/0x/, ''), 16).toString();
+        const wallet = parseAddress(result[0]);
+        const beneficiary = parseAddress(result[1]);
+        const amount = result[2].toString();
+        const period = result[3].toString();
+        const startAt = result[4].toString();
+        const timeout = result[5].toString();
+        const lastPayment = result[6].toString();
+        const lastRequest = result[7].toString();
+        const subscriptionId = result[8].toString();
 
-        return {wallet, beneficiary, amount, period, startAt, lastTimeSlot};
+        return {wallet, beneficiary, amount, period, startAt, timeout, lastPayment, lastRequest, subscriptionId};
     }
 
     /**
@@ -67,8 +66,6 @@ class SubscriptionContract extends Contract {
      * @return {Promise<{address: Address, signature: Uint8Array, message: Cell, cell: Cell, body: Cell, resultMessage: Cell}>}
      */
     async createPayExternalMessage() {
-        const body = new Cell();
-
         const selfAddress = await this.getAddress();
         const header = Contract.createExternalMessageHeader(selfAddress);
         const resultMessage = Contract.createCommonMsgInfo(header, null, null);
@@ -76,7 +73,7 @@ class SubscriptionContract extends Contract {
         return {
             address: selfAddress,
             message: resultMessage, // old wallet_send_generate_external_message
-            body
+            body: new Cell()
         };
     }
 }

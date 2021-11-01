@@ -1,0 +1,61 @@
+const {BN} = require("../utils");
+
+class HttpProviderUtils {
+
+    static parseObject(x) {
+        console.log(x);
+        const typeName = x['@type'];
+        switch (typeName) {
+            case 'tvm.list':
+            case 'tvm.tuple':
+                return x.elements.map(HttpProviderUtils.parseObject);
+            case 'tvm.stackEntryTuple':
+                return HttpProviderUtils.parseObject(x.tuple);
+            case 'tvm.stackEntryNumber':
+                return HttpProviderUtils.parseObject(x.number);
+            case 'tvm.numberDecimal':
+                return new BN(x.number, 10);
+            default:
+                throw new Error('unknown type ' + typeName);
+        }
+    }
+
+    /**
+     * @param pair  {any[]}
+     * @return {any}
+     */
+    static parseResponseStack(pair) {
+        console.log(pair);
+        const typeName = pair[0];
+        const value = pair[1];
+
+        switch (typeName) {
+            case 'num':
+                return new BN(value.replace(/0x/, ''), 16);
+            case 'list':
+                return HttpProviderUtils.parseObject(value);
+            default:
+                throw new Error('unknown type ' + typeName);
+        }
+    }
+
+    static parseResponse(result) {
+        if (result.exit_code !== 0) throw new Error(result);
+        return HttpProviderUtils.parseResponseStack(result.stack[0])
+    }
+
+    static makeArg(arg) {
+        if (arg instanceof BN || arg instanceof Number) {
+            return ['num', arg];
+        } else {
+            throw new Error('unknown arg type ' + arg);
+        }
+    }
+
+    static makeArgs(args) {
+        return args.map(this.makeArg);
+    }
+
+}
+
+module.exports.default = HttpProviderUtils;

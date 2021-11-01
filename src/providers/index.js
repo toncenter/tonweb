@@ -1,3 +1,5 @@
+const HttpProviderUtils = require('./HttpProviderUtils').default;
+
 let XMLHttpRequest;
 if (typeof window === 'undefined') {
     XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
@@ -143,6 +145,21 @@ class HttpProvider {
             method: method,
             stack: params,
         });
+    }
+
+    /**
+     * Invoke get-method of smart contract
+     * @param address   {string}    contract address
+     * @param method   {string | number}        method name or method id
+     * @param params?   Array of stack elements: [['num',3], ['cell', cell_object], ['slice', slice_object]]
+     */
+    async call2(address, method, params = []) {
+        const result = await this.send('runGetMethod', {
+            address: address,
+            method: method,
+            stack: params
+        });
+        return HttpProviderUtils.parseResponse(result);
     }
 
     /**
