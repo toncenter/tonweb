@@ -3,7 +3,6 @@ const {BN} = require("../utils");
 class HttpProviderUtils {
 
     static parseObject(x) {
-        console.log(x);
         const typeName = x['@type'];
         switch (typeName) {
             case 'tvm.list':
@@ -25,7 +24,6 @@ class HttpProviderUtils {
      * @return {any}
      */
     static parseResponseStack(pair) {
-        console.log(pair);
         const typeName = pair[0];
         const value = pair[1];
 
@@ -33,6 +31,7 @@ class HttpProviderUtils {
             case 'num':
                 return new BN(value.replace(/0x/, ''), 16);
             case 'list':
+            case 'tuple':
                 return HttpProviderUtils.parseObject(value);
             default:
                 throw new Error('unknown type ' + typeName);
@@ -41,7 +40,8 @@ class HttpProviderUtils {
 
     static parseResponse(result) {
         if (result.exit_code !== 0) throw new Error(result);
-        return HttpProviderUtils.parseResponseStack(result.stack[0])
+        const arr = result.stack.map(HttpProviderUtils.parseResponseStack);
+        return arr.length === 1 ? arr[0] : arr;
     }
 
     static makeArg(arg) {
