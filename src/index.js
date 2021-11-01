@@ -7,10 +7,11 @@ const HttpProvider = require("./providers").default;
 const {Contract} = require("./contract");
 const Wallets = require("./contract/wallet").default;
 const {BlockSubscribe} = require("./BlockSubscribe");
+const {SubscriptionContract} = require("./contract/subscription/index");
 const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
 const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
 const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
-const version = '0.0.22';
+const version = '0.0.23';
 
 class TonWeb {
     constructor(provider) {
@@ -72,6 +73,7 @@ TonWeb.boc = boc;
 TonWeb.HttpProvider = HttpProvider;
 TonWeb.Contract = Contract;
 TonWeb.Wallets = Wallets;
+TonWeb.SubscriptionContract = SubscriptionContract;
 TonWeb.BlockSubscribe = BlockSubscribe;
 TonWeb.ledger = {
     TransportWebUSB,
