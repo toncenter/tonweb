@@ -47,10 +47,10 @@ async function init() {
     const subscription = new SubscriptionContract(tonweb.provider, {
         wc: 0,
         wallet: walletAddress,
-        beneficiary: new TonWeb.utils.Address('EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG'),
-        amount: TonWeb.utils.toNano(0.1), // 0.1 ton
-        period: 60 * 60, // 1 hour,
-        timeout: 30 * 60, // 0.5 hour
+        beneficiary: new TonWeb.utils.Address('EQCmDZwk4sS3Nl2VumtvsDMs5AZ2AqH8yqJzf9y10sxaolWg'),
+        amount: TonWeb.utils.toNano(2), // 2 ton
+        period: 23 * 60 * 60, // 24 hour,
+        timeout: 3 * 60 * 60, // 3 hour
         subscriptionId: 123
     });
     const subscriptionAddress = await subscription.getAddress();
@@ -64,7 +64,7 @@ async function init() {
                 secretKey: keyPair.secretKey,
                 seqno: seqno,
                 pluginWc: 0,
-                amount: TonWeb.utils.toNano(0.1), // 0.1 ton
+                amount: TonWeb.utils.toNano(2), // 2 ton
                 stateInit: (await subscription.createStateInit()).stateInit,
                 body: subscription.createBody(),
             }).send()
@@ -78,7 +78,7 @@ async function init() {
             await wallet.methods.installPlugin({
                 secretKey: keyPair.secretKey,
                 seqno: seqno,
-                pluginAddress: 'EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG'
+                pluginAddress: 'EQCmDZwk4sS3Nl2VumtvsDMs5AZ2AqH8yqJzf9y10sxaolWg'
             }).send()
         );
     }
@@ -90,7 +90,7 @@ async function init() {
             await wallet.methods.removePlugin({
                 secretKey: keyPair.secretKey,
                 seqno: seqno,
-                pluginAddress: 'EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG'
+                pluginAddress: 'EQCmDZwk4sS3Nl2VumtvsDMs5AZ2AqH8yqJzf9y10sxaolWg'
             }).send()
         );
     }
@@ -110,7 +110,7 @@ async function init() {
     const walletGetMethods = async () => {
         console.log('publicKey', (await wallet.methods.getPublicKey()).toString(16));
         console.log('pluginList', await wallet.methods.getPluginsList());
-        console.log('isPluginInstalled1', await wallet.methods.isPluginInstalled('EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG'))
+        console.log('isPluginInstalled1', await wallet.methods.isPluginInstalled('EQCmDZwk4sS3Nl2VumtvsDMs5AZ2AqH8yqJzf9y10sxaolWg'))
         console.log('isPluginInstalled2', await wallet.methods.isPluginInstalled(subscriptionAddress.toString(true, true, true)));
     }
 
@@ -120,8 +120,8 @@ async function init() {
     // await deployAndInstallPlugin();
     // await installPlugin();
     // await removePlugin();
-    await walletGetMethods();
-    await subscriptionGetMethods();
+    // await walletGetMethods();
+    // await subscriptionGetMethods();
 
 
 }
