@@ -20,7 +20,7 @@ class WalletContract extends Contract {
 
         this.methods = {
             /**
-             * @param   params {{secretKey: Uint8Array, toAddress: Address | string, amount: BN | number, seqno: number, payload: string | Uint8Array, sendMode: number}}
+             * @param   params {{secretKey: Uint8Array, toAddress: Address | string, amount: BN | number, seqno: number, payload: string | Uint8Array | Cell, sendMode: number}}
              */
             transfer: (params) => {
 
@@ -114,7 +114,7 @@ class WalletContract extends Contract {
      * @param address   {Address | string}
      * @param amount    {BN | number} in nanograms
      * @param seqno {number}
-     * @param payload   {string | Uint8Array}
+     * @param payload?   {string | Uint8Array | Cell}
      * @param sendMode?  {number}
      * @param dummySignature?    {boolean}
      * @return {Promise<{address: Address, signature: Uint8Array, message: Cell, cell: Cell, body: Cell, resultMessage: Cell}>}
@@ -128,9 +128,11 @@ class WalletContract extends Contract {
         sendMode = 3,
         dummySignature = false
     ) {
-        const payloadCell = new Cell();
+        let payloadCell = new Cell();
         if (payload) {
-            if (typeof payload === 'string') {
+            if (payload.refs) { // is Cell
+                payloadCell = payload;
+            } else if (typeof payload === 'string') {
                 if (payload.length > 0) {
                     payloadCell.bits.writeUint(0, 32);
                     payloadCell.bits.writeBytes(stringToBytes(payload));
