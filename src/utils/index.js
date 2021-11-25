@@ -79,6 +79,7 @@ function hexToBytes(s) {
     for (let i = 0; i < length; i++) {
         const i2 = i * 2;
         const b = s.substring(i2, i2 + 2);
+        if (!to_byte_map.hasOwnProperty(b)) throw new Error('invalid hex character ' + b);
         result[i] = to_byte_map[b];
     }
     return result;
@@ -247,7 +248,7 @@ function bytesToBase64(bytes) {
 
 function base64toString(base64) {
     if (typeof window === 'undefined') {
-        return new Buffer(base64, 'base64').toString('binary');
+        return Buffer.from(base64, 'base64').toString('binary'); // todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
     } else {
         return atob(base64);
     }
@@ -255,7 +256,7 @@ function base64toString(base64) {
 
 function stringToBase64(s) {
     if (typeof window === 'undefined') {
-        return Buffer.from(s, "binary").toString('base64')
+        return Buffer.from(s, 'binary').toString('base64'); // todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
     } else {
         return btoa(s);
     }
