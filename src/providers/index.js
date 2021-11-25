@@ -89,12 +89,12 @@ class HttpProvider {
      * @param address   {string}
      * @param limit?    {number}
      * @param lt?    {number}
-     * @param txhash?    {string}
+     * @param hash?    {string}
      * @param to_lt?    {number}
      * @return array of transaction object
      */
-    async getTransactions(address, limit = 20, lt = undefined, txhash = undefined, to_lt = undefined) {
-        return this.send("getTransactions", {address, limit, lt, txhash, to_lt});
+    async getTransactions(address, limit = 20, lt = undefined, hash = undefined, to_lt = undefined, archival = undefined) {
+        return this.send("getTransactions", {address, limit, lt, hash, to_lt, archival});
     };
 
     /**
