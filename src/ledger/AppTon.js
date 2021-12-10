@@ -132,7 +132,7 @@ class AppTon {
     async sign(accountNumber, buffer) {
         const accountNumberBuffer = Buffer.alloc(4);
         accountNumberBuffer.writeInt32BE(accountNumber);
-        const signBuffer = Buffer.concat([accountNumberBuffer, new Buffer(buffer)]);
+        const signBuffer = Buffer.concat([accountNumberBuffer, Buffer.from(buffer)]);
 
         const response = await this.transport
             .send(
@@ -166,7 +166,7 @@ class AppTon {
 
         const accountNumberBuffer = Buffer.alloc(4);
         accountNumberBuffer.writeInt32BE(accountNumber);
-        const msgBuffer = Buffer.concat([accountNumberBuffer, new Buffer(await query.signingMessage.toBoc())]);
+        const msgBuffer = Buffer.concat([accountNumberBuffer, Buffer.from(await query.signingMessage.toBoc())]);
 
         const response = await this.transport
             .send(

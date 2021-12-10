@@ -247,7 +247,7 @@ function bytesToBase64(bytes) {
 
 function base64toString(base64) {
     if (typeof window === 'undefined') {
-        return new Buffer(base64, 'base64').toString('binary');
+        return Buffer.from(base64, 'base64').toString('binary');
     } else {
         return atob(base64);
     }
