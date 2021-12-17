@@ -6,8 +6,6 @@ TonWeb interface is close as possible to the web3.js.
 
 TonWeb has only 3 external dependencies (BN.js, tweetnacl, ethjs-unit) and is not too big (~200kb).
 
-Used by [tonwallet.me](https://tonwallet.me) and [ton-wallet plugin](https://tonwallet.me/plugin).
-
 ## Install Web
 
 `npm install tonweb`
