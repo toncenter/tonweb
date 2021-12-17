@@ -9,11 +9,11 @@ class SubscriptionContract extends Contract {
      * @param options   {{wc: number, wallet: Address, beneficiary: Address, amount: BN, period: number, timeout: number, subscriptionId: number, address?: Address | string}}
      */
     constructor(provider, options) {
-        options.code = Cell.oneFromBoc('B5EE9C7241021001000225000114FF00F4A413F4BCF2C80B0102012002030201480405035CF230DB3C5335A127A904F82327A128A90401BC5135A0F823B913B0F29E735210BCF25FF8005386DB3CF82302DB3C0D0E0F0468D0DB3C0BD0D303FA40305309C7058F1E5F093333D31F30821064737472BA8E8330DB3CE031708210756E6B77DB3CE0530AC705B30D060C070121A0D0C9B67813F488DE0411F488DE0410130D0044F825821064737472708018C8CB055004CF168317FA0213CB6A12CB1FCB3FC973FB0004888E8D109D5F0D708210756E6B77DB3CE02BD749C1208E8D109D5F0D708210756E6B77DB3CE00BD31F30841EB08210706C75675210BAE3023A5F086C2232821064737472BA0C0C080902B8305335A127A904F82327A128A904BEF2710AFA44300A71B094393A07A48EA709A619F833D078D721D70B3F5260A11BBC8E923036F82370708210737562732759DB3C5077DE07E222B393F82333DE106910581047103645044313DB3C0C0F010C8E82DB3CE0300A0216DB3C7F821064737472DB3C0B0C0018708030C8CB05CB61C972FB00006021B395831972FB02DE70F8276F118010C8CB055005CF1621FA0214F40013CB6912CB1F830602948100A032DEC901FB000030ED44D0FA40FA40FA00D31FD31FD31FD31FD31FD307D31F30005270F8258210706C7567228018C8CB055006CF168317FA0215CB6A14CB1F13CB3F01FA02CB00C973FB000040C8500ACF165008CF165006FA0214CB1F12CB1FCB1FCB1FCB1FCB07CB1FC9ED54ACD897B2');
+        options.code = Cell.oneFromBoc('B5EE9C7241020F01000262000114FF00F4A413F4BCF2C80B0102012002030201480405036AF230DB3C5335A127A904F82327A128A90401BC5135A0F823B913B0F29EF800725210BE945387F0078E855386DB3CA4E2F82302DB3C0B0C0D0202CD06070121A0D0C9B67813F488DE0411F488DE0410130B048FD6D9E05E8698198FD201829846382C74E2F841999E98F9841083239BA395D497803F018B841083AB735BBED9E702984E382D9C74688462F863841083AB735BBED9E70156BA4E09040B0A0A080269F10FD22184093886D9E7C12C1083239BA39384008646582A803678B2801FD010A65B5658F89659FE4B9FD803FC1083239BA396D9E40E0A04F08E8D108C5F0C708210756E6B77DB3CE00AD31F308210706C7567831EB15210BA8F48305324A126A904F82326A127A904BEF27109FA4430A619F833D078D721D70B3F5260A11BBE8E923036F82370708210737562732759DB3C5077DE106910581047103645135042DB3CE0395F076C2232821064737472BA0A0A0D09011A8E897F821064737472DB3CE0300A006821B39982100400000072FB02DE70F8276F118010C8CB055005CF1621FA0214F40013CB6912CB1F830602948100A032DEC901FB000030ED44D0FA40FA40FA00D31FD31FD31FD31FD31FD307D31F30018021FA443020813A98DB3C01A619F833D078D721D70B3FA070F8258210706C7567228018C8CB055007CF165004FA0215CB6A12CB1F13CB3F01FA02CB00C973FB000E0040C8500ACF165008CF165006FA0214CB1F12CB1FCB1FCB1FCB1FCB07CB1FC9ED54005801A615F833D020D70B078100D1BA95810088D721DED307218100DDBA028100DEBA12B1F2E047D33F30A8AB0FE5855AB4');
         super(provider, options);
 
         this.methods.pay = () => Contract.createMethod(provider, this.createPayExternalMessage());
-        this.methods.getSubscriptionData = this.getSubscriptionData.bind(this)
+        this.methods.getSubscriptionData = this.getSubscriptionData.bind(this);
     }
 
     /**
@@ -27,10 +27,10 @@ class SubscriptionContract extends Contract {
         cell.bits.writeAddress(this.options.beneficiary);
         cell.bits.writeGrams(this.options.amount);
         cell.bits.writeUint(this.options.period, 32);
-        cell.bits.writeUint(0, 32); // start_at
+        cell.bits.writeUint(0, 32); // start_time
         cell.bits.writeUint(this.options.timeout, 32);
-        cell.bits.writeUint(0, 32); // last_payment
-        cell.bits.writeUint(0, 32); // last_request_attempt
+        cell.bits.writeUint(0, 32); // last_payment_time
+        cell.bits.writeUint(0, 32); // last_request_time
         cell.bits.writeUint(0, 8); // failed_attempts
         cell.bits.writeUint(this.options.subscriptionId, 32); // subscription_id
         return cell;
@@ -42,7 +42,7 @@ class SubscriptionContract extends Contract {
      */
     createBody() {
         const body = new Cell();
-        body.bits.writeUint(0x706c7567, 32); // op
+        body.bits.writeUint(new BN(0x706c7567).add(new BN(0x80000000)), 32); // op
         return body;
     }
 
@@ -65,10 +65,10 @@ class SubscriptionContract extends Contract {
         const beneficiary = parseAddress(result[1]);
         const amount = result[2];
         const period = result[3].toNumber();
-        const startAt = result[4].toNumber();
+        const startAt = result[4].toNumber(); // start_time
         const timeout = result[5].toNumber();
-        const lastPayment = result[6].toNumber();
-        const lastRequest = result[7].toNumber();
+        const lastPayment = result[6].toNumber(); // last_payment_time
+        const lastRequest = result[7].toNumber(); // last_request_time
         const failedAttempts = result[8].toNumber();
         const subscriptionId = result[9].toNumber();
 
@@ -83,11 +83,13 @@ class SubscriptionContract extends Contract {
         const selfAddress = await this.getAddress();
         const header = Contract.createExternalMessageHeader(selfAddress);
         const resultMessage = Contract.createCommonMsgInfo(header, null, null);
+        const body = new Cell();
+        body.bits.writeUint(Math.floor(Date.now() / 1000), 64);
 
         return {
             address: selfAddress,
-            message: resultMessage, // old wallet_send_generate_external_message
-            body: new Cell()
+            message: resultMessage,
+            body: body
         };
     }
 }
