@@ -5,6 +5,7 @@ const {SimpleWalletContractR1, SimpleWalletContractR2, SimpleWalletContractR3} =
 const {WalletV2ContractR1, WalletV2ContractR2} = require("./WalletContractV2");
 const {WalletV3ContractR1, WalletV3ContractR2} = require("./WalletContractV3");
 const {WalletV4ContractR1} = require("./WalletContractV4");
+const {WalletV4ContractR2} = require("./WalletContractV4R2");
 
 class Wallets {
     /**
@@ -20,9 +21,10 @@ class Wallets {
             'v2R2': WalletV2ContractR2,
             'v3R1': WalletV3ContractR1,
             'v3R2': WalletV3ContractR2,
-            'v4R1': WalletV4ContractR1
+            'v4R1': WalletV4ContractR1,
+            'v4R2': WalletV4ContractR2
         };
-        this.list = [SimpleWalletContractR1, SimpleWalletContractR2, SimpleWalletContractR3, WalletV2ContractR1, WalletV2ContractR2, WalletV3ContractR1, WalletV3ContractR2, WalletV4ContractR1];
+        this.list = [SimpleWalletContractR1, SimpleWalletContractR2, SimpleWalletContractR3, WalletV2ContractR1, WalletV2ContractR2, WalletV3ContractR1, WalletV3ContractR2, WalletV4ContractR1, WalletV4ContractR2];
         this.defaultVersion = 'v3R1';
         this.default = this.all[this.defaultVersion];
     }

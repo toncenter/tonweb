@@ -177,9 +177,11 @@ class WalletContract extends Contract {
         sendMode = 3,
         dummySignature = false
     ) {
-        const payloadCell = new Cell();
+        let payloadCell = new Cell();
         if (payload) {
-            if (typeof payload === 'string') {
+            if (payload.refs) { // is Cell
+                payloadCell = payload;
+            } else if (typeof payload === 'string') {
                 if (payload.length > 0) {
                     payloadCell.bits.writeUint(0, 32);
                     payloadCell.bits.writeBytes(stringToBytes(payload));
