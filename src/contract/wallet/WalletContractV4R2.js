@@ -61,7 +61,7 @@ class WalletV4ContractR2 extends WalletContract {
      */
     createDataCell() {
         const cell = new Cell();
-        cell.bits.writeUint(0, 32);
+        cell.bits.writeUint(0, 32); // seqno
         cell.bits.writeUint(this.options.walletId, 32);
         cell.bits.writeBytes(this.options.publicKey);
         cell.bits.writeUint(0, 1); // plugins dict empty

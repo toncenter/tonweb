@@ -14,12 +14,7 @@ class WalletV4ContractR1 extends WalletContract {
         super(provider, options);
         if (!this.options.walletId) this.options.walletId = 698983191 + this.options.wc;
 
-        this.methods.deployAndInstallPlugin = (params) => Contract.createMethod(provider, this.deployAndInstallPlugin(params));
-        this.methods.installPlugin = (params) => Contract.createMethod(provider, this.installPlugin(params));
-        this.methods.removePlugin = (params) => Contract.createMethod(provider, this.removePlugin(params));
         this.methods.getPublicKey = this.getPublicKey.bind(this);
-        this.methods.isPluginInstalled = this.isPluginInstalled.bind(this);
-        this.methods.getPluginsList = this.getPluginsList.bind(this);
     }
 
     getName() {
@@ -68,81 +63,11 @@ class WalletV4ContractR1 extends WalletContract {
     }
 
     /**
-     * @param   params {{secretKey: Uint8Array, seqno: number, pluginWc: number, amount: BN, stateInit: Cell, body: Cell}}
-     */
-    async deployAndInstallPlugin(params) {
-        const {secretKey, seqno, pluginWc, amount, stateInit, body} = params;
-
-        const signingMessage = this.createSigningMessage(seqno, true);
-        signingMessage.bits.writeUint(1, 8); // op
-        signingMessage.bits.writeInt(pluginWc, 8);
-        signingMessage.bits.writeGrams(amount);
-        signingMessage.refs.push(stateInit);
-        signingMessage.refs.push(body);
-        return this.createExternalMessage(signingMessage, secretKey, seqno, false);
-    }
-
-    /**
-     * @private
-     * @param   params {{secretKey: Uint8Array, seqno: number, pluginAddress: string | Address}}
-     * @param   isInstall {boolean} install or uninstall
-     */
-    async _setPlugin(params, isInstall) {
-        const {secretKey, seqno} = params;
-        const pluginAddress = new Address(params.pluginAddress);
-
-        const signingMessage = this.createSigningMessage(seqno, true);
-        signingMessage.bits.writeUint(isInstall ? 2 : 3, 8); // op
-        signingMessage.bits.writeInt(pluginAddress.wc, 8);
-        signingMessage.bits.writeBytes(pluginAddress.hashPart);
-
-        return this.createExternalMessage(signingMessage, secretKey, seqno, false);
-    }
-
-    /**
-     * @param   params {{secretKey: Uint8Array, seqno: number, pluginAddress: string | Address}}
-     */
-    async installPlugin(params) {
-        return this._setPlugin(params, true);
-    }
-
-    /**
-     * @param   params {{secretKey: Uint8Array, seqno: number, pluginAddress: string | Address}}
-     */
-    async removePlugin(params) {
-        return this._setPlugin(params, false);
-    }
-
-    /**
      * @return {Promise<BN>}
      */
     async getPublicKey() {
         const myAddress = await this.getAddress();
         return this.provider.call2(myAddress.toString(), 'get_public_key');
-    }
-
-    /**
-     * @param pluginAddress {string | Address}
-     * @return {Promise<boolean>}
-     */
-    async isPluginInstalled(pluginAddress) {
-        pluginAddress = new Address(pluginAddress);
-        const hashPart = '0x' + bytesToHex(pluginAddress.hashPart);
-
-        const myAddress = await this.getAddress();
-        const result = await this.provider.call2(myAddress.toString(), 'is_plugin_installed', [['num', pluginAddress.wc], ['num', hashPart]]);
-        return !result.isZero();
-    }
-
-    /**
-     * @return {Promise<string[]>} plugins addresses
-     */
-    async getPluginsList() {
-        const parseAddress = tuple => tuple[0].toNumber() + ':' + tuple[1].toString(16);
-
-        const myAddress = await this.getAddress();
-        const result = await this.provider.call2(myAddress.toString(), 'get_plugin_list');
-        return result.map(parseAddress);
     }
 }
 
