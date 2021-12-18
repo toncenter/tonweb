@@ -11,7 +11,7 @@ const {SubscriptionContract} = require("./contract/subscription/index");
 const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
 const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
 const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
-const version = '0.0.25e';
+const version = '0.0.26e';
 
 class TonWeb {
     constructor(provider) {

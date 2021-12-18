@@ -145,7 +145,7 @@ async function init() {
         if (msg.message !== 'ODY6s4A=\n') return false; // msg from subscription prefix
 
         const subscriptionAddress = msg.source; // subscription contract address
-        const amount = new BN(msg.value); // coins received by the publisher (in nanotons); subscription amount minus fee and withheld 1 ton
+        const amount = new BN(msg.value); // coins received by the publisher (in nanotons); subscription amount minus fee and withheld 0.0671 ton
 
         // get subscription data
 
@@ -160,6 +160,7 @@ async function init() {
             beneficiary: new Address(subscriptionData.beneficiary),
             amount: subscriptionData.amount,
             period: subscriptionData.period,
+            startAt: subscriptionData.startAt,
             timeout: subscriptionData.timeout,
             subscriptionId: subscriptionData.subscriptionId
         });
