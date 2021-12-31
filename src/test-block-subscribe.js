@@ -95,11 +95,15 @@ async function init() {
     const tonweb = new TonWeb();
     const storage = new BlocksStorageImpl();
 
-    const onTransaction = async (shortTx) => {
-        console.log('TX ' + shortTx.account);
+    const onTransaction = async (shortTx, shardId, blockNumber) => {
+        console.log('TX ' + shortTx.account + ' in block ' + shardId + '|' + blockNumber);
     }
 
-    const blockSubscribe = new TonWeb.BlockSubscribe(tonweb.provider, storage, onTransaction);
+    const onBlock = async (shardId, blockNumber) => {
+        console.log('BLOCK ' + shardId + '|' + blockNumber);
+    }
+
+    const blockSubscribe = new TonWeb.BlockSubscribe(tonweb.provider, storage, onTransaction, undefined, onBlock);
     await blockSubscribe.start();
 }
 

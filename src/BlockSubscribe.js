@@ -14,16 +14,20 @@ class BlockSubscribe {
     /**
      * @param provider  {TonWeb.HttpProvider}
      * @param storage   persistent storage for storing block numbers that we have already processed.
-     * @param onTransaction {(tx: ShortTx) => Promise<void>} callback which is called for each transaction of each block.
+     * @param onTransaction {(tx: ShortTx, shardId: string, blockNumber: number) => Promise<void>} callback which is called for each transaction of each block.
      *                                                       callback may throw an error, in this case the block processing will be interrupted and block will not be saved in the storage as processed.
      *                                                       blocks are processed out of chronological order.
+     *                                                       for masterchain shardId === '-1'
      * @param startMcBlockNumber? {number} start masterchain block number from which we start to process blocks.
      *                                     if not specified, the subscription starts from the last block of the network at the time of launch.
+     * @param onBlock?(shardId: string, blockNumber: number) => Promise<void> callback which is called for of each block.
+     *                                                                        for masterchain shardId === '-1'
      */
-    constructor(provider, storage, onTransaction, startMcBlockNumber) {
+    constructor(provider, storage, onTransaction, startMcBlockNumber, onBlock) {
         this.provider = provider;
         this.storage = storage;
         this.onTransaction = onTransaction;
+        this.onBlock = onBlock;
         this.startMcBlockNumber = startMcBlockNumber;
     }
 
@@ -56,8 +60,11 @@ class BlockSubscribe {
                 for (let i = lastSavedMcBlock + 1; i < lastMcBlock; i++) {
                     const blockShards = await this.provider.getBlockShards(i);
                     const blockTransactions = await this.provider.getMasterchainBlockTransactions(i);
+                    if (this.onBlock) {
+                        this.onBlock('-1', i);
+                    }
                     for (let shortTx of blockTransactions.transactions) {
-                        await this.onTransaction(shortTx);
+                        await this.onTransaction(shortTx, '-1', i);
                     }
                     await this.storage.insertBlocks(i, blockShards.shards.map(parseShardBlockNumber));
                 }
@@ -88,8 +95,11 @@ class BlockSubscribe {
                         await this.storage.setBlockProcessed(shardId, shardBlockNumber, []);
                     } else {
                         const blockTransactions = await this.provider.getShardBlockTransactions(shardId, shardBlockNumber);
+                        if (this.onBlock) {
+                            this.onBlock(shardId, shardBlockNumber);
+                        }
                         for (let shortTx of blockTransactions.transactions) {
-                            await this.onTransaction(shortTx);
+                            await this.onTransaction(shortTx, shardId, shardBlockNumber);
                         }
                         const prevBlocks = blockHeader.prev_blocks.map(parseShardBlockNumber);
                         await this.storage.setBlockProcessed(shardId, shardBlockNumber, prevBlocks);
