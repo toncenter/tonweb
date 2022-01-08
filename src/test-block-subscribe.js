@@ -92,7 +92,7 @@ class BlocksStorageImpl {
 }
 
 async function init() {
-    const tonweb = new TonWeb();
+    const tonweb = new TonWeb(new TonWeb.HttpProvider('https://test2.toncenter.com/jsonRPC'));
     const storage = new BlocksStorageImpl();
 
     const onTransaction = async (shortTx, shardId, blockNumber) => {

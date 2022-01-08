@@ -43,7 +43,7 @@ class HttpProvider {
             xhr.onerror = function () {
                 reject(new Error("Network Error"));
             };
-            xhr.setRequestHeader("content-type", "application/json");
+            xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(JSON.stringify(request));
         });
     }
