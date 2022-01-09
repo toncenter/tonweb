@@ -9,7 +9,7 @@ const Wallets = require("./contract/wallet").default;
 const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
 const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
 const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
-const version = '0.0.25';
+const version = '0.0.26';
 
 class TonWeb {
     constructor(provider) {
