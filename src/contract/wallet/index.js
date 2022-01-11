@@ -25,19 +25,10 @@ class WalletContract extends Contract {
             transfer: (params) => {
 
                 const createQuery = async () => {
-                    const query = await this.createTransferMessage(params.secretKey, params.toAddress, params.amount, params.seqno, params.payload, params.sendMode, !Boolean(params.secretKey));
-                    const legacyQuery = query.code ? // deploy
-                        {
-                            address: query.address.toString(true, true, false),
-                            body: query.body.toObject(),
-                            init_code: query.code.toObject(),
-                            init_data: query.data.toObject(),
-                        } : {
-                            address: query.address.toString(true, true, true),
-                            body: query.body.toObject(),
-                        }
-
-                    return {query, legacyQuery};
+                    var sk = params.secretKey;
+                    const query = await this.createTransferMessage(sk, params.toAddress, params.amount, params.seqno, params.payload, params.sendMode, !Boolean(sk));
+                    console.log(query);
+                    return {query:query};
                 }
 
                 const promise = createQuery();
@@ -52,8 +43,18 @@ class WalletContract extends Contract {
                         return provider.sendBoc(boc);
                     },
                     estimateFee: async () => {
-                        const legacyQuery = (await promise).legacyQuery;
-                        return provider.getEstimateFee(legacyQuery); // todo: get fee by boc
+                        const query = (await promise).query;
+                        const serialized = query.code ? // deploy
+                          {
+                              address: query.address.toString(true, true, false),
+                              body: bytesToBase64(await query.body.toBoc(false)),
+                              init_code: bytesToBase64(await query.code.toBoc(false)),
+                              init_data: bytesToBase64(await query.data.toBoc(false)),
+                          } : {
+                              address: query.address.toString(true, true, true),
+                              body: bytesToBase64(await query.body.toBoc(false)),
+                          };
+                        return provider.getEstimateFee(serialized);
                     }
                 }
             },
