@@ -335,7 +335,6 @@ async function moveToTheEnd(indexHashmap, topologicalOrderArray, target) {
  */
 async function treeWalk(cell, topologicalOrderArray, indexHashmap, parentHash = null) {
     const cellHash = await cell.hash();
-    let fl = (h) => bytesToHex(h).slice(0, 4) + ":" + indexHashmap[h];
     if (cellHash in indexHashmap) { // Duplication cell
         //it is possible that already seen cell is a children of more deep cell
         if (parentHash) {
@@ -353,15 +352,6 @@ async function treeWalk(cell, topologicalOrderArray, indexHashmap, parentHash = 
         indexHashmap = res[1];
     }
 
-    if (parentHash == null) {
-        for (let c of topologicalOrderArray) {
-            let s = " ";
-
-            for (let subCell of c[1].refs) {
-                s += fl(await subCell.hash()) + " "
-            }
-        }
-    }
     return [topologicalOrderArray, indexHashmap];
 }
 
