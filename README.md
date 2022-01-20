@@ -39,7 +39,7 @@ const address = await wallet.getAddress();
 
 const nonBounceableAddress = address.toString(true, true, false);
 
-const seqno = await wallet.methods.seqno().call(); 
+const seqno = await wallet.methods.seqno().call();
 
 await wallet.deploy(secretKey).send(); // deploy wallet to blockchain
 
@@ -83,7 +83,7 @@ Each part is documented separately:
 [tonweb-utils](https://github.com/toncenter/tonweb/blob/master/src/utils/README.md) - work with TON Addresses, coin values, byte arrays, hex, hash functions.
 
 
-**Also we use JSDoc in code** 
+**Also we use JSDoc in code**
 
 ## Build
 
@@ -101,7 +101,7 @@ npm install -g tonweb
 export NODE_PATH=$(npm root --quiet -g)
 ```
 
-Then create your_script.js 
+Then create your_script.js
 
 ```
 const TonWeb = require('tonweb');
@@ -112,7 +112,7 @@ const tonweb = new TonWeb();
 
 ```
 
-run script 
+run script
 
 ```bash
 node your_script.js
