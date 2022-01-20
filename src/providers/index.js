@@ -180,38 +180,36 @@ class HttpProvider {
     }
 
     /**
-     * Returns transactions hashes included in this masterhcain block
-     * @param masterchainBlockNumber  {number}
-     */
-    async getMasterchainBlockTransactions(masterchainBlockNumber) {
-        return this.send('getBlockTransactions', {
-            workchain: -1,
-            shard: '-9223372036854775808', // masterchain's shardAll = 0x8000000000000000
-            seqno: masterchainBlockNumber
-        });
-    }
-
-    /**
-     * Returns transactions hashes included in this shardchain block
+     * Returns transactions hashes included in this block
+     * @param workchain {number}
      * @param shardId   {string}
      * @param shardBlockNumber  {number}
      */
-    async getShardBlockTransactions(shardId, shardBlockNumber) {
+    async getBlockTransactions(workchain, shardId, shardBlockNumber) {
         return this.send('getBlockTransactions', {
-            workchain: 0,
+            workchain: workchain,
             shard: shardId,
             seqno: shardBlockNumber
         });
     }
 
     /**
-     * Returns shardchain block header and his previous blocks ID's
+     * Returns transactions hashes included in this masterhcain block
+     * @param masterchainBlockNumber  {number}
+     */
+    async getMasterchainBlockTransactions(masterchainBlockNumber) {
+        return this.getBlockTransactions(-1, '-9223372036854775808', masterchainBlockNumber);
+    }
+
+    /**
+     * Returns block header and his previous blocks ID's
+     * @param workchain {number}
      * @param shardId   {string}
      * @param shardBlockNumber  {number}
      */
-    async getShardBlockHeader(shardId, shardBlockNumber) {
+    async getBlockHeader(workchain, shardId, shardBlockNumber) {
         return this.send('getBlockHeader', {
-            workchain: 0,
+            workchain: workchain,
             shard: shardId,
             seqno: shardBlockNumber
         });
@@ -222,11 +220,7 @@ class HttpProvider {
      * @param masterchainBlockNumber  {number}
      */
     async getMasterchainBlockHeader(masterchainBlockNumber) {
-        return this.send('getBlockHeader', {
-            workchain: -1,
-            shard: '-9223372036854775808', // masterchain's shardAll = 0x8000000000000000
-            seqno: masterchainBlockNumber
-        });
+        return this.getBlockHeader(-1, '-9223372036854775808', masterchainBlockNumber);
     }
 }
 
