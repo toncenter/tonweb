@@ -16,7 +16,7 @@ class WalletContract extends Contract {
 
         this.methods = {
             /**
-             * @param   params {{secretKey: Uint8Array, toAddress: Address | string, amount: BN | number, seqno: number, payload: string | Uint8Array, sendMode: number}}
+             * @param   params {{secretKey: Uint8Array, toAddress: Address | string, amount: BN | number, seqno: number, payload: string | Uint8Array | Cell, sendMode: number}}
              */
             transfer: (params) => Contract.createMethod(provider, this.createTransferMessage(params.secretKey, params.toAddress, params.amount, params.seqno, params.payload, params.sendMode, !Boolean(params.secretKey))),
 
@@ -163,7 +163,7 @@ class WalletContract extends Contract {
      * @param address   {Address | string}
      * @param amount    {BN | number} in nanograms
      * @param seqno {number}
-     * @param payload   {string | Uint8Array}
+     * @param payload?   {string | Uint8Array | Cell}
      * @param sendMode?  {number}
      * @param dummySignature?    {boolean}
      * @return {Promise<{address: Address, signature: Uint8Array, message: Cell, cell: Cell, body: Cell, resultMessage: Cell}>}

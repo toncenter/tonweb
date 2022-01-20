@@ -28,9 +28,9 @@ class BlockSubscription {
         this.provider = provider;
         this.storage = storage;
         this.onBlock = onBlock;
-        this.startMcBlockNumber = options?.startMcBlockNumber;
-        this.mcInterval = options?.mcInterval || MC_INTERVAL;
-        this.shardsInterval = options?.shardsInterval || SHARDS_INTERVAL;
+        this.startMcBlockNumber = options ? options.startMcBlockNumber : undefined;
+        this.mcInterval = (options ? options.mcInterval : undefined) || MC_INTERVAL;
+        this.shardsInterval = (options ? options.shardsInterval : undefined) || SHARDS_INTERVAL;
     }
 
     async start() {

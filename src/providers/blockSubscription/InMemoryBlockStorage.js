@@ -5,14 +5,13 @@
  * Dumb in-memory implementation.
  */
 class InMemoryBlockStorage {
-    logFunction = null;
-    masterchainBlocks = {}; // mcBlockNumber {number} -> isProcessed {boolean}
-    shardchainBlocks = {}; // workchain {number} + shardId {string} + shardBlockNumber {number} -> isProcessed {boolean}
 
     /**
      * @param logFunction?   {(text: string) => void}
      */
     constructor(logFunction) {
+        this.masterchainBlocks = {}; // mcBlockNumber {number} -> isProcessed {boolean}
+        this.shardchainBlocks = {}; // workchain {number} + shardId {string} + shardBlockNumber {number} -> isProcessed {boolean}
         this.logFunction = logFunction;
     }
 

@@ -38,6 +38,7 @@ function parseFriendlyAddress(addressString) {
     } else {
         workchain = addr[1];
     }
+    if (workchain !== 0 && workchain !== -1) throw new Error('Invalid address wc ' + workchain);
 
     const hashPart = addr.slice(2, 34);
     return {isTestOnly, isBounceable, workchain, hashPart};
@@ -80,10 +81,16 @@ class Address {
         } else {
             this.isUrlSafe = false;
         }
-        if (anyForm.search(":") > 0) {
+        if (anyForm.indexOf(':') > -1) {
+            const arr = anyForm.split(':');
+            if (arr.length !== 2) throw new Error('Invalid address ' + anyForm);
+            const wc = parseInt(arr[0]);
+            if (wc !== 0 && wc !== -1) throw new Error('Invalid address wc ' + anyForm);
+            const hex = arr[1];
+            if (hex.length !== 64) throw new Error('Invalid address hex ' + anyForm);
             this.isUserFriendly = false;
-            this.wc = parseInt(anyForm.split(":")[0]);
-            this.hashPart = hexToBytes(anyForm.split(":")[1]);
+            this.wc = wc;
+            this.hashPart = hexToBytes(hex);
             this.isTestOnly = false;
             this.isBounceable = false;
         } else {
