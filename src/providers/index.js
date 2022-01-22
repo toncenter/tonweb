@@ -7,12 +7,14 @@ if (typeof window === 'undefined') {
     XMLHttpRequest = window.XMLHttpRequest;
 }
 
+const SHARD_ID_ALL = '-9223372036854775808'; // 0x8000000000000000
+
 class HttpProvider {
     /**
      * @param host? {string}
      */
     constructor(host) {
-        this.host = host || "https://toncenter.com/api/test/v2/jsonRPC";
+        this.host = host || "https://toncenter.com/api/v2/jsonRPC";
     }
 
     /**
@@ -198,7 +200,7 @@ class HttpProvider {
      * @param masterchainBlockNumber  {number}
      */
     async getMasterchainBlockTransactions(masterchainBlockNumber) {
-        return this.getBlockTransactions(-1, '-9223372036854775808', masterchainBlockNumber);
+        return this.getBlockTransactions(-1, SHARD_ID_ALL, masterchainBlockNumber);
     }
 
     /**
@@ -220,8 +222,10 @@ class HttpProvider {
      * @param masterchainBlockNumber  {number}
      */
     async getMasterchainBlockHeader(masterchainBlockNumber) {
-        return this.getBlockHeader(-1, '-9223372036854775808', masterchainBlockNumber);
+        return this.getBlockHeader(-1, SHARD_ID_ALL, masterchainBlockNumber);
     }
 }
+
+HttpProvider.SHARD_ID_ALL = SHARD_ID_ALL;
 
 module.exports.default = HttpProvider;
