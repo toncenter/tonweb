@@ -1,3 +1,5 @@
+const HttpProviderUtils = require('./HttpProviderUtils').default;
+
 let XMLHttpRequest;
 if (typeof window === 'undefined') {
     XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
@@ -5,12 +7,14 @@ if (typeof window === 'undefined') {
     XMLHttpRequest = window.XMLHttpRequest;
 }
 
+const SHARD_ID_ALL = '-9223372036854775808'; // 0x8000000000000000
+
 class HttpProvider {
     /**
      * @param host? {string}
      */
     constructor(host) {
-        this.host = host || "https://toncenter.com/api/test/v2/jsonRPC";
+        this.host = host || "https://toncenter.com/api/v2/jsonRPC";
     }
 
     /**
@@ -144,6 +148,84 @@ class HttpProvider {
             stack: params,
         });
     }
+
+    /**
+     * Invoke get-method of smart contract
+     * @param address   {string}    contract address
+     * @param method   {string | number}        method name or method id
+     * @param params?   Array of stack elements: [['num',3], ['cell', cell_object], ['slice', slice_object]]
+     */
+    async call2(address, method, params = []) {
+        const result = await this.send('runGetMethod', {
+            address: address,
+            method: method,
+            stack: params
+        });
+        return HttpProviderUtils.parseResponse(result);
+    }
+
+    /**
+     * Returns ID's of last and init block of masterchain
+     */
+    async getMasterchainInfo() {
+        return this.send('getMasterchainInfo', {});
+    }
+
+    /**
+     * Returns ID's of shardchain blocks included in this masterchain block
+     * @param masterchainBlockNumber {number}
+     */
+    async getBlockShards(masterchainBlockNumber) {
+        return this.send('shards', {
+            seqno: masterchainBlockNumber
+        });
+    }
+
+    /**
+     * Returns transactions hashes included in this block
+     * @param workchain {number}
+     * @param shardId   {string}
+     * @param shardBlockNumber  {number}
+     */
+    async getBlockTransactions(workchain, shardId, shardBlockNumber) {
+        return this.send('getBlockTransactions', {
+            workchain: workchain,
+            shard: shardId,
+            seqno: shardBlockNumber
+        });
+    }
+
+    /**
+     * Returns transactions hashes included in this masterhcain block
+     * @param masterchainBlockNumber  {number}
+     */
+    async getMasterchainBlockTransactions(masterchainBlockNumber) {
+        return this.getBlockTransactions(-1, SHARD_ID_ALL, masterchainBlockNumber);
+    }
+
+    /**
+     * Returns block header and his previous blocks ID's
+     * @param workchain {number}
+     * @param shardId   {string}
+     * @param shardBlockNumber  {number}
+     */
+    async getBlockHeader(workchain, shardId, shardBlockNumber) {
+        return this.send('getBlockHeader', {
+            workchain: workchain,
+            shard: shardId,
+            seqno: shardBlockNumber
+        });
+    }
+
+    /**
+     * Returns masterchain block header and his previous block ID
+     * @param masterchainBlockNumber  {number}
+     */
+    async getMasterchainBlockHeader(masterchainBlockNumber) {
+        return this.getBlockHeader(-1, SHARD_ID_ALL, masterchainBlockNumber);
+    }
 }
+
+HttpProvider.SHARD_ID_ALL = SHARD_ID_ALL;
 
 module.exports.default = HttpProvider;

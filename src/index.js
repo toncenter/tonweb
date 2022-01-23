@@ -6,10 +6,12 @@ const AppTon = require("./ledger/AppTon");
 const HttpProvider = require("./providers").default;
 const {Contract} = require("./contract");
 const Wallets = require("./contract/wallet").default;
+const {BlockSubscription, InMemoryBlockStorage} = require("./providers/blockSubscription");
+const {SubscriptionContract} = require("./contract/subscription/index");
 const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
 const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
 const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
-const version = '0.0.26';
+const version = '0.0.27';
 
 class TonWeb {
     constructor(provider) {
@@ -18,6 +20,8 @@ class TonWeb {
         this.Address = Address;
         this.boc = boc;
         this.Contract = Contract;
+        this.BlockSubscription = BlockSubscription;
+        this.InMemoryBlockStorage = InMemoryBlockStorage;
 
         this.provider = provider || new HttpProvider();
         this.wallet = new Wallets(this.provider);
@@ -70,6 +74,9 @@ TonWeb.boc = boc;
 TonWeb.HttpProvider = HttpProvider;
 TonWeb.Contract = Contract;
 TonWeb.Wallets = Wallets;
+TonWeb.SubscriptionContract = SubscriptionContract;
+TonWeb.BlockSubscription = BlockSubscription;
+TonWeb.InMemoryBlockStorage = InMemoryBlockStorage;
 TonWeb.ledger = {
     TransportWebUSB,
     TransportWebHID,
