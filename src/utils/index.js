@@ -18,7 +18,7 @@ function sha256(bytes) {
     if (typeof document !== 'undefined') { // web
         return crypto.subtle.digest("SHA-256", bytes);
     } else {  // nodejs or react-native
-        return myCrypto.subtle.digest("SHA-256", bytes);
+        return myCrypto.subtle.digest({name:"SHA-256"}, bytes);
     }
 }
 
