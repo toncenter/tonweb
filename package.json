@@ -27,17 +27,17 @@
   "homepage": "https://github.com/toncenter/tonweb#readme",
   "repository": "https://github.com/toncenter/tonweb",
   "dependencies": {
-    "bn.js": "^5.1.1",
-    "tweetnacl": "^1.0.3",
-    "ethjs-unit": "^0.1.6",
-    "xmlhttprequest": "^1.8.0",
-    "@ledgerhq/hw-transport-webusb": "^5.46.0",
-    "@ledgerhq/hw-transport-webhid": "^5.46.0",
-    "@ledgerhq/hw-transport-web-ble": "^5.46.0"
+    "bn.js": "5.1.1",
+    "tweetnacl": "1.0.3",
+    "ethjs-unit": "0.1.6",
+    "xmlhttprequest": "1.8.0",
+    "@ledgerhq/hw-transport-webusb": "5.48.0",
+    "@ledgerhq/hw-transport-webhid": "5.48.0",
+    "@ledgerhq/hw-transport-web-ble": "5.48.0"
   },
   "devDependencies": {
-    "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11"
+    "webpack": "4.42.1",
+    "webpack-cli": "3.3.11"
   },
   "browser": {
     "crypto": false,
