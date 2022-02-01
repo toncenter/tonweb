@@ -184,7 +184,8 @@ class WalletContract extends Contract {
             } else if (typeof payload === 'string') {
                 if (payload.length > 0) {
                     payloadCell.bits.writeUint(0, 32);
-                    payloadCell.bits.writeBytes(stringToBytes(payload));
+                    const payloadBytes = new TextEncoder().encode(payload);
+                    payloadCell.bits.writeBytes(payloadBytes);
                 }
             } else {
                 payloadCell.bits.writeBytes(payload)
