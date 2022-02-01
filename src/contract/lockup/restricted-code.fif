@@ -1,0 +1,353 @@
+"Asm.fif" include
+// automatically generated from `/home/main/Documents/ton/crypto/smartcont/stdlib.fc` `restricted.fc` 
+PROGRAM{
+  DECLPROC is_whitelisted?
+  DECLPROC check_message_destination
+  DECLPROC unpack_data
+  DECLPROC pack_data
+  DECLPROC lock_grams
+  DECLPROC unlock_grams
+  DECLPROC recv_internal
+  DECLPROC recv_external
+  85143 DECLMETHOD seqno
+  80113 DECLMETHOD wallet_id
+  78748 DECLMETHOD get_public_key
+  67779 DECLMETHOD get_balances_at
+  87878 DECLMETHOD get_balances
+  113982 DECLMETHOD check_destination
+  is_whitelisted? PROC:<{
+    //  addr allowed_destinations
+    OVER	//  addr allowed_destinations addr
+    SBITS	//  addr allowed_destinations _6
+    PFXDICTGETQ
+    NULLSWAPIFNOT2	//  _8 _9 _10 _11
+    3 1 BLKDROP2	//  found
+  }>
+  check_message_destination PROCREF:<{
+    //  msg allowed_destinations
+    SWAP	//  allowed_destinations msg
+    CTOS	//  allowed_destinations cs
+    4 LDU	//  allowed_destinations flags cs
+    SWAP
+    8 PUSHINT	//  allowed_destinations cs flags _8=8
+    AND	//  allowed_destinations cs _9
+    IFJMP:<{	//  allowed_destinations cs
+      2DROP	// 
+      TRUE	//  _10
+    }>	//  allowed_destinations cs
+    LDMSGADDR	//  allowed_destinations _21 _20
+    NIP	//  allowed_destinations cs
+    LDMSGADDR	//  allowed_destinations _23 _22
+    DROP	//  allowed_destinations d_addr
+    SWAP	//  d_addr allowed_destinations
+    is_whitelisted? CALLDICT	//  _17
+  }>
+  unpack_data PROC:<{
+    // 
+    c4 PUSH	//  _1
+    CTOS	//  cs
+    32 LDU	//  _4 cs
+    32 LDU	//  _4 _7 cs
+    256 LDU	//  _4 _7 _10 cs
+    256 LDU	//  _4 _7 _10 _13 cs
+    LDDICT	//  _4 _7 _10 _13 _16 cs
+    LDGRAMS	//  _4 _7 _10 _13 _16 _18 cs
+    LDDICT	//  _4 _7 _10 _13 _16 _18 _20 cs
+    LDGRAMS	//  _4 _7 _10 _13 _16 _18 _20 _22 cs
+    LDDICT	//  res res res res res res res res res cs
+    ENDS
+  }>
+  pack_data PROC:<{
+    //  seqno subwallet_id public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value restricted
+    s0 s8 XCHG
+    NEWC	//  restricted subwallet_id public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value seqno _9
+    32 STI	//  restricted subwallet_id public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value _11
+    s1 s7 XCHG	//  restricted total_restricted_value public_key config_public_key allowed_destinations total_locked_value locked subwallet_id _11
+    32 STI	//  restricted total_restricted_value public_key config_public_key allowed_destinations total_locked_value locked _13
+    s1 s5 XCHG	//  restricted total_restricted_value locked config_public_key allowed_destinations total_locked_value public_key _13
+    256 STU	//  restricted total_restricted_value locked config_public_key allowed_destinations total_locked_value _15
+    s1 s3 XCHG	//  restricted total_restricted_value locked total_locked_value allowed_destinations config_public_key _15
+    256 STU	//  restricted total_restricted_value locked total_locked_value allowed_destinations _17
+    STDICT	//  restricted total_restricted_value locked total_locked_value _18
+    SWAP	//  restricted total_restricted_value locked _18 total_locked_value
+    STGRAMS	//  restricted total_restricted_value locked _19
+    STDICT	//  restricted total_restricted_value _20
+    SWAP	//  restricted _20 total_restricted_value
+    STGRAMS	//  restricted _21
+    STDICT	//  _22
+    ENDC	//  _23
+  }>
+  lock_grams PROC:<{
+    //  locked total ts value
+    s2 s2 XCPU	//  locked value ts total value
+    ADD	//  locked value ts total
+    s1 s3 PUSH2
+    32 PUSHINT	//  locked value ts total ts locked _7=32
+    DICTUGET
+    NULLSWAPIFNOT	//  locked value ts total found_cs found
+    IF:<{	//  locked value ts total found_cs
+      LDGRAMS	//  locked value ts total found_value found_cs
+      ENDS
+      s1 s3 XCHG	//  locked total ts value found_value
+      ADD	//  locked total ts value
+      s0 s2 XCHG	//  locked value ts total
+    }>ELSE<{
+      DROP	//  locked value ts total
+    }>
+    NEWC	//  locked value ts total _15
+    s0 s3 XCHG2	//  locked total ts _15 value
+    STGRAMS	//  locked total ts _16
+    s0 s1 s3 XCHG3
+    32 PUSHINT	//  total _16 ts locked _17=32
+    DICTUSETB	//  total locked
+    SWAP	//  locked total
+  }>
+  unlock_grams PROC:<{
+    //  locked total now_ts
+    UNTIL:<{
+      s2 PUSH
+      32 PUSHINT	//  locked total now_ts locked _7=32
+      DICTUREMMIN
+      NULLSWAPIFNOT2	//  locked total now_ts locked' value_cs ts f
+      DUP	//  locked total now_ts locked' value_cs ts f f
+      IF:<{	//  locked total now_ts locked' value_cs ts f
+        DROP	//  locked total now_ts locked' value_cs ts
+        s3 PUSH	//  locked total now_ts locked' value_cs ts now_ts
+        LEQ	//  locked total now_ts locked' value_cs f
+      }>ELSE<{
+        NIP	//  locked total now_ts locked' value_cs f
+      }>
+      DUP	//  locked total now_ts locked' value_cs f f
+      IF:<{	//  locked total now_ts locked' value_cs f
+        s5 POP	//  f total now_ts locked value_cs
+        LDGRAMS	//  f total now_ts locked value value_cs
+        ENDS
+        s1 s3 XCHG	//  f locked now_ts total value
+        SUB	//  f locked now_ts total
+        s0 s1 s3 XCHG3	//  locked total now_ts f
+      }>ELSE<{
+        2 1 BLKDROP2	//  locked total now_ts f
+      }>
+      NOT	//  locked total now_ts _17
+    }>	//  locked total now_ts
+    DROP	//  locked total
+  }>
+  recv_internal PROC:<{
+    //  msg_value in_msg_cell in_msg
+    SWAP	//  msg_value in_msg in_msg_cell
+    CTOS	//  msg_value in_msg cs
+    4 LDU	//  msg_value in_msg flags cs
+    SWAP
+    1 PUSHINT	//  msg_value in_msg cs flags _9=1
+    AND	//  msg_value in_msg cs _10
+    IFJMP:<{	//  msg_value in_msg cs
+      3 BLKDROP	// 
+    }>	//  msg_value in_msg cs
+    LDMSGADDR	//  msg_value in_msg _74 _73
+    DROP	//  msg_value in_msg s_addr
+    OVER	//  msg_value in_msg s_addr in_msg
+    SEMPTY	//  msg_value in_msg s_addr _14
+    IFJMP:<{	//  msg_value in_msg s_addr
+      3 BLKDROP	// 
+    }>	//  msg_value in_msg s_addr
+    SWAP	//  msg_value s_addr in_msg
+    32 LDU	//  msg_value s_addr op in_msg
+    OVER	//  msg_value s_addr op in_msg op
+    2 LESSINT	//  msg_value s_addr op in_msg _20
+    IFJMP:<{	//  msg_value s_addr op in_msg
+      4 BLKDROP	// 
+    }>	//  msg_value s_addr op in_msg
+    unpack_data CALLDICT	//  msg_value s_addr op in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value restricted
+    s11 s4 XCPU	//  msg_value restricted op in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value s_addr allowed_destinations
+    is_whitelisted? CALLDICT	//  msg_value restricted op in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value _31
+    0x82eaf9c4 PUSHINT	//  msg_value restricted op in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value _31 _32
+    s11 s(-1) PUXC	//  msg_value restricted op in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value _31 op _32
+    NEQ	//  msg_value restricted op in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value _31 _33
+    AND	//  msg_value restricted op in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value _34
+    IFJMP:<{	//  msg_value restricted op in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value
+      12 BLKDROP	// 
+    }>	//  msg_value restricted op in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value
+    40 PUSHINT	//  msg_value restricted op in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value _35
+    0x82eaf9c4 PUSHINT	//  msg_value restricted op in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value _35 _36
+    s1 s11 XCHG	//  msg_value restricted _35 in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value op _36
+    EQUAL	//  msg_value restricted _35 in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value _37
+    s1 s10 XCHG	//  msg_value restricted total_restricted_value in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked _35 _37
+    THROWANYIFNOT
+    33 PUSHINT	//  msg_value restricted total_restricted_value in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked _39
+    s11 PUSH
+    1000000000 PUSHINT	//  msg_value restricted total_restricted_value in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked _39 msg_value _40=1000000000
+    GEQ	//  msg_value restricted total_restricted_value in_msg stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked _39 _41
+    THROWANYIFNOT
+    s0 s7 XCHG
+    9 PUSHPOW2	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value in_msg _45=512
+    LDSLICEX	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value signature in_msg
+    32 PUSHINT	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value signature in_msg _47
+    OVER	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value signature in_msg _47 in_msg
+    HASHSU	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value signature in_msg _47 _48
+    s0 s3 s6 XC2PU	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value _47 in_msg _48 signature config_public_key
+    CHKSIGNU	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value _47 in_msg _49
+    s1 s2 XCHG	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value in_msg _47 _49
+    THROWANYIFNOT
+    32 LDU	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value cmd in_msg
+    41 PUSHINT	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value cmd in_msg _55
+    0x373aa9f4 PUSHINT	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value cmd in_msg _55 _56
+    s1 s3 XCHG	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value _55 in_msg cmd _56
+    EQUAL	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value _55 in_msg _57
+    s1 s2 XCHG	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value in_msg _55 _57
+    THROWANYIFNOT
+    1 LDU	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value _61 in_msg
+    32 LDU	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value _61 _93 _92
+    DROP	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value only_restrict ts
+    SWAP	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value ts only_restrict
+    IF:<{	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value ts
+      s3 s9 XCHG
+      s8 s0 s10 XCHG3	//  total_locked_value config_public_key allowed_destinations locked stored_seqno stored_subwallet public_key restricted total_restricted_value ts msg_value
+      lock_grams CALLDICT	//  total_locked_value config_public_key allowed_destinations locked stored_seqno stored_subwallet public_key restricted total_restricted_value
+    }>ELSE<{	//  msg_value restricted total_restricted_value locked stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value ts
+      s3 s7 XCHG
+      s1 s0 s10 XCHG3	//  allowed_destinations restricted total_restricted_value config_public_key stored_seqno stored_subwallet public_key locked total_locked_value ts msg_value
+      lock_grams CALLDICT	//  allowed_destinations restricted total_restricted_value config_public_key stored_seqno stored_subwallet public_key locked total_locked_value
+      s0 s8 XCHG
+      s5 s7 XCHG
+      s5 s6 XCHG2	//  total_locked_value config_public_key allowed_destinations locked stored_seqno stored_subwallet public_key restricted total_restricted_value
+    }>
+    s4 s8 XCHG
+    s3 s7 XCHG
+    5 2 REVERSE
+    s2 s4 XCHG
+    s3 s0 s0 XCHG3	//  stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value restricted
+    pack_data CALLDICT	//  _69
+    c4 POP
+  }>
+  recv_external PROC:<{
+    //  in_msg
+    9 PUSHPOW2	//  in_msg _3=512
+    LDSLICEX	//  signature in_msg
+    DUP	//  signature in_msg cs
+    32 LDU	//  signature in_msg _9 cs
+    32 LDU	//  signature in_msg _9 _12 cs
+    32 LDU	//  signature in_msg subwallet_id valid_until msg_seqno cs
+    36 PUSHINT	//  signature in_msg subwallet_id valid_until msg_seqno cs _18
+    s0 s3 XCHG
+    NOW	//  signature in_msg subwallet_id _18 msg_seqno cs valid_until _19
+    LEQ	//  signature in_msg subwallet_id _18 msg_seqno cs _20
+    s1 s3 XCHG	//  signature in_msg subwallet_id cs msg_seqno _18 _20
+    THROWANYIF
+    unpack_data CALLDICT	//  signature in_msg subwallet_id cs msg_seqno stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value restricted
+    34 PUSHINT	//  signature in_msg subwallet_id cs msg_seqno stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value restricted _32
+    s10 s9 XCPU	//  signature in_msg subwallet_id cs _32 stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value restricted msg_seqno stored_seqno
+    EQUAL	//  signature in_msg subwallet_id cs _32 stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value restricted _33
+    s1 s10 XCHG	//  signature in_msg subwallet_id cs restricted stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value _32 _33
+    THROWANYIFNOT
+    35 PUSHINT	//  signature in_msg subwallet_id cs restricted stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value _35
+    s11 s7 XCPU	//  signature in_msg _35 cs restricted stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value subwallet_id stored_subwallet
+    EQUAL	//  signature in_msg _35 cs restricted stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value _36
+    s1 s11 XCHG	//  signature in_msg total_restricted_value cs restricted stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked _35 _36
+    THROWANYIFNOT
+    31 PUSHINT	//  signature in_msg total_restricted_value cs restricted stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked _38
+    s0 s11 XCHG	//  signature _38 total_restricted_value cs restricted stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked in_msg
+    HASHSU	//  signature _38 total_restricted_value cs restricted stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked _39
+    s0 s12 s5 XC2PU	//  locked _38 total_restricted_value cs restricted stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value _39 signature public_key
+    CHKSIGNU	//  locked _38 total_restricted_value cs restricted stored_seqno stored_subwallet public_key config_public_key allowed_destinations total_locked_value _40
+    s1 s10 XCHG	//  locked total_locked_value total_restricted_value cs restricted stored_seqno stored_subwallet public_key config_public_key allowed_destinations _38 _40
+    THROWANYIFNOT
+    ACCEPT
+    s5 s7 XCHG2
+    NOW	//  locked total_locked_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key restricted total_restricted_value _43
+    unlock_grams CALLDICT	//  locked total_locked_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key restricted total_restricted_value
+    s9 s8 XCHG2
+    NOW	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value _45
+    unlock_grams CALLDICT	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value
+    DUP	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked
+    1 PUSHINT	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked can_use_restricted=1
+    s8 PUSH	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked can_use_restricted=1 cs_copy
+    WHILE:<{
+      DUP	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked can_use_restricted cs_copy cs_copy
+      SREFS	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked can_use_restricted cs_copy _51
+    }>DO<{	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked can_use_restricted cs_copy
+      8 LDU	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked can_use_restricted _102 _101
+      NIP	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked can_use_restricted cs_copy
+      LDREF	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked can_use_restricted msg cs_copy
+      s1 s11 XCPU	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked can_use_restricted cs_copy msg allowed_destinations
+      check_message_destination INLINECALLDICT	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked can_use_restricted cs_copy _59
+      s1 s2 XCHG	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked cs_copy can_use_restricted _59
+      AND	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked cs_copy can_use_restricted
+      SWAP	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked can_use_restricted cs_copy
+    }>	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked can_use_restricted cs_copy
+    DROP	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked can_use_restricted
+    IFNOT:<{	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked
+      s9 PUSH	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked total_restricted_value
+      ADD	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked
+    }>	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked
+    2 PUSHINT	//  restricted total_restricted_value allowed_destinations cs config_public_key stored_seqno stored_subwallet public_key locked total_locked_value effectively_locked _62=2
+    RAWRESERVE
+    s0 s6 XCHG	//  restricted total_restricted_value allowed_destinations total_locked_value config_public_key stored_seqno stored_subwallet public_key locked cs
+    WHILE:<{
+      DUP	//  restricted total_restricted_value allowed_destinations total_locked_value config_public_key stored_seqno stored_subwallet public_key locked cs cs
+      SREFS	//  restricted total_restricted_value allowed_destinations total_locked_value config_public_key stored_seqno stored_subwallet public_key locked cs _66
+    }>DO<{	//  restricted total_restricted_value allowed_destinations total_locked_value config_public_key stored_seqno stored_subwallet public_key locked cs
+      8 LDU	//  restricted total_restricted_value allowed_destinations total_locked_value config_public_key stored_seqno stored_subwallet public_key locked mode cs
+      LDREF	//  restricted total_restricted_value allowed_destinations total_locked_value config_public_key stored_seqno stored_subwallet public_key locked mode msg cs
+      s0 s2 XCHG	//  restricted total_restricted_value allowed_destinations total_locked_value config_public_key stored_seqno stored_subwallet public_key locked cs msg mode
+      SENDRAWMSG
+    }>	//  restricted total_restricted_value allowed_destinations total_locked_value config_public_key stored_seqno stored_subwallet public_key locked cs
+    ENDS
+    s0 s3 XCHG	//  restricted total_restricted_value allowed_destinations total_locked_value config_public_key locked stored_subwallet public_key stored_seqno
+    INC	//  restricted total_restricted_value allowed_destinations total_locked_value config_public_key locked stored_subwallet public_key _77
+    s7 s6 s8 XCHG3
+    s1 s4 XCHG
+    s1 s5 XCHG
+    s3 s3 s0 XCHG3	//  _77 stored_subwallet public_key config_public_key allowed_destinations total_locked_value locked total_restricted_value restricted
+    pack_data CALLDICT	//  _78
+    c4 POP
+  }>
+  seqno PROC:<{
+    // 
+    c4 PUSH	//  _0
+    CTOS	//  _1
+    32 PLDU	//  _3
+  }>
+  wallet_id PROC:<{
+    // 
+    c4 PUSH	//  _1
+    CTOS	//  ds
+    32 LDU	//  _9 _8
+    NIP	//  ds
+    32 PLDU	//  _7
+  }>
+  get_public_key PROC:<{
+    // 
+    c4 PUSH	//  _1
+    CTOS	//  ds
+    64 LDU	//  _11 _10
+    NIP	//  ds
+    256 PLDU	//  _9
+  }>
+  get_balances_at PROC:<{
+    //  time
+    unpack_data CALLDICT	//  time _16 _17 _18 _19 _20 _21 _22 _23 _24
+    4 4 BLKDROP2
+    s4 POP	//  time restricted total_locked_value locked total_restricted_value
+    s3 s0 s4 XC2PU	//  time locked total_locked_value restricted total_restricted_value time
+    unlock_grams CALLDICT	//  time locked total_locked_value _25 _26
+    NIP	//  time locked total_locked_value total_restricted_value
+    s0 s3 XCHG	//  total_restricted_value locked total_locked_value time
+    unlock_grams CALLDICT	//  total_restricted_value _27 _28
+    NIP	//  total_restricted_value total_locked_value
+    BALANCE	//  total_restricted_value total_locked_value _14
+    FIRST	//  total_restricted_value total_locked_value ton_balance
+    -ROT	//  ton_balance total_restricted_value total_locked_value
+  }>
+  get_balances PROC:<{
+    // 
+    NOW	//  _0
+    get_balances_at CALLDICT	//  _2 _3 _4
+  }>
+  check_destination PROC:<{
+    //  destination
+    unpack_data CALLDICT	//  destination _12 _13 _14 _15 _16 _17 _18 _19 _20
+    s4 s8 XCHG
+    8 BLKDROP	//  destination allowed_destinations
+    is_whitelisted? CALLDICT	//  _11
+  }>
+}END>c
