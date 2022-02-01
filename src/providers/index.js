@@ -126,12 +126,11 @@ class HttpProvider {
 
 
     /**
-     * @deprecated
-     * @param query     object as described https://toncenter.com/api/test/v2/#estimateFeeSimple
+     * @param query     object as described https://toncenter.com/api/test/v2/#estimateFee
      * @return fees object
      */
     async getEstimateFee(query) {
-        return this.send("estimateFeeSimple", query);
+        return this.send("estimateFee", query);
     };
 
     /**

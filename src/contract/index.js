@@ -1,22 +1,6 @@
 const {Cell} = require("../boc");
 const {Address, bytesToBase64, bytesToHex} = require("../utils");
 
-async function _queryWrapper(queryPromise) {
-    const query = await queryPromise;
-    const legacyQuery = query.code ? // deploy
-        {
-            address: query.address.toString(true, true, false),
-            body: query.body.toObject(),
-            init_code: query.code.toObject(),
-            init_data: query.data.toObject(),
-        } : {
-            address: query.address.toString(true, true, true),
-            body: query.body.toObject(),
-        }
-
-    return {query, legacyQuery};
-}
-
 class Contract {
     /**
      * @param provider    {HttpProvider}
@@ -229,20 +213,29 @@ class Contract {
     }
 
     static createMethod(provider, queryPromise) {
-        const promise = _queryWrapper(queryPromise);
-
         return {
             getQuery: async () => {
-                return (await promise).query.message;
+                return (await queryPromise).message;
             },
             send: async () => {
-                const query = (await promise).query;
+                const query = await queryPromise;
                 const boc = bytesToBase64(await query.message.toBoc(false));
                 return provider.sendBoc(boc);
             },
             estimateFee: async () => {
-                const legacyQuery = (await promise).legacyQuery;
-                return provider.getEstimateFee(legacyQuery); // todo: get fee by boc
+                const query = await queryPromise;
+                const serialized = query.code ? // deploy
+                    {
+                        address: query.address.toString(true, true, false),
+                        body: bytesToBase64(await query.body.toBoc(false)),
+                        init_code: bytesToBase64(await query.code.toBoc(false)),
+                        init_data: bytesToBase64(await query.data.toBoc(false)),
+                    } : {
+                        address: query.address.toString(true, true, true),
+                        body: bytesToBase64(await query.body.toBoc(false)),
+                    };
+
+                return provider.getEstimateFee(serialized);
             }
         }
     }
