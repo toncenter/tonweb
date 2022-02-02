@@ -85,6 +85,12 @@ Each part is documented separately:
 
 **Also we use JSDoc in code**
 
+## Roadmap
+
+1. Unit-tests
+
+2. Typescript
+
 ## Build
 
 ```bash
