@@ -161,23 +161,6 @@ class Cell {
     }
 
     /**
-     * @return {{}}
-     */
-    toObject() {
-        const res = {};
-        res['data'] = {
-            'b64': bytesToBase64(this.bits.array.slice(0, Math.ceil(this.bits.cursor / 8))),
-            'len': this.bits.cursor
-        };
-        res['refs'] = []
-        for (let k in this.refs) {
-            const i = this.refs[k];
-            res['refs'].push(i.toObject());
-        }
-        return res;
-    }
-
-    /**
      * Recursively prints cell's content like Fift
      * @return  {string}
      */
