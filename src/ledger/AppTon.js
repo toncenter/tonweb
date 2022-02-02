@@ -1,38 +1,6 @@
 const {Cell} = require("../boc");
-const {Address, BN, toNano, bytesToHex, hexToBytes, nacl, stringToBytes, bytesToBase64} = require("../utils");
+const {Address, BN, bytesToHex} = require("../utils");
 const {Contract} = require("../contract");
-
-/**
- * Copy-paste from TonWeb.WalletContract
- * @param query     result of wallet.createTransferMessage
- * @param provider  TonWeb provider
- * @return {Promise<{estimateFee: function, send: function, getQuery: function}>}
- */
-const createTransferResult = async (query, provider) => {
-    return {
-        getQuery: async () => {
-            return query.message;
-        },
-        send: async () => {
-            const boc = bytesToBase64(await query.message.toBoc(false));
-            return provider.sendBoc(boc);
-        },
-        estimateFee: async () => {
-            const legacyQuery = query.code ? // deploy
-                {
-                    address: query.address.toString(true, true, false),
-                    body: query.body.toObject(),
-                    init_code: query.code.toObject(),
-                    init_data: query.data.toObject(),
-                } : {
-                    address: query.address.toString(true, true, true),
-                    body: query.body.toObject(),
-                }
-
-            return provider.getEstimateFee(legacyQuery); // todo: get fee by boc
-        }
-    }
-}
 
 class AppTon {
 
@@ -119,7 +87,7 @@ class AppTon {
             );
         const len = response[0];
         const addressHex = new Uint8Array(response.slice(1, 1 + len));
-        const address = new Address(wc + ':' + bytesToHex(addressHex));
+        const address = new Address('0:' + bytesToHex(addressHex));
         return {address};
     }
 
@@ -198,8 +166,8 @@ class AppTon {
         const header = Contract.createExternalMessageHeader(selfAddress);
         const resultMessage = Contract.createCommonMsgInfo(header, stateInit, body);
 
-        return createTransferResult(
-            {
+        const resultPromise = new Promise(resolve => {
+            resolve({
                 address: selfAddress,
                 message: resultMessage, // old wallet_send_generate_external_message
 
@@ -210,8 +178,12 @@ class AppTon {
                 stateInit,
                 code,
                 data,
-            },
-            this.ton.provider
+            });
+        });
+
+        return Contract.createMethod(
+            this.ton.provider,
+            resultPromise
         );
     }
 }
