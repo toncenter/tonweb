@@ -200,6 +200,14 @@ class BitString {
         }
     }
 
+
+    /**
+     * @param amount  {number | BN} in nanotons
+     */
+    writeCoins(amount) {
+        this.writeGrams(amount);
+    }
+
     //addr_none$00 = MsgAddressExt;
     //addr_std$10 anycast:(Maybe Anycast)
     // workchain_id:int8 address:uint256 = MsgAddressInt;

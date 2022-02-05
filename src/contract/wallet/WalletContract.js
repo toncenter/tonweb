@@ -16,9 +16,9 @@ class WalletContract extends Contract {
 
         this.methods = {
             /**
-             * @param   params {{secretKey: Uint8Array, toAddress: Address | string, amount: BN | number, seqno: number, payload: string | Uint8Array | Cell, sendMode: number}}
+             * @param   params {{secretKey: Uint8Array, toAddress: Address | string, amount: BN | number, seqno: number, payload: string | Uint8Array | Cell, sendMode: number, stateInit?: Cell}}
              */
-            transfer: (params) => Contract.createMethod(provider, this.createTransferMessage(params.secretKey, params.toAddress, params.amount, params.seqno, params.payload, params.sendMode, !Boolean(params.secretKey))),
+            transfer: (params) => Contract.createMethod(provider, this.createTransferMessage(params.secretKey, params.toAddress, params.amount, params.seqno, params.payload, params.sendMode, !Boolean(params.secretKey), params.stateInit)),
 
             seqno: () => {
                 return {
@@ -166,6 +166,7 @@ class WalletContract extends Contract {
      * @param payload?   {string | Uint8Array | Cell}
      * @param sendMode?  {number}
      * @param dummySignature?    {boolean}
+     * @param stateInit? {Cell}
      * @return {Promise<{address: Address, signature: Uint8Array, message: Cell, cell: Cell, body: Cell, resultMessage: Cell}>}
      */
     async createTransferMessage(
@@ -175,7 +176,8 @@ class WalletContract extends Contract {
         seqno,
         payload = "",
         sendMode = 3,
-        dummySignature = false
+        dummySignature = false,
+        stateInit = null
     ) {
         let payloadCell = new Cell();
         if (payload) {
@@ -193,7 +195,7 @@ class WalletContract extends Contract {
         }
 
         const orderHeader = Contract.createInternalMessageHeader(new Address(address), new BN(amount));
-        const order = Contract.createCommonMsgInfo(orderHeader, null, payloadCell);
+        const order = Contract.createCommonMsgInfo(orderHeader, stateInit, payloadCell);
         const signingMessage = this.createSigningMessage(seqno);
         signingMessage.bits.writeUint8(sendMode);
         signingMessage.refs.push(order);

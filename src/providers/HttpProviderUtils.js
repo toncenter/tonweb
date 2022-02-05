@@ -33,6 +33,8 @@ class HttpProviderUtils {
             case 'list':
             case 'tuple':
                 return HttpProviderUtils.parseObject(value);
+            case 'cell':
+                return value;
             default:
                 throw new Error('unknown type ' + typeName);
         }
