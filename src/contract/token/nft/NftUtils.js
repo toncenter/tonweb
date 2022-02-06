@@ -18,7 +18,9 @@ const parseAddress = x => {
         n = n - BigInt(256);
     }
     const hashPart = readIntFromBitString(cell.bits, 3 + 8, 256);
-    return new Address(n.toString(10) + ":" + hashPart.toString(16));
+    const s = n.toString(10) + ":" + hashPart.toString(16);
+    if (s === '0:0') return null;
+    return new Address(s);
 };
 
 module.exports = {parseAddress};

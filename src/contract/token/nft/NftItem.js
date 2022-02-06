@@ -21,7 +21,7 @@ class NftItem extends Contract {
     /**
      * @override
      * @private
-     * @return {Cell} cell contains wallet data
+     * @return {Cell} cell contains nft data
      */
     createDataCell() {
         const cell = new Cell();
