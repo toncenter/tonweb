@@ -68,6 +68,24 @@ tonweb.sendBoc(bocBytes);
 
 ```
 
+## API
+
+By default, mainnet [toncenter.com](https://toncenter.com) API is used. Please note that without the API key there will be a request rate limit.
+
+You can start your own TON HTTP API instance as it is [open source](https://github.com/toncenter/ton-http-api).
+
+Use mainnet TonCenter API with high ratelimit API key:
+
+```js
+    const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC', {apiKey: 'YOUR_MAINNET_TONCENTER_API_KEY'}));
+```
+
+Use testnet TonCenter API with high ratelimit API key:
+
+```js
+    const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {apiKey: 'YOUR_TESTNET_TONCENTER_API_KEY'}));
+```
+
 ## Documentation
 
 Each part is documented separately:
