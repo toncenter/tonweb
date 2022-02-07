@@ -2,7 +2,6 @@ const {Contract} = require("../../index.js");
 const {Cell} = require("../../../boc");
 const {Address} = require("../../../utils");
 const {parseAddress} = require('./NftUtils.js');
-const TonWeb = require("../../../index");
 
 class NftCollection extends Contract {
     /**
@@ -58,10 +57,10 @@ class NftCollection extends Contract {
         body.bits.writeUint(params.index, 64);
         body.bits.writeCoins(params.amount);
 
-        const nftItemContent = new TonWeb.boc.Cell();
+        const nftItemContent = new Cell();
         nftItemContent.bits.writeAddress(params.ownerAddress);
 
-        const uriContent = new TonWeb.boc.Cell();
+        const uriContent = new Cell();
         uriContent.bits.writeInt(0x01, 8);
         uriContent.bits.writeBytes(new TextEncoder().encode(params.uri));
 

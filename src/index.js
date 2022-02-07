@@ -7,6 +7,8 @@ const HttpProvider = require("./providers").default;
 const {Contract} = require("./contract");
 const Wallets = require("./contract/wallet").default;
 const LockupWallets = require("./contract/lockup").default;
+const NFT = require("./contract/token/nft").default;
+const JETTON = require("./contract/token/ft").default;
 const {BlockSubscription, InMemoryBlockStorage} = require("./providers/blockSubscription");
 const {SubscriptionContract} = require("./contract/subscription/index");
 const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
@@ -86,6 +88,11 @@ TonWeb.ledger = {
     BluetoothTransport,
     AppTon,
 };
+TonWeb.token = {
+    nft: NFT,
+    ft: JETTON,
+    jetton: JETTON,
+}
 
 if (typeof window !== 'undefined') {
     window.TonWeb = TonWeb;
