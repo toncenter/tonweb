@@ -1,4 +1,5 @@
-const {BN} = require("../utils");
+const {BN, base64ToBytes} = require("../utils");
+const {Cell} = require("../boc");
 
 class HttpProviderUtils {
 
@@ -34,7 +35,8 @@ class HttpProviderUtils {
             case 'tuple':
                 return HttpProviderUtils.parseObject(value);
             case 'cell':
-                return value;
+                const contentBytes = base64ToBytes(value.bytes);
+                return Cell.oneFromBoc(contentBytes);
             default:
                 throw new Error('unknown type ' + typeName);
         }

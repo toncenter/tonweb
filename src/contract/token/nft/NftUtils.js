@@ -10,9 +10,7 @@ const readIntFromBitString = (bs, cursor, bits) => {
     return n;
 }
 
-const parseAddress = x => {
-    const bytes = base64ToBytes(x.bytes);
-    const cell = Cell.oneFromBoc(bytes);
+const parseAddress = cell => {
     let n = readIntFromBitString(cell.bits, 3, 8);
     if (n > BigInt(127)) {
         n = n - BigInt(256);
