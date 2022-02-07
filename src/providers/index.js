@@ -12,9 +12,11 @@ const SHARD_ID_ALL = '-9223372036854775808'; // 0x8000000000000000
 class HttpProvider {
     /**
      * @param host? {string}
+     * @param options? {{apiKey: string}}
      */
-    constructor(host) {
+    constructor(host, options) {
         this.host = host || "https://toncenter.com/api/v2/jsonRPC";
+        this.options = options || {};
     }
 
     /**
@@ -24,28 +26,31 @@ class HttpProvider {
      * @return {Promise<any>}
      */
     sendImpl(apiUrl, request) {
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open("POST", apiUrl, true);
 
-            xhr.onload = function () {
-                if (this.status == 200) {
-                    const r = JSON.parse(this.responseText);
+            xhr.onload = () => {
+                if (xhr.status == 200) {
+                    const r = JSON.parse(xhr.responseText);
                     if ("error" in r) {
                         reject(r["error"]);
                     }
                     resolve(r["result"]);
                 } else {
-                    const error = new Error(this.statusText);
-                    error.code = this.status;
+                    const error = new Error(xhr.statusText);
+                    error.code = xhr.status;
                     reject(error);
                 }
             };
 
-            xhr.onerror = function () {
+            xhr.onerror = () => {
                 reject(new Error("Network Error"));
             };
             xhr.setRequestHeader("Content-Type", "application/json");
+            if (this.options.apiKey) {
+                xhr.setRequestHeader("X-API-Key", this.options.apiKey);
+            }
             xhr.send(JSON.stringify(request));
         });
     }
