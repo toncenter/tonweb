@@ -78,7 +78,7 @@ async function init() {
         );
     }
 
-    const nftItemAddress = new TonWeb.utils.Address('EQCA29fyUYXU3PEL0pQjVdRPEeDmmOBUOpv6IcU4i51ZXXF_');
+    const nftItemAddress = new TonWeb.utils.Address('EQB6mLupHOWbWgnzxSUHElaVrmTKGrhw-rlFgSQhXI7E79X_');
     console.log('nft item address=', nftItemAddress.toString(true, true, true));
     const nftItem = new NftItem(tonweb.provider, {address: nftItemAddress});
 

@@ -16,8 +16,8 @@ const parseAddress = cell => {
         n = n - BigInt(256);
     }
     const hashPart = readIntFromBitString(cell.bits, 3 + 8, 256);
-    const s = n.toString(10) + ":" + hashPart.toString(16);
-    if (s === '0:0') return null;
+    if (n.toString(10) + ":" + hashPart.toString(16) === '0:0') return null;
+    const s = n.toString(10) + ":" + hashPart.toString(16).padStart(64, '0');
     return new Address(s);
 };
 
