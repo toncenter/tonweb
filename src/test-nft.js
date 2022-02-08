@@ -78,7 +78,7 @@ async function init() {
         );
     }
 
-    const nftItemAddress = new TonWeb.utils.Address('EQB6mLupHOWbWgnzxSUHElaVrmTKGrhw-rlFgSQhXI7E79X_');
+    const nftItemAddress = new TonWeb.utils.Address('EQAG8AAwA6-JFy0NTvttuQKsdjpC0xepaBcm2ty-1n8czgXP');
     console.log('nft item address=', nftItemAddress.toString(true, true, true));
     const nftItem = new NftItem(tonweb.provider, {address: nftItemAddress});
 
@@ -111,7 +111,14 @@ async function init() {
         );
     }
 
-    const sale = new NftSale(tonweb.provider, {marketplaceAddress: marketplaceAddress, nftAddress: nftItemAddress, price: TonWeb.utils.toNano('1.3')});
+    const sale = new NftSale(tonweb.provider, {
+        marketplaceAddress: marketplaceAddress,
+        nftAddress: nftItemAddress,
+        fullPrice: TonWeb.utils.toNano('1.3'),
+        marketplaceFee: TonWeb.utils.toNano('0.2'),
+        royaltyAddress: nftCollectionAddress,
+        royaltyAmount: TonWeb.utils.toNano('0.1'),
+    });
     const saleAddress =  await sale.getAddress();
     console.log('sale address', saleAddress.toString(true, true, true));
 
@@ -184,7 +191,10 @@ async function init() {
         data.marketplaceAddress = data.marketplaceAddress.toString(true, true, true);
         data.nftAddress = data.nftAddress.toString(true, true, true);
         data.nftOwnerAddress = data.nftOwnerAddress?.toString(true, true, true);
-        data.price = data.price.toString();
+        data.fullPrice = data.fullPrice.toString();
+        data.marketplaceFee = data.marketplaceFee.toString();
+        data.royaltyAmount = data.royaltyAmount.toString();
+        data.royaltyAddress = data.royaltyAddress.toString(true, true, true);
         console.log(data);
     };
 

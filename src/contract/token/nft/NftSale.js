@@ -3,13 +3,13 @@ const {Cell} = require("../../../boc");
 const {parseAddress} = require("./NftUtils");
 const {BN} = require("../../../utils");
 
-const NFT_SALE_HEX_CODE = 'B5EE9C724102090100014E000114FF00F4A413F4BCF2C80B01020120020302014804050004F2300202CE0607001DA03859DA89A1F481F481F481F4006101F7401D0D3030171B0925F04E0FA4030ED44D0FA40FA40FA40FA003021D749C202B38E343135355CC705925F05E05114C705F2E1F401D31F801112BAF2E1F5D33F31FA40304303C85004CF1658CF1601CF1601FA02C9ED54E03324C7009634414470F003E004D31FD33F3021C001925F08E021C0029631455013F003E080800A7582103B9ACA005240A05230BEF2E1C2708010C8CB055006CF165073A113A0FA0212CB6AC971FB00702071218018C8CB055006CF1622FA0215CB6A14CB1F14CB3F21CF1601CF16CA0021FA02CA00C98100A0FB008008C33333501C0038E3882103B9ACA0013BEF2E1C9702071218010C8CB055007CF1622FA0216CB6A15CB1F13CB3F21CF1601CF1612CA0021FA02CA00C98100A0FB00E05F04F2C1C36C25C2D3';
+const NFT_SALE_HEX_CODE = 'B5EE9C7241020B0100019F000114FF00F4A413F4BCF2C80B01020120020302014804050004F2300202CD0607002FA03859DA89A1F481F481F481F401A861A1F401F481F4006102F7D00E8698180B8D8492F82707D201876A2687D207D207D207D006A18116BA4E10159C71B991B1B2990E382C92F837028916382F970FA01698FC008895D7970FAE99F98FD2018201A642802E78B2801E78B00E78B00FD016664F6AA701363804C9B081B2299823878027003698FE99F9810E000C92F857010E00171814080901F7D41081DCD650029285029185F7970E101E87D007D207D0018384008646582A804E78B28B9D090D0A85AD08A500AFD010AE5B564B8FD80384008646582AC678B2803FD010B65B564B8FD80384008646582A802E78B00FD0109E5B564B8FD8038103890C00C646582A802E78B117D010A65B509E58F8A659F91678B2C40A00143110471036454012F004008E3234343435C0038E3882103B9ACA0013BEF2E1C9702071218010C8CB055007CF1622FA0216CB6A15CB1F13CB3F21CF1601CF1612CA0021FA02CA00C98100A0FB00E05F04F2C1C3001ECF16CA0021FA02CA00C98100A0FB00B6C972BD';
 
 class NftSale extends Contract {
 
     /**
      * @param provider
-     * @param options   {{marketplaceAddress: Address, nftAddress: Address, price: BN, address?: Address | string}}
+     * @param options   {{marketplaceAddress: Address, nftAddress: Address, fullPrice: BN, marketplaceFee: BN, royaltyAddress: Address, royaltyAmount: BN, address?: Address | string}}
      */
     constructor(provider, options) {
         options.wc = 0;
@@ -29,7 +29,14 @@ class NftSale extends Contract {
         cell.bits.writeAddress(this.options.marketplaceAddress);
         cell.bits.writeAddress(this.options.nftAddress);
         cell.bits.writeAddress(null); // nft_owner_address
-        cell.bits.writeCoins(this.options.price);
+        cell.bits.writeCoins(this.options.fullPrice);
+
+        const feesCell = new Cell();
+        feesCell.bits.writeCoins(this.options.marketplaceFee);
+        feesCell.bits.writeAddress(this.options.royaltyAddress);
+        feesCell.bits.writeCoins(this.options.royaltyAmount);
+        cell.refs[0] = feesCell;
+
         return cell;
     }
 
@@ -40,9 +47,12 @@ class NftSale extends Contract {
         const marketplaceAddress = parseAddress(result[0]);
         const nftAddress = parseAddress(result[1]);
         const nftOwnerAddress = parseAddress(result[2]);
-        const price = result[3];
+        const fullPrice = result[3];
+        const marketplaceFee = result[4];
+        const royaltyAddress = parseAddress(result[5]);
+        const royaltyAmount = result[6];
 
-        return {marketplaceAddress, nftAddress, nftOwnerAddress, price};
+        return {marketplaceAddress, nftAddress, nftOwnerAddress, fullPrice, marketplaceFee, royaltyAddress, royaltyAmount};
     }
 
     /**
