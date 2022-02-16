@@ -19,8 +19,9 @@ async function init() {
 
     const nftCollection = new NftCollection(tonweb.provider, {
         ownerAddress: walletAddress,
-        royalty: 0.11,
+        royalty: 0.13,
         royaltyAddress: walletAddress,
+        baseUri: 'http://localhost:63342/nft-marketplace/',
         uri: 'http://localhost:63342/nft-marketplace/my_collection.json',
         nftItemCodeHex: NftItem.codeHex
     });
@@ -68,22 +69,22 @@ async function init() {
                 amount: amount,
                 seqno: seqno,
                 payload: await nftCollection.createMintBody({
-                    index: 0,
+                    itemIndex: 1,
                     amount,
                     ownerAddress: walletAddress,
-                    uri: 'http://localhost:63342/nft-marketplace/my_nft.json'
+                    uri: 'my_nft.json'
                 }),
                 sendMode: 3,
             }).send()
         );
     }
 
-    const nftItemAddress = new TonWeb.utils.Address('EQAG8AAwA6-JFy0NTvttuQKsdjpC0xepaBcm2ty-1n8czgXP');
+    const nftItemAddress = new TonWeb.utils.Address('EQC_44NocaKk3h_8z8gfA58H-V9NbklFntwU6f6Gs54dUqY0');
     console.log('nft item address=', nftItemAddress.toString(true, true, true));
     const nftItem = new NftItem(tonweb.provider, {address: nftItemAddress});
 
     const getNftItemInfo = async () => {
-        const data = await nftItem.methods.getData();
+        const data = await nftCollection.methods.getNftItemContent(nftItem);
         data.collectionAddress = data.collectionAddress.toString(true, true, true);
         data.ownerAddress = data.ownerAddress?.toString(true, true, true);
         console.log(data);
