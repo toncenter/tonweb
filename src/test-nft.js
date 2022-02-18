@@ -21,8 +21,8 @@ async function init() {
         ownerAddress: walletAddress,
         royalty: 0.13,
         royaltyAddress: walletAddress,
-        baseUri: 'http://localhost:63342/nft-marketplace/',
-        uri: 'http://localhost:63342/nft-marketplace/my_collection.json',
+        collectionContentUri: 'http://localhost:63342/nft-marketplace/my_collection.json',
+        nftItemContentBaseUri: 'http://localhost:63342/nft-marketplace/',
         nftItemCodeHex: NftItem.codeHex
     });
     const nftCollectionAddress = await nftCollection.getAddress();
@@ -69,17 +69,17 @@ async function init() {
                 amount: amount,
                 seqno: seqno,
                 payload: await nftCollection.createMintBody({
-                    itemIndex: 1,
                     amount,
-                    ownerAddress: walletAddress,
-                    uri: 'my_nft.json'
+                    itemIndex: 0,
+                    itemOwnerAddress: walletAddress,
+                    itemContentUri: 'my_nft.json'
                 }),
                 sendMode: 3,
             }).send()
         );
     }
 
-    const nftItemAddress = new TonWeb.utils.Address('EQC_44NocaKk3h_8z8gfA58H-V9NbklFntwU6f6Gs54dUqY0');
+    const nftItemAddress = new TonWeb.utils.Address('EQB6T_IgKMhouzB7Uhe3WEZrvpungNGVJuqeJh-f-23HdbQb');
     console.log('nft item address=', nftItemAddress.toString(true, true, true));
     const nftItem = new NftItem(tonweb.provider, {address: nftItemAddress});
 
@@ -137,8 +137,8 @@ async function init() {
                 seqno: seqno,
                 payload: await nftItem.createTransferBody({
                     newOwnerAddress: saleAddress,
-                    payloadAmount: TonWeb.utils.toNano(0.1),
-                    payload: new TextEncoder().encode('gift'),
+                    forwardAmount: TonWeb.utils.toNano(0.1),
+                    forwardPayload: new TextEncoder().encode('gift'),
                     responseAddress: walletAddress
                 }),
                 sendMode: 3,
