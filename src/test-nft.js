@@ -8,6 +8,8 @@ async function init() {
     const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC'));
 
     const seed = TonWeb.utils.base64ToBytes('vt58J2v6FaSuXFGcyGtqT5elpVxcZ+I1zgu/GUfA5uY=');
+    const seed2 = TonWeb.utils.base64ToBytes('at58J2v6FaSuXFGcyGtqT5elpVxcZ+I1zgu/GUfA5uY=');
+    const WALLET2_ADDRESS = 'EQB6-6po0yspb68p7RRetC-hONAz-JwxG9514IEOKw_llXd5';
     const keyPair = TonWeb.utils.nacl.sign.keyPair.fromSeed(seed);
     const WalletClass = tonweb.wallet.all['v3R1'];
     const wallet = new WalletClass(tonweb.provider, {
@@ -65,7 +67,7 @@ async function init() {
         console.log(
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
-                toAddress: nftCollectionAddress,
+                toAddress: nftCollectionAddress.toString(true, true, true),
                 amount: amount,
                 seqno: seqno,
                 payload: await nftCollection.createMintBody({
@@ -73,6 +75,26 @@ async function init() {
                     itemIndex: 0,
                     itemOwnerAddress: walletAddress,
                     itemContentUri: 'my_nft.json'
+                }),
+                sendMode: 3,
+            }).send()
+        );
+    }
+
+    const changeCollectionOwner = async () => {
+        const seqno = (await wallet.methods.seqno().call()) || 0;
+        console.log({seqno})
+
+        const amount = TonWeb.utils.toNano(0.5);
+
+        console.log(
+            await wallet.methods.transfer({
+                secretKey: keyPair.secretKey,
+                toAddress: nftCollectionAddress.toString(true, true, true),
+                amount: amount,
+                seqno: seqno,
+                payload: await nftCollection.createChangeOwnerBody({
+                    newOwnerAddress: new TonWeb.utils.Address(WALLET2_ADDRESS)
                 }),
                 sendMode: 3,
             }).send()
@@ -209,6 +231,7 @@ async function init() {
     // await getSaleInfo();
     // await transferNftItem();
     // await cancelSale();
+    // await changeCollectionOwner();
 }
 
 

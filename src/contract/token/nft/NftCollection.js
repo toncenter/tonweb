@@ -4,9 +4,7 @@ const {Address, bytesToBase64} = require("../../../utils");
 const {parseAddress} = require('./NftUtils.js');
 const {createOffchainUriCell, serializeUri, parseOffchainUriCell} = require("./NftUtils");
 
-// todo: add method - get_royalty_params
 // todo: add method - batch deploy
-// todo: add method - change owner
 class NftCollection extends Contract {
     /**
      * @param provider
@@ -76,6 +74,29 @@ class NftCollection extends Contract {
         nftItemContent.refs[0] = uriContent;
 
         body.refs[0] = nftItemContent;
+        return body;
+    }
+
+    /**
+     * params   {{queryId?: number}}
+     * @return {Cell}
+     */
+    createGetRoyaltyParamsBody(params) {
+        const body = new Cell();
+        body.bits.writeUint(0x693d3950, 32); // OP
+        body.bits.writeUint(params.queryId || 0, 64); // query_id
+        return body;
+    }
+
+    /**
+     * params   {{queryId?: number, newOwnerAddress: Address}}
+     * @return {Cell}
+     */
+    createChangeOwnerBody(params) {
+        const body = new Cell();
+        body.bits.writeUint(3, 32); // OP
+        body.bits.writeUint(params.queryId || 0, 64); // query_id
+        body.bits.writeAddress(params.newOwnerAddress);
         return body;
     }
 
