@@ -8,11 +8,13 @@ TonWeb has only 3 external dependencies (BN.js, tweetnacl, ethjs-unit) and is no
 
 ## Install Web
 
-`npm install tonweb`
+`npm install tonweb` or `yarn add tonweb`
 
-`import TonWeb from "tonweb"`
+```js
+import TonWeb from "tonweb";
 
-`const tonweb = new TonWeb()`
+const tonweb = new TonWeb();
+```
 
 or
 
@@ -22,11 +24,13 @@ or
 
 ## Install NodeJS
 
-`npm install tonweb`
+`npm install tonweb` or `yarn add tonweb`
 
-`const TonWeb = require('tonweb');`
+```js
+const TonWeb = require('tonweb');
 
-`const tonweb = new TonWeb();`
+const tonweb = new TonWeb();
+```
 
 ## Overview example
 
@@ -77,13 +81,13 @@ You can start your own TON HTTP API instance as it is [open source](https://gith
 Use mainnet TonCenter API with high ratelimit API key:
 
 ```js
-    const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC', {apiKey: 'YOUR_MAINNET_TONCENTER_API_KEY'}));
+const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC', {apiKey: 'YOUR_MAINNET_TONCENTER_API_KEY'}));
 ```
 
 Use testnet TonCenter API with high ratelimit API key:
 
 ```js
-    const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {apiKey: 'YOUR_TESTNET_TONCENTER_API_KEY'}));
+const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {apiKey: 'YOUR_TESTNET_TONCENTER_API_KEY'}));
 ```
 
 ## Documentation
