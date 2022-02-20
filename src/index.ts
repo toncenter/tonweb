@@ -1,6 +1,7 @@
-const utils = require("./utils");
-const Address = require("./utils/Address").default;
-utils.Address = Address;
+
+import { AddressType } from './utils/Address';
+import * as utils from './utils';
+
 const boc = require("./boc");
 const AppTon = require("./ledger/AppTon");
 const HttpProvider = require("./providers").default;
@@ -16,86 +17,132 @@ const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
 const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
 const version = '0.0.29';
 
-class TonWeb {
-    constructor(provider) {
-        this.version = version;
-        this.utils = utils;
-        this.Address = Address;
-        this.boc = boc;
-        this.Contract = Contract;
-        this.BlockSubscription = BlockSubscription;
-        this.InMemoryBlockStorage = InMemoryBlockStorage;
 
-        this.provider = provider || new HttpProvider();
-        this.wallet = new Wallets(this.provider);
-        this.lockupWallet = LockupWallets;
+// @todo: implement/import these types:
+export type Address = any;
+export type Transaction = any;
+export type CellObject = any;
+export type SliceObject = any;
+
+export type StackElement = (
+  | ['num', number]
+  | ['cell', CellObject]
+  | ['slice', SliceObject]
+
+  // @todo: remove this when entire type is fully typed
+  | [string, any]
+);
+
+
+export default class TonWeb {
+
+    public version = version;
+    public utils = utils;
+    public Address = utils.Address;
+    public boc = boc;
+    public Contract = Contract;
+    public BlockSubscription = BlockSubscription;
+    public InMemoryBlockStorage = InMemoryBlockStorage;
+    public wallet = new Wallets(this.provider);
+    public lockupWallet = LockupWallets;
+
+    constructor(public provider = new HttpProvider()) {
     }
 
     /**
      * Use this method to get transaction history of a given address.
-     * @param address   {Address | string}
-     * @param limit?    {number}
-     * @param lt?    {number}
-     * @param txhash?    {string}   in HEX
-     * @param to_lt?    {number}
-     * @return array of transaction objects
+     * Returns array of transaction objects.
      */
-    async getTransactions(address, limit = 20, lt = undefined, txhash = undefined, to_lt = undefined) {
-        return this.provider.getTransactions(address.toString(), limit, lt, txhash, to_lt);
+    async getTransactions(
+      address: AddressType,
+      limit = 20,
+      lt?: number,
+      txhash?: string,
+      to_lt?: number
+    ): Promise<Transaction[]> {
+        return this.provider.getTransactions(
+          address.toString(),
+          limit,
+          lt,
+          txhash,
+          to_lt
+        );
     };
 
     /**
-     * @param address   {Address | string}
-     * @return {Promise<string>} - The current balance for the given address in nanograms.
+     * Returns current balance for the given address in nanograms.
      */
-    async getBalance(address) {
+    async getBalance(address: AddressType): Promise<string> {
         return this.provider.getBalance(address.toString());
     }
 
     /**
-     * Use this method to send serialized boc file: fully packed and serialized external message.
-     * @param bytes {Uint8Array}
+     * Use this method to send serialized boc file:
+     * fully packed and serialized external message.
      */
-    async sendBoc(bytes) {
+    async sendBoc(bytes: Uint8Array) {
         return this.provider.sendBoc(utils.bytesToBase64(bytes));
     }
 
-    /**
-     * Invoke get-method of smart contract
-     * @param address   {Address | string}    contract address
-     * @param method   {string | number}        method name or method id
-     * @param params?   Array of stack elements: [['num',3], ['cell', cell_object], ['slice', slice_object]]
-     */
-    async call(address, method, params = []) {
-        return this.provider.call(address.toString(), method, params);
-    }
-}
 
-TonWeb.version = version;
-TonWeb.utils = utils;
-TonWeb.Address = Address;
-TonWeb.boc = boc;
-TonWeb.HttpProvider = HttpProvider;
-TonWeb.Contract = Contract;
-TonWeb.Wallets = Wallets;
-TonWeb.LockupWallets = LockupWallets;
-TonWeb.SubscriptionContract = SubscriptionContract;
-TonWeb.BlockSubscription = BlockSubscription;
-TonWeb.InMemoryBlockStorage = InMemoryBlockStorage;
-TonWeb.ledger = {
-    TransportWebUSB,
-    TransportWebHID,
-    BluetoothTransport,
-    AppTon,
-};
-TonWeb.token = {
-    nft: NFT,
-    ft: JETTON,
-    jetton: JETTON,
+
+    /**
+     * Invoke get-method of smart contract.
+     */
+    async call(
+      /**
+       * Contract address.
+       */
+      address: AddressType,
+
+      /**
+       * Method name or method ID.
+       */
+      method: (string | number),
+
+      /**
+       * Array of stack elements.
+       */
+      params: StackElement[] = []
+
+    ): Promise<any> {
+
+        // @todo: type return value
+
+        return this.provider.call(
+          address.toString(),
+          method,
+          params
+        );
+    }
+
+    public static version = version;
+    public static utils = utils;
+    public static Address = utils.Address;
+    public static boc = boc;
+    public static HttpProvider = HttpProvider;
+    public static Contract = Contract;
+    public static Wallets = Wallets;
+    public static LockupWallets = LockupWallets;
+    public static SubscriptionContract = SubscriptionContract;
+    public static BlockSubscription = BlockSubscription;
+    public static InMemoryBlockStorage = InMemoryBlockStorage;
+
+    public static ledger = {
+        TransportWebUSB,
+        TransportWebHID,
+        BluetoothTransport,
+        AppTon,
+    };
+
+    public static token = {
+        nft: NFT,
+        ft: JETTON,
+        jetton: JETTON,
+    }
+
 }
 
 if (typeof window !== 'undefined') {
-    window.TonWeb = TonWeb;
+    (window as any).TonWeb = TonWeb;
 }
-
-module.exports = TonWeb;

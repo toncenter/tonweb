@@ -1,5 +1,11 @@
-const BN = require("bn.js");
-const nacl = require("tweetnacl");
+
+import BN from "bn.js";
+import nacl from "tweetnacl";
+export { BN, nacl };
+
+import Address from './Address';
+export { Address };
+
 const ethunit = require("ethjs-unit");
 
 let myCrypto = null;
@@ -10,11 +16,7 @@ if (typeof document !== 'undefined') { // web
     myCrypto = require('isomorphic-webcrypto');
 }
 
-/**
- * @param bytes {Uint8Array}
- * @return  {Promise<ArrayBuffer>}
- */
-function sha256(bytes) {
+export function sha256(bytes: Uint8Array): Promise<ArrayBuffer> {
     if (typeof document !== 'undefined') { // web
         return crypto.subtle.digest("SHA-256", bytes);
     } else {  // nodejs or react-native
@@ -23,20 +25,16 @@ function sha256(bytes) {
 }
 
 /**
- * from coins to nanocoins
- * @param amount {number | BN | string}
- * @return {BN}
+ * Converts the specified amount from coins to nanocoins.
  */
-function toNano(amount) {
+export function toNano(amount: (number | BN | string)): BN {
     return ethunit.toWei(amount, 'gwei');
 }
 
 /**
- * from nanocoins to coins
- * @param amount  {number | BN | string}
- * @return {string}
+ * Converts the specified amount from nanocoins to coins.
  */
-function fromNano(amount) {
+export function fromNano(amount: (number | BN | string)): string {
     return ethunit.fromWei(amount, 'gwei');
 }
 
@@ -52,12 +50,11 @@ for (let ord = 0; ord <= 0xff; ord++) {
     to_byte_map[s] = ord;
 }
 
-//  converter using lookups
 /**
- * @param buffer  {Uint8Array}
- * @return {string}
+ * Converts the specified bytes array to hex string
+ * using lookup table.
  */
-function bytesToHex(buffer) {
+export function bytesToHex(buffer: Uint8Array): string {
     const hex_array = [];
     //(new Uint8Array(buffer)).forEach((v) => { hex_array.push(to_hex_array[v]) });
     for (let i = 0; i < buffer.byteLength; i++) {
@@ -66,14 +63,13 @@ function bytesToHex(buffer) {
     return hex_array.join("");
 }
 
-// reverse conversion using lookups
 /**
- * @param s {string}
- * @return {Uint8Array}
+ * Converts the specified hex string to bytes array
+ * using lookup table.
  */
-function hexToBytes(s) {
-    s = s.toLowerCase();
-    const length2 = s.length;
+export function hexToBytes(hex: string): Uint8Array {
+    hex = hex.toLowerCase();
+    const length2 = hex.length;
     if (length2 % 2 !== 0) {
         throw "hex string must have length a multiple of 2";
     }
@@ -81,19 +77,14 @@ function hexToBytes(s) {
     const result = new Uint8Array(length);
     for (let i = 0; i < length; i++) {
         const i2 = i * 2;
-        const b = s.substring(i2, i2 + 2);
+        const b = hex.substring(i2, i2 + 2);
         if (!to_byte_map.hasOwnProperty(b)) throw new Error('invalid hex character ' + b);
         result[i] = to_byte_map[b];
     }
     return result;
 }
 
-/**
- * @param str {string}
- * @param size  {number}
- * @return {Uint8Array}
- */
-function stringToBytes(str, size = 1) {
+export function stringToBytes(str: string, size = 1): Uint8Array {
     let buf;
     let bufView;
     if (size === 1) {
@@ -139,11 +130,7 @@ function _crc32c(crc, bytes) {
     return crc ^ 0xffffffff;
 }
 
-/**
- * @param bytes {Uint8Array}
- * @return {Uint8Array}
- */
-function crc32c(bytes) {
+export function crc32c(bytes: Uint8Array): Uint8Array {
     //Version suitable for crc32-c of BOC
     const int_crc = _crc32c(0, bytes);
     const arr = new ArrayBuffer(4);
@@ -152,11 +139,7 @@ function crc32c(bytes) {
     return new Uint8Array(arr).reverse();
 }
 
-/**
- * @param data  {ArrayLike<number>}
- * @return {Uint8Array}
- */
-function crc16(data) {
+export function crc16(data: ArrayLike<number>): Uint8Array {
     const poly = 0x1021;
     let reg = 0;
     const message = new Uint8Array(data.length + 2);
@@ -178,24 +161,14 @@ function crc16(data) {
     return new Uint8Array([Math.floor(reg / 256), reg % 256]);
 }
 
-/**
- * @param a {Uint8Array}
- * @param b {Uint8Array}
- * @return {Uint8Array}
- */
-function concatBytes(a, b) {
+export function concatBytes(a: Uint8Array, b: Uint8Array): Uint8Array {
     const c = new Uint8Array(a.length + b.length);
     c.set(a);
     c.set(b, a.length);
     return c;
 }
 
-/**
- * @param a {Uint8Array}
- * @param b {Uint8Array}
- * @return {boolean}
- */
-function compareBytes(a, b) {
+export function compareBytes(a: Uint8Array, b: Uint8Array): boolean {
     // TODO Make it smarter
     return a.toString() === b.toString();
 }
@@ -219,11 +192,7 @@ const base64abc = (() => {
     return abc;
 })();
 
-/**
- * @param bytes {Uint8Array}
- * @return {string}
- */
-function bytesToBase64(bytes) {
+export function bytesToBase64(bytes: Uint8Array): string {
     let result = "";
     let i;
     const l = bytes.length;
@@ -249,7 +218,7 @@ function bytesToBase64(bytes) {
     return result;
 }
 
-function base64toString(base64) {
+export function base64toString(base64: string): string {
     if (typeof window === 'undefined') {
         return Buffer.from(base64, 'base64').toString('binary'); // todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
     } else {
@@ -257,19 +226,15 @@ function base64toString(base64) {
     }
 }
 
-function stringToBase64(s) {
+export function stringToBase64(string: string): string {
     if (typeof window === 'undefined') {
-        return Buffer.from(s, 'binary').toString('base64'); // todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
+        return Buffer.from(string, 'binary').toString('base64'); // todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
     } else {
-        return btoa(s);
+        return btoa(string);
     }
 }
 
-/**
- * @param base64  {string}
- * @return {Uint8Array}
- */
-function base64ToBytes(base64) {
+export function base64ToBytes(base64: string): Uint8Array {
     const binary_string = base64toString(base64);
     const len = binary_string.length;
     const bytes = new Uint8Array(len);
@@ -279,36 +244,17 @@ function base64ToBytes(base64) {
     return bytes;
 }
 
-/**
- * @param n  {number}
- * @param ui8array  {Uint8Array}
- * @return {number}
- */
-function readNBytesUIntFromArray(n, ui8array) {
+export function readNBytesUIntFromArray(
+  n: number,
+  ui8array: Uint8Array
+
+): number {
+
     let res = 0;
     for (let c = 0; c < n; c++) {
         res *= 256;
         res += ui8array[c];
     }
     return res;
-}
 
-module.exports = {
-    BN,
-    nacl,
-    sha256,
-    fromNano,
-    toNano,
-    bytesToHex,
-    hexToBytes,
-    stringToBytes,
-    crc32c,
-    crc16,
-    concatBytes,
-    bytesToBase64,
-    base64ToBytes,
-    base64toString,
-    stringToBase64,
-    compareBytes,
-    readNBytesUIntFromArray
-};
+}

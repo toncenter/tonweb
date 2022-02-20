@@ -1,15 +1,34 @@
-const {crc16, hexToBytes, bytesToHex, stringToBytes, base64toString, stringToBase64} = require("./index");
+
+const {
+    crc16,
+    hexToBytes,
+    bytesToHex,
+    stringToBytes,
+    base64toString,
+    stringToBase64,
+
+} = require("./index");
+
+
+export type AddressType = (Address | string);
+
+interface ParsedAddress {
+    isTestOnly: boolean;
+    workchain: number;
+    hashPart: Uint8Array;
+    isBounceable: boolean;
+}
+
 
 const bounceable_tag = 0x11;
 const non_bounceable_tag = 0x51;
 const test_flag = 0x80;
 
+
 /**
  * @private
- * @param addressString {string}
- * @return {{isTestOnly: boolean, workchain: number, hashPart: Uint8Array, isBounceable: boolean}}
  */
-function parseFriendlyAddress(addressString) {
+function parseFriendlyAddress(addressString: string): ParsedAddress {
     const data = stringToBytes(base64toString(addressString));
     if (data.length !== 36) { // 1byte tag + 1byte workchain + 32 bytes hash + 2 byte crc
         throw "Unknown address type: byte length is not equal to 36";
@@ -44,11 +63,9 @@ function parseFriendlyAddress(addressString) {
     return {isTestOnly, isBounceable, workchain, hashPart};
 }
 
-class Address {
-    /**
-     * @param anyForm {string | Address}
-     */
-    static isValid(anyForm) {
+export default class Address {
+
+    public static isValid(anyForm: AddressType) {
         try {
             new Address(anyForm);
             return true;
@@ -57,10 +74,18 @@ class Address {
         }
     }
 
+    public wc: number;
+    public hashPart: Uint8Array;
+    public isTestOnly: boolean;
+    public isUserFriendly: boolean;
+    public isBounceable: boolean;
+    public isUrlSafe: boolean;
+
     /**
      * @param anyForm {string | Address}
      */
-    constructor(anyForm) {
+    constructor(anyForm: AddressType) {
+
         if (anyForm == null) {
             throw "Invalid address";
         }
@@ -103,17 +128,13 @@ class Address {
         }
     }
 
-    /**
-     * @param isUserFriendly? {boolean}
-     * @param isUrlSafe? {boolean}
-     * @param isBounceable? {boolean}
-     * @param isTestOnly? {boolean}
-     * @return {string}
-     */
-    toString(isUserFriendly,
-             isUrlSafe,
-             isBounceable,
-             isTestOnly) {
+    public toString(
+        isUserFriendly?: boolean,
+        isUrlSafe?: boolean,
+        isBounceable?: boolean,
+        isTestOnly?: boolean
+
+    ): string {
 
         if (isUserFriendly === undefined) isUserFriendly = this.isUserFriendly;
         if (isUrlSafe === undefined) isUrlSafe = this.isUrlSafe;
@@ -145,5 +166,3 @@ class Address {
         }
     }
 }
-
-module.exports.default = Address;

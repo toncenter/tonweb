@@ -2,10 +2,12 @@
   "name": "tonweb",
   "version": "0.0.29",
   "description": "TonWeb - JavaScript API for TON blockchain",
-  "main": "src/index.js",
+  "main": "dist/__todo__.js",
+  "types": "dist/types/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx webpack --mode=none"
+    "build": "npx webpack --mode=none",
+    "build:types": "tsc -p ./tsconfig.lib.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "TON",
