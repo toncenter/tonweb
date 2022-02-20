@@ -226,11 +226,11 @@ export function base64toString(base64: string): string {
     }
 }
 
-export function stringToBase64(string: string): string {
+export function stringToBase64(str: string): string {
     if (typeof window === 'undefined') {
-        return Buffer.from(string, 'binary').toString('base64'); // todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
+        return Buffer.from(str, 'binary').toString('base64'); // todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
     } else {
-        return btoa(string);
+        return btoa(str);
     }
 }
 
