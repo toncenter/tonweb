@@ -6,7 +6,6 @@
     "rootDir": "src/",
     "outDir": "dist/",
     "declarationDir": "dist/types/",
-    "removeComments": true,
     "lib": [
       "ESNext",
       "DOM",
