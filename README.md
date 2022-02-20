@@ -1,6 +1,6 @@
-# TonWeb - JavaScript SDK for [The Open Network](https://ton.org)
-
 ![splash_js_sdk](https://user-images.githubusercontent.com/1449561/154848382-e89fef68-3aee-4ca6-8d52-1466bfdf2c89.png)
+
+# TonWeb - JavaScript SDK for [The Open Network](https://ton.org)
 
 [![NPM](https://img.shields.io/npm/v/tonweb.svg)](https://www.npmjs.org/package/tonweb)
 
