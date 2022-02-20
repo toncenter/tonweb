@@ -1,31 +1,15 @@
+import HttpProvider, { StackElement } from './providers';
+export { CellObject, EstimateFeeBody, HttpProviderOptions, SliceObject, StackElement, } from './providers';
 import { AddressType } from './utils/Address';
+export { AddressType } from './utils/Address';
 import * as utils from './utils';
-export declare type Address = any;
-export declare type Transaction = any;
-export declare type CellObject = any;
-export declare type SliceObject = any;
-export declare type StackElement = (['num', number] | ['cell', CellObject] | ['slice', SliceObject] | [string, any]);
 export default class TonWeb {
-    provider: any;
-    version: string;
-    utils: typeof utils;
-    Address: typeof utils.Address;
-    boc: any;
-    Contract: any;
-    BlockSubscription: any;
-    InMemoryBlockStorage: any;
-    wallet: any;
-    lockupWallet: any;
-    constructor(provider?: any);
-    getTransactions(address: AddressType, limit?: number, lt?: number, txhash?: string, to_lt?: number): Promise<Transaction[]>;
-    getBalance(address: AddressType): Promise<string>;
-    sendBoc(bytes: Uint8Array): Promise<any>;
-    call(address: AddressType, method: (string | number), params?: StackElement[]): Promise<any>;
+    provider: HttpProvider;
     static version: string;
     static utils: typeof utils;
     static Address: typeof utils.Address;
     static boc: any;
-    static HttpProvider: any;
+    static HttpProvider: typeof HttpProvider;
     static Contract: any;
     static Wallets: any;
     static LockupWallets: any;
@@ -43,4 +27,44 @@ export default class TonWeb {
         ft: any;
         jetton: any;
     };
+    version: string;
+    utils: typeof utils;
+    Address: typeof utils.Address;
+    boc: any;
+    Contract: any;
+    BlockSubscription: any;
+    InMemoryBlockStorage: any;
+    wallet: any;
+    lockupWallet: any;
+    constructor(provider?: HttpProvider);
+    /**
+     * Use this method to get transaction history of a given address.
+     * Returns array of transaction objects.
+     */
+    getTransactions(address: AddressType, limit?: number, lt?: number, txhash?: string, to_lt?: number): Promise<any>;
+    /**
+     * Returns current balance for the given address in nanograms.
+     */
+    getBalance(address: AddressType): Promise<string>;
+    /**
+     * Use this method to send serialized boc file:
+     * fully packed and serialized external message.
+     */
+    sendBoc(bytes: Uint8Array): Promise<any>;
+    /**
+     * Invoke get-method of smart contract.
+     */
+    call(
+    /**
+     * Contract address.
+     */
+    address: AddressType, 
+    /**
+     * Method name or method ID.
+     */
+    method: (string | number), 
+    /**
+     * Array of stack elements.
+     */
+    params?: StackElement[]): Promise<any>;
 }

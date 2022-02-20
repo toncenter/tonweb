@@ -7,6 +7,9 @@ export default class Address {
     isUserFriendly: boolean;
     isBounceable: boolean;
     isUrlSafe: boolean;
+    /**
+     * @param anyForm {string | Address}
+     */
     constructor(anyForm: AddressType);
     toString(isUserFriendly?: boolean, isUrlSafe?: boolean, isBounceable?: boolean, isTestOnly?: boolean): string;
 }

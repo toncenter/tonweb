@@ -4,9 +4,23 @@ export { BN, nacl };
 import Address from './Address';
 export { Address };
 export declare function sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
+/**
+ * Converts the specified amount from coins to nanocoins.
+ */
 export declare function toNano(amount: (number | BN | string)): BN;
+/**
+ * Converts the specified amount from nanocoins to coins.
+ */
 export declare function fromNano(amount: (number | BN | string)): string;
+/**
+ * Converts the specified bytes array to hex string
+ * using lookup table.
+ */
 export declare function bytesToHex(buffer: Uint8Array): string;
+/**
+ * Converts the specified hex string to bytes array
+ * using lookup table.
+ */
 export declare function hexToBytes(hex: string): Uint8Array;
 export declare function stringToBytes(str: string, size?: number): Uint8Array;
 export declare function crc32c(bytes: Uint8Array): Uint8Array;
