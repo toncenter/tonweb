@@ -1,5 +1,7 @@
-const {BN, base64ToBytes} = require("../utils");
-const {Cell} = require("../boc");
+
+import { BN, base64ToBytes } from '../utils';
+
+const {Cell} = require('../boc');
 
 class HttpProviderUtils {
 

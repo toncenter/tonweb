@@ -1,7 +1,12 @@
 
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import BluetoothTransport from '@ledgerhq/hw-transport-web-ble';
+
 import HttpProvider, { StackElement } from './providers';
 
 export {
+    default as HttpProvider,
     CellObject,
     EstimateFeeBody,
     HttpProviderOptions,
@@ -10,23 +15,39 @@ export {
 
 } from './providers';
 
+import {
+    BlockSubscription,
+    InMemoryBlockStorage,
+
+} from './providers/block-subscription';
+
+export {
+    BlockSubscription,
+    InMemoryBlockStorage,
+    LogFunction,
+    BlockHandler,
+    BlockSubscriptionOptions,
+    ShardBlock,
+    BlockStorage,
+
+} from './providers/block-subscription';
+
 import { AddressType } from './utils/Address';
 export { AddressType } from './utils/Address';
 
 import * as utils from './utils';
 
-const boc = require("./boc");
-const AppTon = require("./ledger/AppTon");
-const {Contract} = require("./contract");
-const Wallets = require("./contract/wallet").default;
-const LockupWallets = require("./contract/lockup").default;
-const NFT = require("./contract/token/nft").default;
-const JETTON = require("./contract/token/ft").default;
-const {BlockSubscription, InMemoryBlockStorage} = require("./providers/blockSubscription");
-const {SubscriptionContract} = require("./contract/subscription/index");
-const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
-const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
-const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
+
+const boc = require('./boc');
+const AppTon = require('./ledger/AppTon');
+const {Contract} = require('./contract');
+const Wallets = require('./contract/wallet').default;
+const LockupWallets = require('./contract/lockup').default;
+const NFT = require('./contract/token/nft').default;
+const JETTON = require('./contract/token/ft').default;
+const {SubscriptionContract} = require('./contract/subscription/index');
+
+
 const version = '0.0.29';
 
 
