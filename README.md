@@ -1,10 +1,8 @@
-# TonWeb - JavaScript API for TON blockchain
+![splash_js_sdk](https://user-images.githubusercontent.com/1449561/154848382-e89fef68-3aee-4ca6-8d52-1466bfdf2c89.png)
+
+# TonWeb - JavaScript SDK for [The Open Network](https://ton.org)
 
 [![NPM](https://img.shields.io/npm/v/tonweb.svg)](https://www.npmjs.org/package/tonweb)
-
-TonWeb interface is close as possible to the web3.js.
-
-TonWeb has only 3 external dependencies (BN.js, tweetnacl, ethjs-unit) and is not too big (~200kb).
 
 ## Install Web
 
@@ -131,7 +129,7 @@ export NODE_PATH=$(npm root --quiet -g)
 
 Then create your_script.js
 
-```
+```js
 const TonWeb = require('tonweb');
 
 const tonweb = new TonWeb();
