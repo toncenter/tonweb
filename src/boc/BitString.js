@@ -236,6 +236,128 @@ class BitString {
         });
     }
 
+    /**
+     * @param n {number}
+     * @return {boolean}    bit value at position `n`
+     */
+    readBit() {
+        var result = this.get(this.readCursor);
+        this.readCursor++;
+        if(this.readCursor > this.writeCursor) {
+          throw "Parse error: not enough bits";
+        }
+        return result;
+    }
+
+    /**
+     * Reads unsigned int
+     *
+     * @param {number} bitLength Size of uint in bits
+     * @returns {BN} number
+     */
+    readUint(bitLength) {
+        if (bitLength < 1) {
+            throw "Incorrect bitLength";
+        }
+        let s = "";
+        for (let i = 0; i < bitLength; i++) {
+            let b = this.readBit();
+            if (b && b > 0) {
+                s += '1';
+            } else {
+                s += '0';
+            }
+        }
+        return new BN(s, 2);
+    }
+
+    /**
+     * Reads signed int
+     *
+     * @param {number} bitLength Size of uint in bits
+     * @returns {BN} number
+     */
+    readInt(bitLength) {
+        if (bitLength < 1) {
+            throw "Incorrect bitLength";
+        }
+        var sign = this.readBit();
+        if (bitLength == 1) {
+          return sign ? new BN(-1) : new BN(0);
+        }
+        var number = this.readUint(bitLength - 1);
+        if(sign) {
+          const b = new BN(2);
+          const nb = b.pow(new BN(bitLength - 1));
+          number -= nb;
+        }
+        return number;
+    }
+
+    /**
+     * Reads Uint8
+     *
+     * @returns {number}
+     */
+    readUint8() {
+        return this.readUint(start, 8).toNumber();
+    }
+
+    /**
+     * Reads Uint16
+     *
+     * @returns {number}
+     */
+    readUint16() {
+        return this.readUint(start, 16).toNumber();
+    }
+
+    /**
+     * Reads Uint32
+     *
+     * @returns {number}
+     */
+    readUint32() {
+        return this.readUint(start, 32).toNumber();
+    }
+
+    /**
+     * Reads Uint64
+     *
+     * @returns {BN}
+     */
+    readUint64() {
+        return this.readUint(start, 64);
+    }
+
+    /**
+     * Reads Int8
+     *
+     * @returns {number}
+     */
+    readInt8() {
+        return this.readInt(8);
+    }
+
+    /**
+     * Reads Int16
+     *
+     * @returns {number}
+     */
+    readInt16(start) {
+        return this.readInt(16);
+    }
+
+    /**
+     * Reads Int32
+     *
+     * @returns {number}
+     */
+    readInt32(start) {
+        return this.readInt(32);
+    }
+
+
     clone() {
         const result = new BitString(0);
         result.array = this.array.slice(0);
