@@ -1,5 +1,7 @@
 import HttpProvider, { StackElement } from './providers';
-export { CellObject, EstimateFeeBody, HttpProviderOptions, SliceObject, StackElement, } from './providers';
+export { default as HttpProvider, CellObject, EstimateFeeBody, HttpProviderOptions, SliceObject, StackElement, } from './providers';
+import { BlockSubscription, InMemoryBlockStorage } from './providers/block-subscription';
+export { BlockSubscription, InMemoryBlockStorage, LogFunction, BlockHandler, BlockSubscriptionOptions, ShardBlock, BlockStorage, } from './providers/block-subscription';
 import { AddressType } from './utils/Address';
 export { AddressType } from './utils/Address';
 import * as utils from './utils';
@@ -14,8 +16,8 @@ export default class TonWeb {
     static Wallets: any;
     static LockupWallets: any;
     static SubscriptionContract: any;
-    static BlockSubscription: any;
-    static InMemoryBlockStorage: any;
+    static BlockSubscription: typeof BlockSubscription;
+    static InMemoryBlockStorage: typeof InMemoryBlockStorage;
     static ledger: {
         TransportWebUSB: any;
         TransportWebHID: any;
@@ -32,8 +34,8 @@ export default class TonWeb {
     Address: typeof utils.Address;
     boc: any;
     Contract: any;
-    BlockSubscription: any;
-    InMemoryBlockStorage: any;
+    BlockSubscription: typeof BlockSubscription;
+    InMemoryBlockStorage: typeof InMemoryBlockStorage;
     wallet: any;
     lockupWallet: any;
     constructor(provider?: HttpProvider);
