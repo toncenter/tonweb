@@ -1,7 +1,7 @@
 import HttpProvider, { StackElement } from './providers';
-export { default as HttpProvider, CellObject, EstimateFeeBody, HttpProviderOptions, SliceObject, StackElement, } from './providers';
+export { CellObject, EstimateFeeBody, HttpProviderOptions, SliceObject, StackElement, } from './providers';
 import { BlockSubscription, InMemoryBlockStorage } from './providers/block-subscription';
-export { BlockSubscription, InMemoryBlockStorage, LogFunction, BlockHandler, BlockSubscriptionOptions, ShardBlock, BlockStorage, } from './providers/block-subscription';
+export { LogFunction, BlockHandler, BlockSubscriptionOptions, ShardBlock, BlockStorage, } from './providers/block-subscription';
 import { AddressType } from './utils/Address';
 export { AddressType } from './utils/Address';
 import * as utils from './utils';
