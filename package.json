@@ -41,7 +41,6 @@
     "webpack-cli": "3.3.12"
   },
   "browser": {
-    "isomorphic-webcrypto": false,
     "xmlhttprequest": false
   }
 }
