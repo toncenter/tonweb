@@ -1,6 +1,6 @@
 {
   "name": "tonweb",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "TonWeb - JavaScript API for TON blockchain",
   "main": "src/index.js",
   "scripts": {
@@ -41,7 +41,6 @@
     "webpack-cli": "3.3.12"
   },
   "browser": {
-    "isomorphic-webcrypto": false,
     "xmlhttprequest": false
   }
 }
