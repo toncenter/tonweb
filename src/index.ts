@@ -6,7 +6,7 @@ import BluetoothTransport from '@ledgerhq/hw-transport-web-ble';
 import HttpProvider, { StackElement } from './providers';
 
 export {
-    default as HttpProvider,
+    // default as HttpProvider,
     CellObject,
     EstimateFeeBody,
     HttpProviderOptions,
@@ -22,8 +22,8 @@ import {
 } from './providers/block-subscription';
 
 export {
-    BlockSubscription,
-    InMemoryBlockStorage,
+    // BlockSubscription,
+    // InMemoryBlockStorage,
     LogFunction,
     BlockHandler,
     BlockSubscriptionOptions,
