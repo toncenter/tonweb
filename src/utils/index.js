@@ -4,7 +4,8 @@ const ethunit = require("ethjs-unit");
 
 const isCryptoSupported = 
     typeof window !== 'undefined' &&
-    typeof window.crypto?.subtle !== 'undefined';
+    typeof window.crypto !== 'undefined'
+    typeof window.crypto.subtle !== 'undefined';
     
 let myCrypto = null;
 
