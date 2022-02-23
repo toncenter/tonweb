@@ -6,7 +6,8 @@ class BitString {
      */
     constructor(length) {
         this.array = Uint8Array.from({length: Math.ceil(length / 8)}, () => 0);
-        this.cursor = 0;
+        this.writeCursor = 0;
+        this.readCursor = 0;
         this.length = length;
     }
 
@@ -14,21 +15,21 @@ class BitString {
      * @return {number}
      */
     getFreeBits() {
-        return this.length - this.cursor;
+        return this.length - this.writeCursor;
     }
 
     /**
      * @return {number}
      */
     getUsedBits() {
-        return this.cursor;
+        return this.writeCursor;
     }
 
     /**
      * @return {number}
      */
     getUsedBytes() {
-        return Math.ceil(this.cursor / 8);
+        return Math.ceil(this.writeCursor / 8);
     }
 
     /**
@@ -81,23 +82,23 @@ class BitString {
      * @param callback  {function(boolean): void}
      */
     forEach(callback) {
-        const max = this.cursor;
+        const max = this.writeCursor;
         for (let x = 0; x < max; x++) {
             callback(this.get(x));
         }
     }
 
     /**
-     * Write bit and increase cursor
+     * Write bit and increase writeCursor
      * @param b  {boolean | number}
      */
     writeBit(b) {
         if (b && b > 0) {
-            this.on(this.cursor);
+            this.on(this.writeCursor);
         } else {
-            this.off(this.cursor);
+            this.off(this.writeCursor);
         }
-        this.cursor = this.cursor + 1;
+        this.writeCursor = this.writeCursor + 1;
     }
 
     /**
@@ -239,7 +240,8 @@ class BitString {
         const result = new BitString(0);
         result.array = this.array.slice(0);
         result.length = this.length
-        result.cursor = this.cursor;
+        result.writeCursor = this.writeCursor;
+        result.readCursor = this.readCursor;
         return result;
     }
 
@@ -256,7 +258,7 @@ class BitString {
     getTopUppedArray() {
         const ret = this.clone();
 
-        let tu = Math.ceil(ret.cursor / 8) * 8 - ret.cursor;
+        let tu = Math.ceil(ret.writeCursor / 8) * 8 - ret.writeCursor;
         if (tu > 0) {
             tu = tu - 1;
             ret.writeBit(true);
@@ -265,7 +267,7 @@ class BitString {
                 ret.writeBit(false);
             }
         }
-        ret.array = ret.array.slice(0, Math.ceil(ret.cursor / 8));
+        ret.array = ret.array.slice(0, Math.ceil(ret.writeCursor / 8));
         return ret.array;
     }
 
@@ -274,9 +276,9 @@ class BitString {
      * @return {string}
      */
     toHex() {
-        if (this.cursor % 4 === 0) {
-            const s = bytesToHex(this.array.slice(0, Math.ceil(this.cursor / 8))).toUpperCase();
-            if (this.cursor % 8 === 0) {
+        if (this.writeCursor % 4 === 0) {
+            const s = bytesToHex(this.array.slice(0, Math.ceil(this.writeCursor / 8))).toUpperCase();
+            if (this.writeCursor % 8 === 0) {
                 return s;
             } else {
                 return s.substr(0, s.length - 1);
@@ -284,7 +286,7 @@ class BitString {
         } else {
             const temp = this.clone();
             temp.writeBit(1);
-            while (temp.cursor % 4 !== 0) {
+            while (temp.writeCursor % 4 !== 0) {
                 temp.writeBit(0);
             }
             const hex = temp.toHex().toUpperCase();
@@ -300,16 +302,16 @@ class BitString {
     setTopUppedArray(array, fullfilledBytes = true) {
         this.length = array.length * 8;
         this.array = array;
-        this.cursor = this.length;
+        this.writeCursor = this.length;
         if (fullfilledBytes || !this.length) {
             return;
         } else {
             let foundEndBit = false;
             for (let c = 0; c < 7; c++) {
-                this.cursor -= 1;
-                if (this.get(this.cursor)) {
+                this.writeCursor -= 1;
+                if (this.get(this.writeCursor)) {
                     foundEndBit = true;
-                    this.off(this.cursor);
+                    this.off(this.writeCursor);
                     break;
                 }
             }

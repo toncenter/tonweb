@@ -114,7 +114,7 @@ class Cell {
      */
     getBitsDescriptor() {
         const d2 = Uint8Array.from({length: 1}, () => 0);
-        d2[0] = Math.ceil(this.bits.cursor / 8) + Math.floor(this.bits.cursor / 8);
+        d2[0] = Math.ceil(this.bits.writeCursor / 8) + Math.floor(this.bits.writeCursor / 8);
         return d2;
     }
 
