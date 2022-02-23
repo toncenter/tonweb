@@ -2,7 +2,7 @@ const BN = require("bn.js");
 const nacl = require("tweetnacl");
 const ethunit = require("ethjs-unit");
 
-const isCryptoAvailable = window && window.crypto && window.crypto.subtle;
+const isCryptoAvailable = typeof window !== 'undefined' && window.crypto && window.crypto.subtle;
 
 let myCrypto = null;
 
