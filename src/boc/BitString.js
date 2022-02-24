@@ -237,7 +237,6 @@ class BitString {
     }
 
     /**
-     * @param n {number}
      * @return {boolean}    bit value at position `n`
      */
     readBit() {
@@ -248,6 +247,19 @@ class BitString {
         }
         return result;
     }
+
+    /**
+     * @param n {number}
+     * @return {BitString} Bitstring with length n read from original Bitstring
+     */
+    readBits(n) {
+        var result = new BitString(n);
+        for(var i = 0; i < n; i++) {
+          result.writeBit(this.readBit());
+        }
+        return result;
+    }
+
 
     /**
      * Reads unsigned int
