@@ -48,7 +48,7 @@ const JETTON = require('./contract/token/ft').default;
 const {SubscriptionContract} = require('./contract/subscription/index');
 
 
-const version = '0.0.29';
+const version = '0.0.32';
 
 
 export default class TonWeb {

@@ -317,7 +317,11 @@ async function moveToTheEnd(
     const data = topologicalOrderArray.splice(targetIndex, 1)[0];
     topologicalOrderArray.push(data);
     for (const subCell of data[1].refs) {
-        moveToTheEnd(indexHashmap, topologicalOrderArray, await subCell.hash());
+        await moveToTheEnd(
+            indexHashmap,
+            topologicalOrderArray,
+            await subCell.hash()
+        );
     }
 }
 
