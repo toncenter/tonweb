@@ -2,9 +2,11 @@ const BN = require("bn.js");
 const nacl = require("tweetnacl");
 const ethunit = require("ethjs-unit");
 
+const isCryptoAvailable = typeof window !== 'undefined' && window.crypto && window.crypto.subtle;
+
 let myCrypto = null;
 
-if (typeof document !== 'undefined') { // web
+if (isCryptoAvailable) { // web
     // nothing to do
 } else { // nodejs or react-native
     myCrypto = require('isomorphic-webcrypto');
@@ -15,7 +17,7 @@ if (typeof document !== 'undefined') { // web
  * @return  {Promise<ArrayBuffer>}
  */
 function sha256(bytes) {
-    if (typeof document !== 'undefined') { // web
+    if (isCryptoAvailable) { // web
         return crypto.subtle.digest("SHA-256", bytes);
     } else {  // nodejs or react-native
         return myCrypto.subtle.digest({name:"SHA-256"}, bytes);
