@@ -282,7 +282,18 @@ function loadHmLabel(slice, m) {
         }
 }
 
+/**
+ * Check whether slice was read to the end
+ * 
+ * @param {Cell} slice object to parse
+ * @returns {bool}
+ */
+function isSliceEmpty(slice) {
+    return slice.bits.readCursor == slice.bits.writeCursor;
+}
+
+
 module.exports = {loadBit, loadUint, loadInt, 
                   loadVarUInteger, loadCoins, 
                   loadRefX, loadMaybeX, loadMaybeRefX, loadEither, loadEitherXorRefX,
-                  loadUnary, loadHmLabel};
+                  loadUnary, loadHmLabel, isSliceEmpty};

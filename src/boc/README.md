@@ -93,3 +93,28 @@ c1.refs.push(c3);
 const deC1 = TonWeb.boc.Cell.fromBoc(await c1.toBoc());
 (await deC1.hash()).toString() === (await c1.hash()).toString();
 ```
+
+## HashMap
+
+### HashMap desrialization example:
+
+```js
+//create hashmap object
+x = new TonWeb.boc.HashMap(64)
+
+//get some cell containing hashmap
+t="B5EE9C7241010A010032000203CE6001020201200303020120030402012005050201CE080802012006060201200707020120080802012009090003006001FFF7D9"
+cell = TonWeb.boc.Cell.fromBoc(t)[0]
+
+//deserialize map from cell, by providing key deserializator and value deserializator
+x.loadHashMapX2Y(cell, TonWeb.boc.CellParser.loadUint, [64], TonWeb.boc.CellParser.loadUint, [8]);
+
+x.elements
+```
+
+### Serialization
+```js
+// Given that x is a hashmap and x.elements contains key/values
+b = x.serialize(k=>{let key = new TonWeb.boc.Cell(); key.bits.writeUint(k,64); return key;},
+                v=>{let val = new TonWeb.boc.Cell(); val.bits.writeUint(v,8); return val;});
+```
