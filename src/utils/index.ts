@@ -8,16 +8,21 @@ export { Address };
 
 const ethunit = require("ethjs-unit");
 
+const isCryptoAvailable = (
+    typeof window !== 'undefined' &&
+    Boolean(window.crypto?.subtle)
+);
+
 let myCrypto = null;
 
-if (typeof document !== 'undefined') { // web
+if (isCryptoAvailable) { // web
     // nothing to do
 } else { // nodejs or react-native
     myCrypto = require('isomorphic-webcrypto');
 }
 
 export function sha256(bytes: Uint8Array): Promise<ArrayBuffer> {
-    if (typeof document !== 'undefined') { // web
+    if (isCryptoAvailable) { // web
         return crypto.subtle.digest("SHA-256", bytes);
     } else {  // nodejs or react-native
         return myCrypto.subtle.digest({name:"SHA-256"}, bytes);
