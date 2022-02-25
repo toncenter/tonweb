@@ -15,7 +15,7 @@ class HashMap {
 
     /**
      * Creates empty hashmap with keys of `n`-bit length
-     * 
+     *
      * @param {number} n key bitsize
      * @param {function} parser Parser of the leafs
      */
@@ -29,7 +29,7 @@ class HashMap {
     /**
      * Loads HashMapNode label
      * hmn_leaf#_ {X:Type} value:X = HashmapNode 0 X;
-     * hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X) 
+     * hmn_fork#_ {n:#} {X:Type} left:^(Hashmap n X)
      *            right:^(Hashmap n X) = HashmapNode (n + 1) X;
      *
      * @param {Cell} slice object to parse
@@ -39,7 +39,7 @@ class HashMap {
     */
     loadHmNode(slice, n, prefix) {
       if(this.raw_elements.length > this.maxMembers) {
-        return; //overflow    
+        return; //overflow
       }
       if (n == 0) { // leaf
         var key_slice = new Cell();
@@ -99,15 +99,15 @@ class HashMap {
     */
     tree_split(arr) {
       let left = [], right = [];
-      let key_decomposed = true;
       for(let {key, value} of arr) {
         let lr = loadBit(key);
         let el = {key:key, value:value};
         lr? right.push({key:key, value:value}) : left.push({key:key, value:value});
-        key_decomposed &= isSliceEmpty(key);
       }
-      if(!key_decomposed) {
+      if(left.length > 1) {
         left = this.tree_split(left);
+      }
+      if(right.length > 1) {
         right = this.tree_split(right);
       }
       if ( !left.length & !right.length) {
@@ -193,10 +193,13 @@ class HashMap {
      * @param {Cell} builder to which edge will be serialized
     */
     serialize_edge(se, builder) {
-      this.serialize_label(se[0], se[1], builder);
       if(se.length == 3) {
+        while(se[2].key.bits.readCursor < se[2].key.bits.writeCursor)
+          se[0] += loadBit(se[2].key) ? "1" : "0";
+        this.serialize_label(se[0], se[1], builder);
         builder.writeCell(se[2].value);
       } else {
+        this.serialize_label(se[0], se[1], builder);
         let left = new Cell();
         this.serialize_edge(se[2], left);
         let right = new Cell();
@@ -220,4 +223,73 @@ class HashMap {
 
 }
 
-module.exports = {HashMap};
+class PfxHashMap extends HashMap {
+
+    /**
+     * Loads PfxHashMapNode label
+     * phm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
+     *            {n = (~m) + l} node:(PfxHashmapNode m X)
+     *            = PfxHashmap n X;
+
+     * phmn_leaf$0 {n:#} {X:Type} value:X = PfxHashmapNode n X;
+     * phmn_fork$1 {n:#} {X:Type} left:^(PfxHashmap n X)
+     *             right:^(PfxHashmap n X) = PfxHashmapNode (n + 1) X;
+
+     * phme_empty$0 {n:#} {X:Type} = PfxHashmapE n X;
+     *
+     * @param {Cell} slice object to parse
+     * @param {number} n
+     * @param {BN} prefix
+     * @returns {number, number} (number and n)
+    */
+    loadHmNode(slice, n, prefix) {
+      if(this.raw_elements.length > this.maxMembers) {
+        return; //overflow
+      }
+
+      let pfx = loadBit(slice);
+
+      if (pfx == 0) { // leaf
+        var key_slice = new Cell();
+        key_slice.bits = prefix;
+        this.raw_elements.push({key:key_slice, value:slice});
+      } else { //fork
+        var prefix_left = prefix.clone();
+        prefix_left.writeBit(0);
+        var prefix_right = prefix.clone();
+        prefix_right.writeBit(1);
+
+        this.loadHashMap(slice.readRef(), n-1, prefix_left);
+        this.loadHashMap(slice.readRef(), n-1, prefix_right);
+      }
+    }
+
+    /**
+     * Serialize PfxHashMap edge
+     * hm_edge#_ {n:#} {X:Type} {l:#} {m:#} label:(HmLabel ~l n)
+     *      {n = (~m) + l} node:(HashmapNode m X) = Hashmap n X;
+     *
+     * @param {array} se array which contains [label as "0" and "1" string, maximal possible size of label, leaf or left fork, right fork]
+     * @param {Cell} builder to which edge will be serialized
+    */
+    serialize_edge(se, builder) {
+      if(se.length == 3) {
+        while(se[2].key.bits.readCursor < se[2].key.bits.writeCursor)
+          se[0] += loadBit(se[2].key) ? "1" : "0";
+        this.serialize_label(se[0], se[1], builder);
+        builder.bits.writeBit(0);
+        builder.writeCell(se[2].value);
+      } else {
+        this.serialize_label(se[0], se[1], builder);
+        builder.bits.writeBit(1);
+        let left = new Cell();
+        this.serialize_edge(se[2], left);
+        let right = new Cell();
+        this.serialize_edge(se[3], right);
+        builder.refs.push(left);
+        builder.refs.push(right);
+      }
+    }
+}
+
+module.exports = {HashMap, PfxHashMap};

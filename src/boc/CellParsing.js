@@ -251,7 +251,7 @@ function loadHmLabel(slice, m) {
             pfx = loadBit(slice);
             if (pfx == 0) {
                 // hml_long$10 {m:#} n:(#<= m) s:(n * Bit) = HmLabel ~n m;
-                const n = loadUintLEQ(slice);
+                const n = loadUintLEQ(slice, m);
                 return loadBits(slice, n);
             }
             else {

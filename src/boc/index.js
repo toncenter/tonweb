@@ -1,9 +1,10 @@
 const {BitString} = require("./BitString");
 const {Cell} = require("./Cell");
-const {HashMap} = require("./HashMap");
+const {HashMap, PfxHashMap} = require("./HashMap");
 const {
     loadBit,
     loadUint,
+    loadInt,
     loadUintLEQ,
     loadMaybeRefX,
     loadUnary,
@@ -13,9 +14,10 @@ const {
 class CellParser { };
 CellParser.loadBit = loadBit;
 CellParser.loadUint = loadUint;
+CellParser.loadInt = loadInt;
 CellParser.loadUintLEQ = loadUintLEQ;
 CellParser.loadMaybeRefX = loadMaybeRefX;
 CellParser.loadUnary = loadUnary;
 CellParser.loadHmLabel = loadHmLabel;
 
-module.exports = {BitString, Cell, HashMap, CellParser};
+module.exports = {BitString, Cell, HashMap, PfxHashMap, CellParser};
