@@ -37,8 +37,8 @@ export { AddressType } from './utils/Address';
 
 import * as utils from './utils';
 
+import * as boc from './boc';
 
-const boc = require('./boc');
 const AppTon = require('./ledger/AppTon');
 const {Contract} = require('./contract');
 const Wallets = require('./contract/wallet').default;
