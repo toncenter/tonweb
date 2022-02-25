@@ -5,12 +5,13 @@ export { LogFunction, BlockHandler, BlockSubscriptionOptions, ShardBlock, BlockS
 import { AddressType } from './utils/Address';
 export { AddressType } from './utils/Address';
 import * as utils from './utils';
+import * as boc from './boc';
 export default class TonWeb {
     provider: HttpProvider;
     static version: string;
     static utils: typeof utils;
     static Address: typeof utils.Address;
-    static boc: any;
+    static boc: typeof boc;
     static HttpProvider: typeof HttpProvider;
     static Contract: any;
     static Wallets: any;
@@ -32,7 +33,7 @@ export default class TonWeb {
     version: string;
     utils: typeof utils;
     Address: typeof utils.Address;
-    boc: any;
+    boc: typeof boc;
     Contract: any;
     BlockSubscription: typeof BlockSubscription;
     InMemoryBlockStorage: typeof InMemoryBlockStorage;
