@@ -107,7 +107,7 @@ t="B5EE9C7241010A010032000203CE6001020201200303020120030402012005050201CE0808020
 cell = TonWeb.boc.Cell.fromBoc(t)[0]
 
 //deserialize map from cell, by providing key deserializator and value deserializator
-x.loadHashMapX2Y(cell, TonWeb.boc.CellParser.loadUint, [64], TonWeb.boc.CellParser.loadUint, [8]);
+x.loadHashMapX2Y(cell, s => TonWeb.boc.CellParser.loadUint(s, 64), s => TonWeb.boc.CellParser.loadUint(s, 8));
 
 x.elements
 ```

@@ -124,16 +124,11 @@ function loadCoins(slice) {
  * @throws {Error} Error object with description
  * @param {Cell} slice object to parse
  * @param {Function} parser Function to parse X
- * @param {Object} parser_params Additional params for X parsing
  * @returns {Object}
  */
-function loadRefX(slice, parser, parser_params) {
+function loadRefX(slice, parser) {
     var ref = slice.readRef();
-    if (parser_params) {
-        return parser(ref, ...parser_params);
-    } else {
-        return parser(ref);
-    }
+    return parser(ref);
 }
 
 /**
@@ -145,19 +140,15 @@ function loadRefX(slice, parser, parser_params) {
  * @throws {Error} Error object with description
  * @param {Cell} slice object to parse
  * @param {Function} parser Function to parse X
- * @param {Object} parser_params Additional params for X parsing
  * @returns {Object}
  */
-function loadMaybeX(slice, parser, parser_params) {
+function loadMaybeX(slice, parser) {
     const maybe = loadBit(slice);
     if (!maybe || !parser) {
-        return;
+        return null;
     }
-    if (parser_params) {
-        return parser(slice, ...parser_params);
-    } else {
-        return parser(slice);
-    }
+    return parser(slice);
+
 }
 
 
@@ -170,11 +161,10 @@ function loadMaybeX(slice, parser, parser_params) {
  * @throws {Error} Error object with description
  * @param {Cell} slice object to parse
  * @param {Function} parser function to parse X
- * @param {Object} parser_params Additional params for X parsing
  * @returns {Object}
  */
-function loadMaybeRefX(slice, parser, parser_params) {
-  return loadMaybeX(slice, loadRefX, {parser:parser, parser_params:parser_params});
+function loadMaybeRefX(slice, parser) {
+  return loadMaybeX(slice, s => loadRefX(s, parser));
 }
 
 /**
@@ -187,17 +177,15 @@ function loadMaybeRefX(slice, parser, parser_params) {
  * @param {Cell} slice object to parse
  * @param {Function} parser_x function to parse X
  * @param {Function} parser_y function to parse Y
- * @param {Object} parser_x_params Additional params for X parsing
- * @param {Object} parser_y_params Additional params for Y parsing
  * @returns {Object}
  */
-function loadEither(slice, parser_x, parser_y, parser_x_params, parser_y_params) {
+function loadEither(slice, parser_x, parser_y) {
     const b = loadBit(slice);
     if (b == 0) {
-        return parser_x(slice, parser_x_params);
+        return parser_x(slice);
     }
     else {
-        return parser_y(slice, parser_y_params);
+        return parser_y(slice);
     }
 }
 
@@ -208,17 +196,15 @@ function loadEither(slice, parser_x, parser_y, parser_x_params, parser_y_params)
  * @param {Cell} slice object to parse
  * @param {Function} parser_x function to parse X
  * @param {Function} parser_y function to parse Y
- * @param {Object} parser_x_params Additional params for X parsing
- * @param {Object} parser_y_params Additional params for Y parsing
  * @returns {Object}
  */
-function loadEitherXorRefX(slice, parser, parser_params) {
+function loadEitherXorRefX(slice, parser) {
     const b = loadBit(slice);
     if (b == 0) {
-        return parser(slice, parser_params);
+        return parser(slice);
     }
     else {
-        return loadRefX(slice, parser, parser_params);
+        return loadRefX(slice, parser);
     }
 }
 

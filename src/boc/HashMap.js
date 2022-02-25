@@ -78,17 +78,15 @@ class HashMap {
      *
      * @param {Cell} slice object to parse
      * @param {Function} key_parser function to parse keys
-     * @param {Object} key_parser_params Additional params for X parsing
      * @param {Function} value_parser function to parse values
-     * @param {Object} value_parser_params Additional params for X parsing
     */
-    loadHashMapX2Y(slice, key_parser, key_parser_params, value_parser, value_parser_params) {
+    loadHashMapX2Y(slice, key_parser, value_parser) {
       this.loadHashMap(slice, this.n, new BitString(this.n));
       for (let element of this.raw_elements) {
          var key = element.key;
          var value = element.value;
-         var dkey = key_parser(key, ...key_parser_params);
-         var dvalue = value_parser(value, ...value_parser_params);
+         var dkey = key_parser(key);
+         var dvalue = value_parser(value);
          this.elements[dkey] = dvalue;
       }
     }
