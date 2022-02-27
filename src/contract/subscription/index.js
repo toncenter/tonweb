@@ -1,4 +1,4 @@
-const {Contract} = require("../index.js");
+const {Contract} = require("../index.ts");
 const {Cell} = require("../../boc");
 const {hexToBytes, BN, nacl, bytesToBase64} = require("../../utils");
 

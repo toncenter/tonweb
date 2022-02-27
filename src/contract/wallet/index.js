@@ -1,6 +1,6 @@
 const {Cell} = require("../../boc");
 const {Address, BN, toNano, bytesToHex, hexToBytes, nacl, stringToBytes, bytesToBase64} = require("../../utils");
-const {Contract} = require("../index.js");
+const {Contract} = require("../index.ts");
 const {SimpleWalletContractR1, SimpleWalletContractR2, SimpleWalletContractR3} = require("./WalletContractSimple");
 const {WalletV2ContractR1, WalletV2ContractR2} = require("./WalletContractV2");
 const {WalletV3ContractR1, WalletV3ContractR2} = require("./WalletContractV3");

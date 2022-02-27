@@ -1,6 +1,6 @@
 const {Cell} = require("../../boc");
 const {Address, BN, toNano, bytesToHex, hexToBytes, nacl, stringToBytes, bytesToBase64, base64ToBytes} = require("../../utils");
-const {Contract} = require("../index.js");
+const {Contract} = require("../index.ts");
 const {WalletContract} = require("../wallet/WalletContract");
 
 const WALLET_ID_BASE = 698983191;

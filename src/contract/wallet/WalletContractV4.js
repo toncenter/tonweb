@@ -1,5 +1,5 @@
 const {Cell} = require("../../boc");
-const {Contract} = require("../index.js");
+const {Contract} = require("../index.ts");
 const {Address, bytesToHex, BN} = require("../../utils");
 const {WalletContract} = require("./WalletContract");
 

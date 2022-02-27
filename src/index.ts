@@ -39,8 +39,18 @@ import * as utils from './utils';
 
 import * as boc from './boc';
 
+import { Contract } from './contract';
+
+export {
+    ContractOptions,
+    Query,
+    Method,
+    StateInit,
+
+} from './contract';
+
+
 const AppTon = require('./ledger/AppTon');
-const {Contract} = require('./contract');
 const Wallets = require('./contract/wallet').default;
 const LockupWallets = require('./contract/lockup').default;
 const NFT = require('./contract/token/nft').default;
