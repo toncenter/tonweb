@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+SCRIPT_PATH="$(dirname "$0")"
+PROJECT_PATH="${SCRIPT_PATH}/.."
+TYPES_PATH="${PROJECT_PATH}/dist/types"
+
+SRC_BRANCH="typescripted"
+TARGET_BRANCH="${1:-types}"
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Working directory must be clean in order to proceed. Either commit or revert the changes"
+  exit 1
+fi
+
+echo "Switching branch to \"${SRC_BRANCH}\"…"
+git checkout -f "${SRC_BRANCH}"
+
+echo "Generating the declarations…"
+TMP_DIR="$(mktemp -d /tmp/tonweb-types.XXXXXXXXXX)"
+rm -rf "${TYPES_PATH}"
+npm run build:types
+cp -R "${TYPES_PATH}/." "${TMP_DIR}/"
+
+echo "Switching branch to \"${TARGET_BRANCH}\"…"
+git checkout -f "${TARGET_BRANCH}"
+rm -rf "${TYPES_PATH}"
+mkdir -p "${TYPES_PATH}"
+cp -R "${TMP_DIR}/." "${TYPES_PATH}/"
+rm -rf "${TMP_DIR}"
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Type declarations are generated, you can now commit the changes!"
+else
+  echo "No new type declarations were generated. Looks like everything is up to date!"
+fi
