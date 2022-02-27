@@ -6,6 +6,8 @@ import { AddressType } from './utils/Address';
 export { AddressType } from './utils/Address';
 import * as utils from './utils';
 import * as boc from './boc';
+import { Contract } from './contract';
+export { ContractOptions, Query, Method, StateInit, } from './contract';
 export default class TonWeb {
     provider: HttpProvider;
     static version: string;
@@ -13,7 +15,7 @@ export default class TonWeb {
     static Address: typeof utils.Address;
     static boc: typeof boc;
     static HttpProvider: typeof HttpProvider;
-    static Contract: any;
+    static Contract: typeof Contract;
     static Wallets: any;
     static LockupWallets: any;
     static SubscriptionContract: any;
@@ -34,7 +36,7 @@ export default class TonWeb {
     utils: typeof utils;
     Address: typeof utils.Address;
     boc: typeof boc;
-    Contract: any;
+    Contract: typeof Contract;
     BlockSubscription: typeof BlockSubscription;
     InMemoryBlockStorage: typeof InMemoryBlockStorage;
     wallet: any;
