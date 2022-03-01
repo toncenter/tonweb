@@ -1,5 +1,5 @@
 # Wallets
-There is a bunch contracts developed by original TON team for managing TON Coins. Tonweb provide access for most popular ones, here is the way how to rebuild and check them.
+There is a bunch of contracts developed by original TON team for managing TON Coins. Tonweb provide access for most popular ones, here is the way how to rebuild and check them.
 # V1 wallet
 Fift-ASM for v1 may be found here https://github.com/newton-blockchain/ton/blob/c2da007f4065e2520e0d948b146e0fb12fa75751/crypto/smartcont/new-wallet.fif :
 
@@ -53,7 +53,7 @@ In this revision additional `seqno` was introduced https://github.com/newton-blo
    CHKSIGNU              // pubk cs cnt ?
    34 THROWIFNOT         // signature mismatch
    ACCEPT
-   SWAP 32 LDU NIP 
+   SWAP 32 LDU NIP
    DUP SREFS IF:<{
      // 3 INT 35 LSHIFT# 3 INT RAWRESERVE    // reserve all but 103 Grams from the balance
      8 LDU LDREF         // pubk cnt mode msg cs
@@ -89,7 +89,7 @@ In this revision additional `get_public_key` was introduced https://github.com/n
    CHKSIGNU              // pubk cs cnt ?
    34 THROWIFNOT         // signature mismatch
    ACCEPT
-   SWAP 32 LDU NIP 
+   SWAP 32 LDU NIP
    DUP SREFS IF:<{
      // 3 INT 35 LSHIFT# 3 INT RAWRESERVE    // reserve all but 103 Grams from the balance
      8 LDU LDREF         // pubk cnt mode msg cs
@@ -219,7 +219,7 @@ dup <s csr.
 
 That gives:
 * Cell `x{FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F2608308D71820D31FD31FD31FF82313BBF263ED44D0D31FD31FD3FFD15132BAF2A15144BAF2A204F901541055F910F2A3F8009320D74A96D307D402FB00E8D101A4C8CB1FCB1FCBFFC9ED54}`
-          
+
 * In serialized form `B5EE9C724101010100620000C0FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F2608308D71820D31FD31FD31FF82313BBF263ED44D0D31FD31FD3FFD15132BAF2A15144BAF2A204F901541055F910F2A3F8009320D74A96D307D402FB00E8D101A4C8CB1FCB1FCBFFC9ED543FBE6EE0`
 
 ## revision 2
@@ -255,5 +255,5 @@ dup <s csr.
 ```
 That gives:
 * Cell `x{FF0020DD2082014C97BA218201339CBAB19F71B0ED44D0D31FD31F31D70BFFE304E0A4F2608308D71820D31FD31FD31FF82313BBF263ED44D0D31FD31FD3FFD15132BAF2A15144BAF2A204F901541055F910F2A3F8009320D74A96D307D402FB00E8D101A4C8CB1FCB1FCBFFC9ED54}`
-          
+
 * In serialized form `B5EE9C724101010100710000DEFF0020DD2082014C97BA218201339CBAB19F71B0ED44D0D31FD31F31D70BFFE304E0A4F2608308D71820D31FD31FD31FF82313BBF263ED44D0D31FD31FD3FFD15132BAF2A15144BAF2A204F901541055F910F2A3F8009320D74A96D307D402FB00E8D101A4C8CB1FCB1FCBFFC9ED5410BD6DAD`

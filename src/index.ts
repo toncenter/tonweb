@@ -3,15 +3,21 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import BluetoothTransport from '@ledgerhq/hw-transport-web-ble';
 
-import HttpProvider, { StackElement } from './providers';
+
+//===========//
+// PROVIDERS //
+//===========//
+
+import { HttpProvider, StackElement } from './providers';
 
 export {
-    // default as HttpProvider,
     CellObject,
     EstimateFeeBody,
+    // HttpProvider,
     HttpProviderOptions,
     SliceObject,
     StackElement,
+    // defaultHost,
 
 } from './providers';
 
@@ -32,26 +38,80 @@ export {
 
 } from './providers/block-subscription';
 
+
+//=======//
+// UTILS //
+//=======//
+
 import { AddressType } from './utils/Address';
 export { AddressType } from './utils/Address';
 
 import * as utils from './utils';
 
+
+//=====//
+// BOC //
+//=====//
+
 import * as boc from './boc';
 
-import { Contract } from './contract';
+
+//==========//
+// CONTRACT //
+//==========//
+
+import { Contract } from './contract/contract';
 
 export {
+    ContractMethods,
     ContractOptions,
-    Query,
     Method,
+    Query,
     StateInit,
 
-} from './contract';
+} from './contract/contract';
 
+
+//=========//
+// WALLETS //
+//=========//
+
+import { Wallets } from './contract/wallet/wallets';
+
+export {
+    DeployMethod,
+    ExternalMessage,
+    SeqnoMethod,
+    SeqnoMethodResult,
+    TransferMethod,
+    TransferMethodParams,
+    WalletContractMethods,
+    WalletContractOptions,
+
+} from './contract/wallet/wallet-contract';
+
+export {
+    WalletV3ContractOptions,
+
+} from './contract/wallet/v3/wallet-v3-contract-base';
+
+export {
+    WalletV4ContractOptions,
+    WalletV4ContractMethods,
+
+} from './contract/wallet/v4/wallet-v4-contract-base';
+
+export {
+    WalletV4ContractR2Methods,
+    DeployAndInstallPluginParams,
+    SetPluginParams,
+
+} from './contract/wallet/v4/wallet-v4-contract-r2';
+
+
+// -----
 
 const AppTon = require('./ledger/AppTon');
-const Wallets = require('./contract/wallet').default;
 const LockupWallets = require('./contract/lockup').default;
 const NFT = require('./contract/token/nft').default;
 const JETTON = require('./contract/token/ft').default;

@@ -1,6 +1,6 @@
 const {Cell} = require("../boc");
 const {Address, BN, bytesToHex} = require("../utils");
-const {Contract} = require("../contract");
+const {Contract} = require("../contract/contract");
 
 class AppTon {
 

@@ -60,10 +60,10 @@ if (typeof window === 'undefined') {
 
 const SHARD_ID_ALL = '-9223372036854775808'; // 0x8000000000000000
 
-const defaultHost = 'https://toncenter.com/api/v2/jsonRPC';
+export const defaultHost = 'https://toncenter.com/api/v2/jsonRPC';
 
 
-export default class HttpProvider {
+export class HttpProvider {
 
     public static SHARD_ID_ALL = SHARD_ID_ALL;
 

@@ -2,7 +2,7 @@
 import BN from 'bn.js';
 
 import { Cell } from '../boc';
-import HttpProvider from '../providers';
+import { HttpProvider } from '../providers';
 import { Address, bytesToBase64, bytesToHex } from '../utils';
 import { AddressType } from '../utils/Address';
 
@@ -11,6 +11,9 @@ export interface ContractOptions {
     code?: Cell;
     address?: AddressType;
     wc?: number;
+}
+
+export interface ContractMethods {
 }
 
 export interface Method {
@@ -35,11 +38,14 @@ export interface Query {
     message: Cell;
     code?: Cell;
     body: Cell;
-    data: Cell;
+    data?: Cell;
 }
 
 
-export class Contract {
+export class Contract<
+    OptionsType extends ContractOptions = ContractOptions,
+    MethodsType extends ContractMethods = ContractMethods
+> {
 
     public static createStateInit(
         code: Cell,
@@ -248,12 +254,12 @@ export class Contract {
 
     public address?: Address;
 
-    public methods = {};
+    public methods: MethodsType = {} as any;
 
 
     constructor(
         public readonly provider: HttpProvider,
-        public readonly options: ContractOptions = {}
+        public readonly options: OptionsType = (<any> {})
     ) {
         if (options.address) {
             this.address = new Address(options.address);

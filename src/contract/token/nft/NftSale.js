@@ -1,4 +1,4 @@
-const {Contract} = require("../../index");
+const {Contract} = require("../../contract");
 const {Cell} = require("../../../boc");
 const {parseAddress} = require("./NftUtils");
 const {BN} = require("../../../utils");
