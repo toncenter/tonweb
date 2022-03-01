@@ -1,4 +1,4 @@
-import HttpProvider, { StackElement } from './providers';
+import { HttpProvider, StackElement } from './providers';
 export { CellObject, EstimateFeeBody, HttpProviderOptions, SliceObject, StackElement, } from './providers';
 import { BlockSubscription, InMemoryBlockStorage } from './providers/block-subscription';
 export { LogFunction, BlockHandler, BlockSubscriptionOptions, ShardBlock, BlockStorage, } from './providers/block-subscription';
@@ -6,8 +6,13 @@ import { AddressType } from './utils/Address';
 export { AddressType } from './utils/Address';
 import * as utils from './utils';
 import * as boc from './boc';
-import { Contract } from './contract';
-export { ContractOptions, Query, Method, StateInit, } from './contract';
+import { Contract } from './contract/contract';
+export { ContractMethods, ContractOptions, Method, Query, StateInit, } from './contract/contract';
+import { Wallets } from './contract/wallet/wallets';
+export { DeployMethod, ExternalMessage, SeqnoMethod, SeqnoMethodResult, TransferMethod, TransferMethodParams, WalletContractMethods, WalletContractOptions, } from './contract/wallet/wallet-contract';
+export { WalletV3ContractOptions, } from './contract/wallet/v3/wallet-v3-contract-base';
+export { WalletV4ContractOptions, WalletV4ContractMethods, } from './contract/wallet/v4/wallet-v4-contract-base';
+export { WalletV4ContractR2Methods, DeployAndInstallPluginParams, SetPluginParams, } from './contract/wallet/v4/wallet-v4-contract-r2';
 export default class TonWeb {
     provider: HttpProvider;
     static version: string;
@@ -16,7 +21,7 @@ export default class TonWeb {
     static boc: typeof boc;
     static HttpProvider: typeof HttpProvider;
     static Contract: typeof Contract;
-    static Wallets: any;
+    static Wallets: typeof Wallets;
     static LockupWallets: any;
     static SubscriptionContract: any;
     static BlockSubscription: typeof BlockSubscription;
@@ -39,7 +44,7 @@ export default class TonWeb {
     Contract: typeof Contract;
     BlockSubscription: typeof BlockSubscription;
     InMemoryBlockStorage: typeof InMemoryBlockStorage;
-    wallet: any;
+    wallet: Wallets;
     lockupWallet: any;
     constructor(provider?: HttpProvider);
     /**
