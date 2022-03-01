@@ -29,7 +29,8 @@ export interface EstimateFeeBody {
 export declare type StackElement = (['num', number] | ['cell', CellObject] | ['slice', SliceObject] | [string, any]);
 export declare type CellObject = any;
 export declare type SliceObject = any;
-export default class HttpProvider {
+export declare const defaultHost = "https://toncenter.com/api/v2/jsonRPC";
+export declare class HttpProvider {
     host: string;
     options: HttpProviderOptions;
     static SHARD_ID_ALL: string;
