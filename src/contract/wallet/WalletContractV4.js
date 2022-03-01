@@ -25,11 +25,13 @@ class WalletV4ContractR1 extends WalletContract {
      * @override
      * @private
      * @param   seqno?   {number}
+     * @param   expireAt? {number}
      * @param   withoutOp? {boolean}
      * @return {Cell}
      */
-    createSigningMessage(seqno, withoutOp) {
+    createSigningMessage(seqno, expireAt, withoutOp) {
         seqno = seqno || 0;
+        expireAt = expireAt || (Math.floor(Date.now() / 1e3) + 60);
         const message = new Cell();
         message.bits.writeUint(this.options.walletId, 32);
         if (seqno === 0) {
@@ -38,9 +40,7 @@ class WalletV4ContractR1 extends WalletContract {
                 message.bits.writeBit(1);
             }
         } else {
-            const date = new Date();
-            const timestamp = Math.floor(date.getTime() / 1e3);
-            message.bits.writeUint(timestamp + 60, 32);
+            message.bits.writeUint(expireAt, 32);
         }
         message.bits.writeUint(seqno, 32);
         if (!withoutOp) {

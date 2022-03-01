@@ -31,11 +31,13 @@ class WalletV4ContractR2 extends WalletContract {
      * @override
      * @private
      * @param   seqno?   {number}
+     * @param   expireAt? {number}
      * @param   withoutOp? {boolean}
      * @return {Cell}
      */
-    createSigningMessage(seqno, withoutOp) {
+    createSigningMessage(seqno, expireAt, withoutOp) {
         seqno = seqno || 0;
+        expireAt = expireAt || (Math.floor(Date.now() / 1e3) + 60);
         const message = new Cell();
         message.bits.writeUint(this.options.walletId, 32);
         if (seqno === 0) {
@@ -44,9 +46,7 @@ class WalletV4ContractR2 extends WalletContract {
                 message.bits.writeBit(1);
             }
         } else {
-            const date = new Date();
-            const timestamp = Math.floor(date.getTime() / 1e3);
-            message.bits.writeUint(timestamp + 60, 32);
+            message.bits.writeUint(expireAt, 32);
         }
         message.bits.writeUint(seqno, 32);
         if (!withoutOp) {
@@ -69,12 +69,12 @@ class WalletV4ContractR2 extends WalletContract {
     }
 
     /**
-     * @param   params {{secretKey: Uint8Array, seqno: number, pluginWc: number, amount: BN, stateInit: Cell, body: Cell}}
+     * @param   params {{secretKey: Uint8Array, seqno: number, pluginWc: number, amount: BN, stateInit: Cell, body: Cell, expireAt?: number}}
      */
     async deployAndInstallPlugin(params) {
-        const {secretKey, seqno, pluginWc, amount, stateInit, body} = params;
+        const {secretKey, seqno, pluginWc, amount, stateInit, body, expireAt} = params;
 
-        const signingMessage = this.createSigningMessage(seqno, true);
+        const signingMessage = this.createSigningMessage(seqno, expireAt, true);
         signingMessage.bits.writeUint(1, 8); // op
         signingMessage.bits.writeInt(pluginWc, 8);
         signingMessage.bits.writeGrams(amount);
@@ -85,14 +85,14 @@ class WalletV4ContractR2 extends WalletContract {
 
     /**
      * @private
-     * @param   params {{secretKey: Uint8Array, seqno: number, pluginAddress: string | Address, amount?: BN, queryId?: number}}
+     * @param   params {{secretKey: Uint8Array, seqno: number, pluginAddress: string | Address, amount?: BN, queryId?: number, expireAt?: number}}
      * @param   isInstall {boolean} install or uninstall
      */
     async _setPlugin(params, isInstall) {
-        const {secretKey, seqno, amount, queryId} = params;
+        const {secretKey, seqno, amount, queryId, expireAt} = params;
         const pluginAddress = new Address(params.pluginAddress);
 
-        const signingMessage = this.createSigningMessage(seqno, true);
+        const signingMessage = this.createSigningMessage(seqno, expireAt, true);
         signingMessage.bits.writeUint(isInstall ? 2 : 3, 8); // op
         signingMessage.bits.writeInt(pluginAddress.wc, 8);
         signingMessage.bits.writeBytes(pluginAddress.hashPart);
