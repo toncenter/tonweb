@@ -1,5 +1,5 @@
 export declare type AddressType = (Address | string);
-export default class Address {
+export declare class Address {
     static isValid(anyForm: AddressType): boolean;
     wc: number;
     hashPart: Uint8Array;

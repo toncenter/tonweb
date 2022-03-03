@@ -1,9 +1,8 @@
-/// <reference types="bn.js" />
+import BN from 'bn.js';
 import { Contract, ContractMethods, ContractOptions, Method } from '../contract';
 import { Cell } from '../../boc';
 import { HttpProvider } from '../../providers/index';
-import { Address, BN } from '../../utils';
-import { AddressType } from '../../utils/Address';
+import { Address, AddressType } from '../../utils/Address';
 export interface WalletContractOptions extends ContractOptions {
     publicKey?: Uint8Array;
 }
