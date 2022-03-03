@@ -73,15 +73,20 @@ export class HttpProviderUtils {
         return (arr.length === 1 ? arr[0] : arr);
     }
 
+    /**
+     * @todo: function is unused: use or remove it
+     */
     public static makeArg(arg: any): ['num', (BN | Number)] {
-        // @todo: instanceof Number check is dangerous
-        if (arg instanceof BN || arg instanceof Number) {
+        if (BN.isBN(arg) || typeof arg === 'number') {
             return ['num', arg];
         } else {
             throw new Error(`Unknown argument type: ${arg}`);
         }
     }
 
+    /**
+     * @todo: function is unused: use or remove it
+     */
     public static makeArgs(args: any[]): Array<['num', (BN | Number)]> {
         return args.map(this.makeArg);
     }
