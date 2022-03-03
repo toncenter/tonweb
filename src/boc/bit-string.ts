@@ -1,6 +1,8 @@
 
-import { BN, bytesToHex } from '../utils';
-import { Address } from '../utils/index';
+import BN from 'bn.js';
+
+import { bytesToHex } from '../utils';
+import { Address } from '../utils/Address';
 
 
 export class BitString {

@@ -1,5 +1,5 @@
 
-const HttpProviderUtils = require('./HttpProviderUtils').default;
+import { HttpProviderUtils } from './http-provider-utils';
 
 
 export interface HttpProviderOptions {

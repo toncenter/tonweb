@@ -1,5 +1,5 @@
-const TonWeb = require("./index");
-const {SubscriptionContract} = require("./contract/subscription");
+const TonWeb = require('./index');
+const { SubscriptionContract } = require('./contract/subscription-contract');
 
 async function init() {
     const BENEFICIARY = 'EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG';

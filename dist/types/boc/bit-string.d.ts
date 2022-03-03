@@ -1,6 +1,5 @@
-/// <reference types="bn.js" />
-import { BN } from '../utils';
-import { Address } from '../utils/index';
+import BN from 'bn.js';
+import { Address } from '../utils/Address';
 export declare class BitString {
     /**
      * A length of bit string in bits.

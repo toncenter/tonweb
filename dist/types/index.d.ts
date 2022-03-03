@@ -1,10 +1,11 @@
+import BN from 'bn.js';
+import nacl from 'tweetnacl';
 import { HttpProvider, StackElement } from './providers';
 export { CellObject, EstimateFeeBody, HttpProviderOptions, SliceObject, StackElement, } from './providers';
 import { BlockSubscription, InMemoryBlockStorage } from './providers/block-subscription';
 export { LogFunction, BlockHandler, BlockSubscriptionOptions, ShardBlock, BlockStorage, } from './providers/block-subscription';
-import { AddressType } from './utils/Address';
+import { Address, AddressType } from './utils/Address';
 export { AddressType } from './utils/Address';
-import * as utils from './utils';
 import * as boc from './boc';
 import { Contract } from './contract/contract';
 export { ContractMethods, ContractOptions, Method, Query, StateInit, } from './contract/contract';
@@ -16,8 +17,29 @@ export { WalletV4ContractR2Methods, DeployAndInstallPluginParams, SetPluginParam
 export default class TonWeb {
     provider: HttpProvider;
     static version: string;
-    static utils: typeof utils;
-    static Address: typeof utils.Address;
+    static utils: {
+        BN: typeof BN;
+        nacl: nacl;
+        Address: typeof Address;
+        sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
+        toNano(amount: string | number | BN): BN;
+        fromNano(amount: string | number | BN): string;
+        bytesToHex(buffer: Uint8Array): string;
+        hexToBytes(hex: string): Uint8Array;
+        stringToBytes(str: string, size?: number): Uint8Array;
+        crc32c(bytes: Uint8Array): Uint8Array;
+        crc16(data: ArrayLike<number>): Uint8Array;
+        concatBytes(a: Uint8Array, b: Uint8Array): Uint8Array;
+        compareBytes(a: Uint8Array, b: Uint8Array): boolean; /**
+         * Array of stack elements.
+         */
+        bytesToBase64(bytes: Uint8Array): string;
+        base64toString(base64: string): string;
+        stringToBase64(str: string): string;
+        base64ToBytes(base64: string): Uint8Array;
+        readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
+    };
+    static Address: typeof Address;
     static boc: typeof boc;
     static HttpProvider: typeof HttpProvider;
     static Contract: typeof Contract;
@@ -38,8 +60,29 @@ export default class TonWeb {
         jetton: any;
     };
     version: string;
-    utils: typeof utils;
-    Address: typeof utils.Address;
+    utils: {
+        BN: typeof BN;
+        nacl: nacl;
+        Address: typeof Address;
+        sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
+        toNano(amount: string | number | BN): BN;
+        fromNano(amount: string | number | BN): string;
+        bytesToHex(buffer: Uint8Array): string;
+        hexToBytes(hex: string): Uint8Array;
+        stringToBytes(str: string, size?: number): Uint8Array;
+        crc32c(bytes: Uint8Array): Uint8Array;
+        crc16(data: ArrayLike<number>): Uint8Array;
+        concatBytes(a: Uint8Array, b: Uint8Array): Uint8Array;
+        compareBytes(a: Uint8Array, b: Uint8Array): boolean; /**
+         * Array of stack elements.
+         */
+        bytesToBase64(bytes: Uint8Array): string;
+        base64toString(base64: string): string;
+        stringToBase64(str: string): string;
+        base64ToBytes(base64: string): Uint8Array;
+        readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
+    };
+    Address: typeof Address;
     boc: typeof boc;
     Contract: typeof Contract;
     BlockSubscription: typeof BlockSubscription;

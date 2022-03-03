@@ -3,8 +3,8 @@ import BN from 'bn.js';
 
 import { Cell } from '../../../boc/index';
 import { HttpProvider } from '../../../providers/index';
-import { AddressType } from '../../../utils/Address';
-import { Address, bytesToHex, toNano } from '../../../utils/index';
+import { Address, AddressType } from '../../../utils/Address';
+import { bytesToHex, toNano } from '../../../utils/index';
 import { Contract, Method } from '../../contract';
 import { ExternalMessage } from '../wallet-contract';
 import { WalletV4ContractBase, WalletV4ContractMethods, WalletV4ContractOptions } from './wallet-v4-contract-base';
@@ -139,9 +139,9 @@ export class WalletV4ContractR2 extends WalletV4ContractBase<
 
     ): Promise<boolean> {
 
-        pluginAddress = new Address(pluginAddress);
+        const address = new Address(pluginAddress);
 
-        const hashPart = '0x' + bytesToHex(pluginAddress.hashPart);
+        const hashPart = '0x' + bytesToHex(address.hashPart);
 
         const myAddress = await this.getAddress();
 
@@ -149,7 +149,7 @@ export class WalletV4ContractR2 extends WalletV4ContractBase<
             myAddress.toString(),
             'is_plugin_installed',
             [
-                ['num', pluginAddress.wc],
+                ['num', address.wc],
                 ['num', hashPart],
             ]
         );

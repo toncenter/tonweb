@@ -1,5 +1,4 @@
-const TonWeb = require("./index");
-const {SubscriptionContract} = require("./contract/subscription");
+const TonWeb = require('./index');
 
 const getRawBody = (msg) => {
     const msg_data = msg?.msg_data;

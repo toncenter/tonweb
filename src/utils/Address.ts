@@ -63,7 +63,7 @@ function parseFriendlyAddress(addressString: string): ParsedAddress {
     return {isTestOnly, isBounceable, workchain, hashPart};
 }
 
-export default class Address {
+export class Address {
 
     public static isValid(anyForm: AddressType) {
         try {
@@ -80,6 +80,7 @@ export default class Address {
     public isUserFriendly: boolean;
     public isBounceable: boolean;
     public isUrlSafe: boolean;
+
 
     /**
      * @param anyForm {string | Address}
@@ -136,10 +137,18 @@ export default class Address {
 
     ): string {
 
-        if (isUserFriendly === undefined) isUserFriendly = this.isUserFriendly;
-        if (isUrlSafe === undefined) isUrlSafe = this.isUrlSafe;
-        if (isBounceable === undefined) isBounceable = this.isBounceable;
-        if (isTestOnly === undefined) isTestOnly = this.isTestOnly;
+        if (isUserFriendly === undefined) {
+            isUserFriendly = this.isUserFriendly;
+        }
+        if (isUrlSafe === undefined) {
+            isUrlSafe = this.isUrlSafe;
+        }
+        if (isBounceable === undefined) {
+            isBounceable = this.isBounceable;
+        }
+        if (isTestOnly === undefined) {
+            isTestOnly = this.isTestOnly;
+        }
 
         if (!isUserFriendly) {
             return this.wc + ":" + bytesToHex(this.hashPart);
@@ -149,20 +158,26 @@ export default class Address {
                 tag |= test_flag;
             }
 
-            const addr = new Int8Array(34);
-            addr[0] = tag;
-            addr[1] = this.wc;
-            addr.set(this.hashPart, 2);
+            const address = new Int8Array(34);
+            address[0] = tag;
+            address[1] = this.wc;
+            address.set(this.hashPart, 2);
 
             const addressWithChecksum = new Uint8Array(36);
-            addressWithChecksum.set(addr);
-            addressWithChecksum.set(crc16(addr), 34);
-            let addressBase64 = stringToBase64(String.fromCharCode.apply(null, new Uint8Array(addressWithChecksum)));
+            addressWithChecksum.set(address);
+            addressWithChecksum.set(crc16(address), 34);
+            let addressBase64 = stringToBase64(
+                // @todo: why use apply()?
+                String.fromCharCode.apply(null, new Uint8Array(addressWithChecksum))
+            );
 
             if (isUrlSafe) {
                 addressBase64 = addressBase64.replace(/\+/g, '-').replace(/\//g, '_');
             }
+
             return addressBase64;
         }
+
     }
+
 }

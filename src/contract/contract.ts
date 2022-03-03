@@ -3,8 +3,8 @@ import BN from 'bn.js';
 
 import { Cell } from '../boc';
 import { HttpProvider } from '../providers';
-import { Address, bytesToBase64, bytesToHex } from '../utils';
-import { AddressType } from '../utils/Address';
+import { bytesToBase64, bytesToHex } from '../utils';
+import { Address, AddressType } from '../utils/Address';
 
 
 export interface ContractOptions {

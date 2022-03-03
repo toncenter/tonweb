@@ -1,8 +1,4 @@
-import BN from "bn.js";
-import nacl from "tweetnacl";
-export { BN, nacl };
-import Address from './Address';
-export { Address };
+import BN from 'bn.js';
 export declare function sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
 /**
  * Converts the specified amount from coins to nanocoins.

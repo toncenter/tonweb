@@ -1,7 +1,9 @@
 
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import BN from 'bn.js';
+import nacl from 'tweetnacl';
 import BluetoothTransport from '@ledgerhq/hw-transport-web-ble';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
 
 //===========//
@@ -43,10 +45,17 @@ export {
 // UTILS //
 //=======//
 
-import { AddressType } from './utils/Address';
+import { Address, AddressType } from './utils/Address';
 export { AddressType } from './utils/Address';
 
-import * as utils from './utils';
+import * as utilsExports from './utils';
+
+const utils = {
+    ...utilsExports,
+    BN,
+    nacl,
+    Address,
+};
 
 
 //=====//
@@ -109,13 +118,28 @@ export {
 } from './contract/wallet/v4/wallet-v4-contract-r2';
 
 
+//==============//
+// SUBSCRIPTION //
+//==============//
+
+import { SubscriptionContract } from './contract/subscription-contract';
+
+export {
+    // SubscriptionContract,
+    PayExternalMessage,
+    SubscriptionContractMethods,
+    SubscriptionContractOptions,
+    SubscriptionData,
+
+} from './contract/subscription-contract';
+
+
 // -----
 
 const AppTon = require('./ledger/AppTon');
 const LockupWallets = require('./contract/lockup').default;
 const NFT = require('./contract/token/nft').default;
 const JETTON = require('./contract/token/ft').default;
-const {SubscriptionContract} = require('./contract/subscription/index');
 
 
 const version = '0.0.32';
@@ -125,7 +149,7 @@ export default class TonWeb {
 
     public static version = version;
     public static utils = utils;
-    public static Address = utils.Address;
+    public static Address = Address;
     public static boc = boc;
     public static HttpProvider = HttpProvider;
     public static Contract = Contract;
@@ -151,7 +175,7 @@ export default class TonWeb {
 
     public version = version;
     public utils = utils;
-    public Address = utils.Address;
+    public Address = Address;
     public boc = boc;
     public Contract = Contract;
     public BlockSubscription = BlockSubscription;

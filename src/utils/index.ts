@@ -1,12 +1,7 @@
 
-import BN from "bn.js";
-import nacl from "tweetnacl";
-export { BN, nacl };
+import BN from 'bn.js';
+import ethUnit from 'ethjs-unit';
 
-import Address from './Address';
-export { Address };
-
-const ethunit = require("ethjs-unit");
 
 const isCryptoAvailable = (
     typeof window !== 'undefined' &&
@@ -21,11 +16,12 @@ if (isCryptoAvailable) { // web
     myCrypto = require('isomorphic-webcrypto');
 }
 
+
 export function sha256(bytes: Uint8Array): Promise<ArrayBuffer> {
     if (isCryptoAvailable) { // web
-        return crypto.subtle.digest("SHA-256", bytes);
+        return crypto.subtle.digest('SHA-256', bytes);
     } else {  // nodejs or react-native
-        return myCrypto.subtle.digest({name:"SHA-256"}, bytes);
+        return myCrypto.subtle.digest({name:'SHA-256'}, bytes);
     }
 }
 
@@ -33,14 +29,14 @@ export function sha256(bytes: Uint8Array): Promise<ArrayBuffer> {
  * Converts the specified amount from coins to nanocoins.
  */
 export function toNano(amount: (number | BN | string)): BN {
-    return ethunit.toWei(amount, 'gwei');
+    return ethUnit.toWei(amount, 'gwei');
 }
 
 /**
  * Converts the specified amount from nanocoins to coins.
  */
 export function fromNano(amount: (number | BN | string)): string {
-    return ethunit.fromWei(amount, 'gwei');
+    return ethUnit.fromWei(amount, 'gwei');
 }
 
 // look up tables
@@ -49,7 +45,7 @@ const to_byte_map = {};
 for (let ord = 0; ord <= 0xff; ord++) {
     let s = ord.toString(16);
     if (s.length < 2) {
-        s = "0" + s;
+        s = '0' + s;
     }
     to_hex_array.push(s);
     to_byte_map[s] = ord;
@@ -65,7 +61,7 @@ export function bytesToHex(buffer: Uint8Array): string {
     for (let i = 0; i < buffer.byteLength; i++) {
         hex_array.push(to_hex_array[buffer[i]]);
     }
-    return hex_array.join("");
+    return hex_array.join('');
 }
 
 /**
@@ -76,7 +72,7 @@ export function hexToBytes(hex: string): Uint8Array {
     hex = hex.toLowerCase();
     const length2 = hex.length;
     if (length2 % 2 !== 0) {
-        throw "hex string must have length a multiple of 2";
+        throw 'hex string must have length a multiple of 2';
     }
     const length = length2 / 2;
     const result = new Uint8Array(length);
@@ -180,9 +176,9 @@ export function compareBytes(a: Uint8Array, b: Uint8Array): boolean {
 
 const base64abc = (() => {
     const abc = []
-    const A = "A".charCodeAt(0);
-    const a = "a".charCodeAt(0);
-    const n = "0".charCodeAt(0);
+    const A = 'A'.charCodeAt(0);
+    const a = 'a'.charCodeAt(0);
+    const n = '0'.charCodeAt(0);
     for (let i = 0; i < 26; ++i) {
         abc.push(String.fromCharCode(A + i));
     }
@@ -192,13 +188,13 @@ const base64abc = (() => {
     for (let i = 0; i < 10; ++i) {
         abc.push(String.fromCharCode(n + i));
     }
-    abc.push("+");
-    abc.push("/");
+    abc.push('+');
+    abc.push('/');
     return abc;
 })();
 
 export function bytesToBase64(bytes: Uint8Array): string {
-    let result = "";
+    let result = '';
     let i;
     const l = bytes.length;
     for (i = 2; i < l; i += 3) {
@@ -211,14 +207,14 @@ export function bytesToBase64(bytes: Uint8Array): string {
         // 1 octet missing
         result += base64abc[bytes[i - 2] >> 2];
         result += base64abc[(bytes[i - 2] & 0x03) << 4];
-        result += "==";
+        result += '==';
     }
     if (i === l) {
         // 2 octets missing
         result += base64abc[bytes[i - 2] >> 2];
         result += base64abc[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)];
         result += base64abc[(bytes[i - 1] & 0x0f) << 2];
-        result += "=";
+        result += '=';
     }
     return result;
 }
