@@ -2,7 +2,7 @@ const BN = require("bn.js");
 const nacl = require("tweetnacl");
 const ethunit = require("ethjs-unit");
 
-const isCryptoAvailable = typeof window !== 'undefined' && window.crypto && window.crypto.subtle;
+const isCryptoAvailable = typeof self !== 'undefined' && self.crypto && self.crypto.subtle;
 
 let myCrypto = null;
 
@@ -252,7 +252,7 @@ function bytesToBase64(bytes) {
 }
 
 function base64toString(base64) {
-    if (typeof window === 'undefined') {
+    if (typeof self === 'undefined') {
         return Buffer.from(base64, 'base64').toString('binary'); // todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
     } else {
         return atob(base64);
@@ -260,7 +260,7 @@ function base64toString(base64) {
 }
 
 function stringToBase64(s) {
-    if (typeof window === 'undefined') {
+    if (typeof self === 'undefined') {
         return Buffer.from(s, 'binary').toString('base64'); // todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
     } else {
         return btoa(s);

@@ -14,7 +14,7 @@ const {SubscriptionContract} = require("./contract/subscription/index");
 const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
 const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
 const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
-const version = '0.0.32';
+const version = '0.0.33';
 
 class TonWeb {
     constructor(provider) {
@@ -92,10 +92,6 @@ TonWeb.token = {
     nft: NFT,
     ft: JETTON,
     jetton: JETTON,
-}
-
-if (typeof window !== 'undefined') {
-    window.TonWeb = TonWeb;
 }
 
 module.exports = TonWeb;
