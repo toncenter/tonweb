@@ -43,8 +43,10 @@
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.0",
+    "@types/ledgerhq__hw-transport": "^4.21.4",
+    "@types/ledgerhq__hw-transport-webusb": "^4.70.1",
     "@types/node": "^15.14.9",
-    "typescript": "^4.5.5",
+    "typescript": "^4.6.2",
     "webpack": "4.42.1",
     "webpack-cli": "3.3.12"
   },

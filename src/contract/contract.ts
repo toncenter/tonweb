@@ -39,6 +39,9 @@ export interface Query {
     code?: Cell;
     body: Cell;
     data?: Cell;
+    signature?: Uint8Array;
+    signingMessage?: Cell;
+    stateInit?: Cell;
 }
 
 
@@ -279,16 +282,7 @@ export class Contract<
         return this.address;
     }
 
-
-    /**
-     * Return cell that contains contract data.
-     */
-    protected createDataCell(): Cell {
-        // Should be overridden by child classes
-        return new Cell();
-    }
-
-    protected async createStateInit(): Promise<StateInit> {
+    public async createStateInit(): Promise<StateInit> {
         const code = this.createCodeCell();
         const data = this.createDataCell();
         const stateInit = Contract.createStateInit(code, data);
@@ -302,6 +296,15 @@ export class Contract<
             code,
             data,
         };
+    }
+
+
+    /**
+     * Return cell that contains contract data.
+     */
+    protected createDataCell(): Cell {
+        // Should be overridden by child classes
+        return new Cell();
     }
 
 

@@ -156,9 +156,24 @@ export {
 } from './contract/lockup/lockup-wallet-v1';
 
 
+//========//
+// LEDGER //
+//========//
+
+import { AppTon } from './ledger/app-ton';
+
+export {
+    // AppTon,
+    AppConfiguration,
+    GetAddressResult,
+    GetPublicKeyResult,
+    SignResult,
+
+} from './ledger/app-ton';
+
+
 // -----
 
-const AppTon = require('./ledger/AppTon');
 const NFT = require('./contract/token/nft').default;
 const JETTON = require('./contract/token/ft').default;
 
