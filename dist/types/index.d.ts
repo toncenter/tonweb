@@ -14,6 +14,10 @@ export { DeployMethod, ExternalMessage, SeqnoMethod, SeqnoMethodResult, Transfer
 export { WalletV3ContractOptions, } from './contract/wallet/v3/wallet-v3-contract-base';
 export { WalletV4ContractOptions, WalletV4ContractMethods, } from './contract/wallet/v4/wallet-v4-contract-base';
 export { WalletV4ContractR2Methods, DeployAndInstallPluginParams, SetPluginParams, } from './contract/wallet/v4/wallet-v4-contract-r2';
+import { SubscriptionContract } from './contract/subscription-contract';
+export { PayExternalMessage, SubscriptionContractMethods, SubscriptionContractOptions, SubscriptionData, } from './contract/subscription-contract';
+import { LockupWalletV1 } from './contract/lockup/lockup-wallet-v1';
+export { LockupWalletV1Config, LockupWalletV1Methods, LockupWalletV1Options, } from './contract/lockup/lockup-wallet-v1';
 export default class TonWeb {
     provider: HttpProvider;
     static version: string;
@@ -30,9 +34,7 @@ export default class TonWeb {
         crc32c(bytes: Uint8Array): Uint8Array;
         crc16(data: ArrayLike<number>): Uint8Array;
         concatBytes(a: Uint8Array, b: Uint8Array): Uint8Array;
-        compareBytes(a: Uint8Array, b: Uint8Array): boolean; /**
-         * Array of stack elements.
-         */
+        compareBytes(a: Uint8Array, b: Uint8Array): boolean;
         bytesToBase64(bytes: Uint8Array): string;
         base64toString(base64: string): string;
         stringToBase64(str: string): string;
@@ -44,8 +46,14 @@ export default class TonWeb {
     static HttpProvider: typeof HttpProvider;
     static Contract: typeof Contract;
     static Wallets: typeof Wallets;
-    static LockupWallets: any;
-    static SubscriptionContract: any;
+    static LockupWallets: {
+        LockupWalletV1: typeof LockupWalletV1;
+        all: {
+            'lockup-0.1': typeof LockupWalletV1;
+        };
+        list: (typeof LockupWalletV1)[];
+    };
+    static SubscriptionContract: typeof SubscriptionContract;
     static BlockSubscription: typeof BlockSubscription;
     static InMemoryBlockStorage: typeof InMemoryBlockStorage;
     static ledger: {
@@ -73,9 +81,7 @@ export default class TonWeb {
         crc32c(bytes: Uint8Array): Uint8Array;
         crc16(data: ArrayLike<number>): Uint8Array;
         concatBytes(a: Uint8Array, b: Uint8Array): Uint8Array;
-        compareBytes(a: Uint8Array, b: Uint8Array): boolean; /**
-         * Array of stack elements.
-         */
+        compareBytes(a: Uint8Array, b: Uint8Array): boolean;
         bytesToBase64(bytes: Uint8Array): string;
         base64toString(base64: string): string;
         stringToBase64(str: string): string;
@@ -88,7 +94,13 @@ export default class TonWeb {
     BlockSubscription: typeof BlockSubscription;
     InMemoryBlockStorage: typeof InMemoryBlockStorage;
     wallet: Wallets;
-    lockupWallet: any;
+    lockupWallet: {
+        LockupWalletV1: typeof LockupWalletV1;
+        all: {
+            'lockup-0.1': typeof LockupWalletV1;
+        };
+        list: (typeof LockupWalletV1)[];
+    };
     constructor(provider?: HttpProvider);
     /**
      * Use this method to get transaction history of a given address.
