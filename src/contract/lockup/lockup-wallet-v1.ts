@@ -13,11 +13,11 @@ export interface LockupWalletV1Options extends WalletContractOptions {
 }
 
 export interface LockupWalletV1Methods extends WalletContractMethods {
-    getPublicKey: () => void;
-    getWalletId: () => void;
-    getLiquidBalance: () => void;
-    getNominalRestrictedBalance: () => void;
-    getNominalLockedBalance: () => void;
+    getPublicKey: () => Promise<BN>;
+    getWalletId: () => Promise<number>;
+    getLiquidBalance: () => Promise<BN>;
+    getNominalRestrictedBalance: () => Promise<BN>;
+    getNominalLockedBalance: () => Promise<BN>;
 }
 
 export interface LockupWalletV1Config {
@@ -56,14 +56,24 @@ export class LockupWalletV1 extends WalletContract<
         super(provider, options);
 
         if (!this.options.walletId) {
-            this.options.walletId = walletIdBase + this.options.wc;
+            this.options.walletId = (walletIdBase + this.options.wc);
         }
 
-        this.methods.getPublicKey = this.getPublicKey.bind(this);
-        this.methods.getWalletId = this.getWalletId.bind(this);
-        this.methods.getLiquidBalance = this.getLiquidBalance.bind(this);
-        this.methods.getNominalRestrictedBalance = this.getNominalRestrictedBalance.bind(this);
-        this.methods.getNominalLockedBalance = this.getNominalLockedBalance.bind(this);
+        this.methods.getPublicKey = (
+            () => this.getPublicKey()
+        );
+        this.methods.getWalletId = (
+            () => this.getWalletId()
+        );
+        this.methods.getLiquidBalance = (
+            () => this.getLiquidBalance()
+        );
+        this.methods.getNominalRestrictedBalance = (
+            () => this.getNominalRestrictedBalance()
+        );
+        this.methods.getNominalLockedBalance = (
+            () => this.getNominalLockedBalance()
+        );
 
     }
 
