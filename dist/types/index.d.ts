@@ -1,5 +1,6 @@
 import BN from 'bn.js';
 import nacl from 'tweetnacl';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { HttpProvider, StackElement } from './providers';
 export { CellObject, EstimateFeeBody, HttpProviderOptions, SliceObject, StackElement, } from './providers';
 import { BlockSubscription, InMemoryBlockStorage } from './providers/block-subscription';
@@ -18,6 +19,8 @@ import { SubscriptionContract } from './contract/subscription-contract';
 export { PayExternalMessage, SubscriptionContractMethods, SubscriptionContractOptions, SubscriptionData, } from './contract/subscription-contract';
 import { LockupWalletV1 } from './contract/lockup/lockup-wallet-v1';
 export { LockupWalletV1Config, LockupWalletV1Methods, LockupWalletV1Options, } from './contract/lockup/lockup-wallet-v1';
+import { AppTon } from './ledger/app-ton';
+export { AppConfiguration, GetAddressResult, GetPublicKeyResult, SignResult, } from './ledger/app-ton';
 export default class TonWeb {
     provider: HttpProvider;
     static version: string;
@@ -57,10 +60,10 @@ export default class TonWeb {
     static BlockSubscription: typeof BlockSubscription;
     static InMemoryBlockStorage: typeof InMemoryBlockStorage;
     static ledger: {
-        TransportWebUSB: any;
+        TransportWebUSB: typeof TransportWebUSB;
         TransportWebHID: any;
         BluetoothTransport: any;
-        AppTon: any;
+        AppTon: typeof AppTon;
     };
     static token: {
         nft: any;
