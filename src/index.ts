@@ -134,10 +134,31 @@ export {
 } from './contract/subscription-contract';
 
 
+//========//
+// LOCKUP //
+//========//
+
+import { LockupWalletV1 } from './contract/lockup/lockup-wallet-v1';
+import * as lockup from './contract/lockup';
+
+const LockupWallets = {
+    LockupWalletV1,
+    all: lockup.all,
+    list: lockup.list,
+};
+
+export {
+    // LockupWalletV1,
+    LockupWalletV1Config,
+    LockupWalletV1Methods,
+    LockupWalletV1Options,
+
+} from './contract/lockup/lockup-wallet-v1';
+
+
 // -----
 
 const AppTon = require('./ledger/AppTon');
-const LockupWallets = require('./contract/lockup').default;
 const NFT = require('./contract/token/nft').default;
 const JETTON = require('./contract/token/ft').default;
 
