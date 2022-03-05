@@ -30,6 +30,9 @@ export interface Query {
     code?: Cell;
     body: Cell;
     data?: Cell;
+    signature?: Uint8Array;
+    signingMessage?: Cell;
+    stateInit?: Cell;
 }
 export declare class Contract<OptionsType extends ContractOptions = ContractOptions, MethodsType extends ContractMethods = ContractMethods> {
     readonly provider: HttpProvider;
@@ -47,11 +50,11 @@ export declare class Contract<OptionsType extends ContractOptions = ContractOpti
     methods: MethodsType;
     constructor(provider: HttpProvider, options?: OptionsType);
     getAddress(): Promise<Address>;
+    createStateInit(): Promise<StateInit>;
     /**
      * Return cell that contains contract data.
      */
     protected createDataCell(): Cell;
-    protected createStateInit(): Promise<StateInit>;
     /**
      * Returns cell that contains contact code.
      */
