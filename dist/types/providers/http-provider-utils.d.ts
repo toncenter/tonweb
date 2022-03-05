@@ -17,6 +17,12 @@ export declare class HttpProviderUtils {
      * @todo: improve typing
      */
     static parseResponse(result: any): any;
+    /**
+     * @todo: function is unused: use or remove it
+     */
     static makeArg(arg: any): ['num', (BN | Number)];
+    /**
+     * @todo: function is unused: use or remove it
+     */
     static makeArgs(args: any[]): Array<['num', (BN | Number)]>;
 }
