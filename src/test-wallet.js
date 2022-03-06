@@ -5,7 +5,7 @@ async function init() {
 
     // Create private key
 
-    const seed = TonWeb.utils.hexToBytes('607cdaf518cd38050b536005bea2667d008d5dda1027f9549479f4a42ac315c4');
+    const seed = TonWeb.utils.base64ToBytes('vt58J2v6FaSuXFGcyGtqT5elpVxcZ+I1zgu/GUfA5uY=');
     const keyPair = TonWeb.utils.nacl.sign.keyPair.fromSeed(seed);
 
     // Create v3 wallet
@@ -16,7 +16,8 @@ async function init() {
         wc: 0
     });
 
-    console.log('my address', (await wallet.getAddress()).toString(true, true, true))
+    const walletAddress = (await wallet.getAddress()).toString(true, true, true);
+    console.log('my address', walletAddress)
 
     // Create transfer
 
@@ -41,10 +42,25 @@ async function init() {
         parsed.value = parsed.value.toString();
         parsed.fromAddress = parsed.fromAddress.toString(true, true, true);
         parsed.toAddress = parsed.toAddress.toString(true, true, true);
-
         console.log(parsed);
     } catch (e) {
         console.error(e); // not valid wallet transfer query
+    }
+
+    // Get transaction and parse
+
+    const transactions = await tonweb.provider.getTransactions(walletAddress);
+
+    try {
+        const tx = transactions[1];
+        const inMsgBody = TonWeb.utils.base64ToBytes(tx.in_msg.msg_data.body);
+        const parsed = WalletClass.parseTransferBody(TonWeb.boc.Cell.oneFromBoc(inMsgBody).beginParse());
+
+        parsed.value = parsed.value.toString();
+        parsed.toAddress = parsed.toAddress.toString(true, true, true);
+        console.log(parsed);
+    } catch (e) {
+        console.error(e); // not valid wallet transfer tx
     }
 }
 

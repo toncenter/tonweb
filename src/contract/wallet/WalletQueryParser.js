@@ -1,33 +1,10 @@
 const {BN} = require("../../utils");
 
 /**
- * @param cell {Cell}
- * @return {any}
+ * @param slice {Slice}
+ * @return {{seqno: number, bounce: boolean, payload: string, expireAt: number, toAddress: Address, value: BN}}
  */
-function parseWalletV3TransferQuery(cell) {
-    let slice = cell.beginParse();
-
-    // header
-
-    if (slice.loadUint(2).toNumber() !== 2) throw Error('invalid header');
-
-    const externalSourceAddress = slice.loadAddress();
-    if (externalSourceAddress !== null) throw Error('invalid externalSourceAddress');
-
-    const externalDestAddress = slice.loadAddress();
-
-    const externalImportFee = slice.loadCoins();
-    if (!externalImportFee.eq(new BN(0))) throw new Error('invalid externalImportFee');
-
-    // stateInit
-
-    if (slice.loadBit()) throw Error('stateInit doesnt supported');
-
-    // body
-
-    if (slice.loadBit()) {
-        slice = slice.loadRef();
-    }
+function parseWalletV3TransferBody(slice) {
     const signature = slice.loadBits(512);
 
     // signing message
@@ -76,9 +53,6 @@ function parseWalletV3TransferQuery(cell) {
     const payloadBytes = order.loadBits(order.getFreeBits());
     const payload = op.eq(new BN(0)) ? new TextDecoder().decode(payloadBytes) : '';
 
-    // console.log(externalSourceAddress);
-    // console.log(externalDestAddress.toString(true, true, true));
-    // console.log(externalImportFee);
     // console.log(bytesToHex(signature));
     // console.log(walletId);
     // console.log(expireAt);
@@ -95,7 +69,6 @@ function parseWalletV3TransferQuery(cell) {
     // console.log(payload);
 
     return {
-        fromAddress: externalDestAddress,
         toAddress: destAddress,
         value,
         bounce,
@@ -105,4 +78,41 @@ function parseWalletV3TransferQuery(cell) {
     };
 }
 
-module.exports = {parseWalletV3TransferQuery};
+/**
+ * @param cell {Cell}
+ * @return {{seqno: number, bounce: boolean, payload: string, fromAddress: Address|null, expireAt: number, toAddress: Address, value: BN}}
+ */
+function parseWalletV3TransferQuery(cell) {
+    const slice = cell.beginParse();
+
+    // header
+
+    if (slice.loadUint(2).toNumber() !== 2) throw Error('invalid header');
+
+    const externalSourceAddress = slice.loadAddress();
+    if (externalSourceAddress !== null) throw Error('invalid externalSourceAddress');
+
+    const externalDestAddress = slice.loadAddress();
+
+    const externalImportFee = slice.loadCoins();
+    if (!externalImportFee.eq(new BN(0))) throw new Error('invalid externalImportFee');
+
+    // stateInit
+
+    if (slice.loadBit()) throw Error('stateInit doesnt supported');
+
+    // body
+
+    const bodySlice = slice.loadBit() ? slice.loadRef() : slice;
+
+    // console.log(externalSourceAddress);
+    // console.log(externalDestAddress.toString(true, true, true));
+    // console.log(externalImportFee);
+
+    return {
+        fromAddress: externalDestAddress,
+        ...parseWalletV3TransferBody(bodySlice)
+    };
+}
+
+module.exports = {parseWalletV3TransferQuery, parseWalletV3TransferBody};
