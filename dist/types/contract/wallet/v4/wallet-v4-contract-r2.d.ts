@@ -1,6 +1,6 @@
 import BN from 'bn.js';
-import { Cell } from '../../../boc/index';
-import { HttpProvider } from '../../../providers/index';
+import { Cell } from '../../../boc/cell';
+import { HttpProvider } from '../../../providers/http-provider';
 import { AddressType } from '../../../utils/Address';
 import { Method } from '../../contract';
 import { ExternalMessage } from '../wallet-contract';

@@ -1,4 +1,4 @@
-import { HttpProvider } from '../../providers';
+import { HttpProvider } from '../../providers/http-provider';
 import { SimpleWalletContractR1 } from './simple/simple-wallet-contract-r1';
 import { SimpleWalletContractR2 } from './simple/simple-wallet-contract-r2';
 import { SimpleWalletContractR3 } from './simple/simple-wallet-contract-r3';
