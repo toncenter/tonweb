@@ -1,8 +1,8 @@
 const TonWeb = require("./index");
-const {NftItem} = require("./contract/token/nft/NftItem");
-const {NftCollection} = require("./contract/token/nft/NftCollection");
-const {NftMarketplace} = require("./contract/token/nft/NftMarketplace");
-const {NftSale} = require("./contract/token/nft/NftSale");
+const {NftItem} = require("./contract/token/nft/nft-item");
+const {NftCollection} = require("./contract/token/nft/nft-collection");
+const {NftMarketplace} = require("./contract/token/nft/nft-marketplace");
+const {NftSale} = require("./contract/token/nft/nft-sale");
 
 async function init() {
     const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC'));

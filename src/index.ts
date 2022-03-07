@@ -202,9 +202,66 @@ export {
 
 } from './contract/token/ft/jetton-minter';
 
-// -----
 
-const NFT = require('./contract/token/nft').default;
+//=====//
+// NFT //
+//=====//
+
+import { NftCollection } from './contract/token/nft/nft-collection';
+
+export {
+    // NftCollection,
+    CreateChangeOwnerBodyParams,
+    CreateGetRoyaltyParamsBodyParams,
+    MintBodyParams,
+    NftCollectionMethods,
+    NftCollectionOptions,
+    NftItemContent,
+    RoyaltyParams,
+    CollectionData,
+
+} from './contract/token/nft/nft-collection';
+
+import { NftItem } from './contract/token/nft/nft-item';
+
+export {
+    // NftItem,
+    CreateGetStaticDataBodyParams,
+    CreateTransferBodyParams,
+    NftItemMethods,
+    NftItemOptions,
+    NftItemData,
+
+} from './contract/token/nft/nft-item';
+
+import { NftMarketplace } from './contract/token/nft/nft-marketplace';
+
+export {
+    // NftMarketplace,
+    NftMarketplaceMethods,
+    NftMarketplaceOptions,
+
+} from './contract/token/nft/nft-marketplace';
+
+import { NftSale } from './contract/token/nft/nft-sale';
+
+export {
+    CreateCancelBodyParams,
+    // NftSale,
+    NftSaleMethods,
+    NftSaleOptions,
+    NftSaleData,
+
+} from './contract/token/nft/nft-sale';
+
+const NFT = {
+    NftCollection,
+    NftItem,
+    NftMarketplace,
+    NftSale,
+};
+
+// -----
 
 
 const version = '0.0.33';

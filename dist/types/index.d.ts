@@ -29,6 +29,14 @@ import { JettonWallet } from './contract/token/ft/jetton-wallet';
 import { JettonMinter } from './contract/token/ft/jetton-minter';
 export { JettonWalletMethods, JettonWalletOptions, } from './contract/token/ft/jetton-wallet';
 export { JettonMinterMethods, JettonMinterOptions, } from './contract/token/ft/jetton-minter';
+import { NftCollection } from './contract/token/nft/nft-collection';
+export { CreateChangeOwnerBodyParams, CreateGetRoyaltyParamsBodyParams, MintBodyParams, NftCollectionMethods, NftCollectionOptions, NftItemContent, RoyaltyParams, CollectionData, } from './contract/token/nft/nft-collection';
+import { NftItem } from './contract/token/nft/nft-item';
+export { CreateGetStaticDataBodyParams, CreateTransferBodyParams, NftItemMethods, NftItemOptions, NftItemData, } from './contract/token/nft/nft-item';
+import { NftMarketplace } from './contract/token/nft/nft-marketplace';
+export { NftMarketplaceMethods, NftMarketplaceOptions, } from './contract/token/nft/nft-marketplace';
+import { NftSale } from './contract/token/nft/nft-sale';
+export { CreateCancelBodyParams, NftSaleMethods, NftSaleOptions, NftSaleData, } from './contract/token/nft/nft-sale';
 export default class TonWeb {
     provider: HttpProvider;
     static version: string;
@@ -77,7 +85,12 @@ export default class TonWeb {
         AppTon: typeof AppTon;
     };
     static token: {
-        nft: any;
+        nft: {
+            NftCollection: typeof NftCollection;
+            NftItem: typeof NftItem;
+            NftMarketplace: typeof NftMarketplace;
+            NftSale: typeof NftSale;
+        };
         ft: {
             JettonWallet: typeof JettonWallet;
             JettonMinter: typeof JettonMinter;
