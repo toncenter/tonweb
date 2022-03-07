@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import { Cell } from '../../../boc/index';
+import { Cell } from '../../../boc/cell';
 import { WalletContract, WalletContractMethods, WalletContractOptions } from '../wallet-contract';
 export interface WalletV4ContractOptions extends WalletContractOptions {
     walletId?: number;

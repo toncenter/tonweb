@@ -1,4 +1,4 @@
-import { HttpProvider } from '../index';
+import { HttpProvider } from '../http-provider';
 import { BlockStorage } from './block-storage';
 export interface BlockSubscriptionOptions {
     /**

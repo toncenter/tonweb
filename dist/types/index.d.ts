@@ -1,13 +1,17 @@
 import BN from 'bn.js';
 import nacl from 'tweetnacl';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { HttpProvider, StackElement } from './providers';
-export { CellObject, EstimateFeeBody, HttpProviderOptions, SliceObject, StackElement, } from './providers';
-import { BlockSubscription, InMemoryBlockStorage } from './providers/block-subscription';
-export { LogFunction, BlockHandler, BlockSubscriptionOptions, ShardBlock, BlockStorage, } from './providers/block-subscription';
+import { HttpProvider, StackElement } from './providers/http-provider';
+export { CellObject, EstimateFeeBody, HttpProviderOptions, SliceObject, StackElement, } from './providers/http-provider';
+import { BlockSubscription } from './providers/block-subscription/block-subscription';
+import { InMemoryBlockStorage } from './providers/block-subscription/in-memory-block-storage';
+export { BlockHandler, BlockSubscriptionOptions, } from './providers/block-subscription/block-subscription';
+export { LogFunction, } from './providers/block-subscription/in-memory-block-storage';
+export { ShardBlock, BlockStorage, } from './providers/block-subscription/block-storage';
 import { Address, AddressType } from './utils/Address';
 export { AddressType } from './utils/Address';
-import * as boc from './boc';
+import { BitString } from './boc/bit-string';
+import { Cell } from './boc/cell';
 import { Contract } from './contract/contract';
 export { ContractMethods, ContractOptions, Method, Query, StateInit, } from './contract/contract';
 import { Wallets } from './contract/wallet/wallets';
@@ -45,7 +49,10 @@ export default class TonWeb {
         readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
     };
     static Address: typeof Address;
-    static boc: typeof boc;
+    static boc: {
+        BitString: typeof BitString;
+        Cell: typeof Cell;
+    };
     static HttpProvider: typeof HttpProvider;
     static Contract: typeof Contract;
     static Wallets: typeof Wallets;
@@ -92,7 +99,10 @@ export default class TonWeb {
         readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
     };
     Address: typeof Address;
-    boc: typeof boc;
+    boc: {
+        BitString: typeof BitString;
+        Cell: typeof Cell;
+    };
     Contract: typeof Contract;
     BlockSubscription: typeof BlockSubscription;
     InMemoryBlockStorage: typeof InMemoryBlockStorage;

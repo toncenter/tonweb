@@ -3,7 +3,7 @@ import BN from 'bn.js';
 import nacl from 'tweetnacl';
 
 import { Contract, ContractMethods, ContractOptions, Method } from '../contract';
-import { Cell } from '../../boc';
+import { Cell } from '../../boc/cell';
 import { HttpProvider } from '../../providers/http-provider';
 import { Address, AddressType } from '../../utils/Address';
 

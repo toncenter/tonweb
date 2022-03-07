@@ -1,5 +1,5 @@
 
-import { Cell } from '../../../boc/index';
+import { Cell } from '../../../boc/cell';
 import { WalletContract } from '../wallet-contract';
 
 

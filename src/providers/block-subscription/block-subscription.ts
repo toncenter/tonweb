@@ -56,8 +56,8 @@ export class BlockSubscription {
     );
 
     private startLT?: any;
-    private mcIntervalId?: NodeJS.Timeout;
-    private shardsIntervalId?: NodeJS.Timeout;
+    private mcIntervalId?: number;
+    private shardsIntervalId?: number;
 
 
     constructor(

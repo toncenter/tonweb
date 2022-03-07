@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import { Cell } from '../boc/index';
+import { Cell } from '../boc/cell';
 /**
  * @todo: extract all the static methods as individual functions
  *        there is no need to use class for this

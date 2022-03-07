@@ -1,4 +1,4 @@
-import { HttpProvider } from '../../../providers/index';
+import { HttpProvider } from '../../../providers/http-provider';
 import { ContractOptions } from '../../contract';
 import { WalletContract } from '../wallet-contract';
 export declare class SimpleWalletContractR2 extends WalletContract {

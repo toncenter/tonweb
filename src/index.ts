@@ -23,22 +23,28 @@ export {
 
 } from './providers/http-provider';
 
-import {
-    BlockSubscription,
-    InMemoryBlockStorage,
+import { BlockSubscription } from './providers/block-subscription/block-subscription';
 
-} from './providers/block-subscription';
+import { InMemoryBlockStorage } from './providers/block-subscription/in-memory-block-storage';
 
 export {
     // BlockSubscription,
-    // InMemoryBlockStorage,
-    LogFunction,
     BlockHandler,
     BlockSubscriptionOptions,
+
+} from './providers/block-subscription/block-subscription';
+
+export {
+    // InMemoryBlockStorage,
+    LogFunction,
+
+} from './providers/block-subscription/in-memory-block-storage';
+
+export {
     ShardBlock,
     BlockStorage,
 
-} from './providers/block-subscription';
+} from './providers/block-subscription/block-storage';
 
 
 //=======//
@@ -62,7 +68,9 @@ const utils = {
 // BOC //
 //=====//
 
-import * as boc from './boc';
+import { BitString } from './boc/bit-string';
+import { Cell } from './boc/cell';
+const boc = { BitString, Cell };
 
 
 //==========//

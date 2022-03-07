@@ -1,6 +1,6 @@
 import BN from 'bn.js';
-import { Cell } from '../../boc/index';
-import { HttpProvider } from '../../providers/index';
+import { Cell } from '../../boc/cell';
+import { HttpProvider } from '../../providers/http-provider';
 import { WalletContract, WalletContractMethods, WalletContractOptions } from '../wallet/wallet-contract';
 export interface LockupWalletV1Options extends WalletContractOptions {
     walletId?: number;

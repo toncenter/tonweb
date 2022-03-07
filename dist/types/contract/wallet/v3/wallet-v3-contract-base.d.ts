@@ -1,4 +1,4 @@
-import { Cell } from '../../../boc/index';
+import { Cell } from '../../../boc/cell';
 import { WalletContract, WalletContractOptions } from '../wallet-contract';
 export interface WalletV3ContractOptions extends WalletContractOptions {
     walletId?: number;
