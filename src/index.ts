@@ -180,10 +180,31 @@ export {
 } from './ledger/app-ton';
 
 
+//========//
+// JETTON //
+//========//
+
+import { JettonWallet } from './contract/token/ft/jetton-wallet';
+import { JettonMinter } from './contract/token/ft/jetton-minter';
+const JETTON = { JettonWallet, JettonMinter };
+
+export {
+    JettonWalletMethods,
+    JettonWalletOptions,
+    // JettonWallet,
+
+} from './contract/token/ft/jetton-wallet';
+
+export {
+    JettonMinterMethods,
+    JettonMinterOptions,
+    // JettonMinter,
+
+} from './contract/token/ft/jetton-minter';
+
 // -----
 
 const NFT = require('./contract/token/nft').default;
-const JETTON = require('./contract/token/ft').default;
 
 
 const version = '0.0.33';

@@ -25,6 +25,10 @@ import { LockupWalletV1 } from './contract/lockup/lockup-wallet-v1';
 export { LockupWalletV1Config, LockupWalletV1Methods, LockupWalletV1Options, } from './contract/lockup/lockup-wallet-v1';
 import { AppTon } from './ledger/app-ton';
 export { AppConfiguration, GetAddressResult, GetPublicKeyResult, SignResult, } from './ledger/app-ton';
+import { JettonWallet } from './contract/token/ft/jetton-wallet';
+import { JettonMinter } from './contract/token/ft/jetton-minter';
+export { JettonWalletMethods, JettonWalletOptions, } from './contract/token/ft/jetton-wallet';
+export { JettonMinterMethods, JettonMinterOptions, } from './contract/token/ft/jetton-minter';
 export default class TonWeb {
     provider: HttpProvider;
     static version: string;
@@ -74,8 +78,14 @@ export default class TonWeb {
     };
     static token: {
         nft: any;
-        ft: any;
-        jetton: any;
+        ft: {
+            JettonWallet: typeof JettonWallet;
+            JettonMinter: typeof JettonMinter;
+        };
+        jetton: {
+            JettonWallet: typeof JettonWallet;
+            JettonMinter: typeof JettonMinter;
+        };
     };
     version: string;
     utils: {
