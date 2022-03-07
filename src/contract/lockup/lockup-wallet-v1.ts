@@ -2,8 +2,8 @@
 import BN from 'bn.js';
 
 import { Cell } from '../../boc/index';
-import { HttpProvider } from '../../providers/index';
-import { base64ToBytes } from '../../utils/index';
+import { HttpProvider } from '../../providers/http-provider';
+import { base64ToBytes } from '../../utils/common';
 import { WalletContract, WalletContractMethods, WalletContractOptions } from '../wallet/wallet-contract';
 
 

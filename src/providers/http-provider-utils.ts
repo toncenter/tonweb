@@ -2,7 +2,7 @@
 import BN from 'bn.js';
 
 import { Cell } from '../boc/index';
-import { base64ToBytes } from '../utils';
+import { base64ToBytes } from '../utils/common';
 
 
 /**

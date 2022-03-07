@@ -2,7 +2,7 @@
 import BN from 'bn.js';
 
 import { Cell } from '../boc/index';
-import { HttpProvider } from '../providers/index';
+import { HttpProvider } from '../providers/http-provider';
 import { Address } from '../utils/Address';
 import { Contract, ContractMethods, ContractOptions, Method } from './contract';
 

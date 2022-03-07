@@ -2,8 +2,8 @@
 import BN from 'bn.js';
 
 import { Cell } from '../boc';
-import { HttpProvider } from '../providers';
-import { bytesToBase64, bytesToHex } from '../utils';
+import { HttpProvider } from '../providers/http-provider';
+import { bytesToBase64, bytesToHex } from '../utils/common';
 import { Address, AddressType } from '../utils/Address';
 
 

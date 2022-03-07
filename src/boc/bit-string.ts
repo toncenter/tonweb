@@ -1,7 +1,7 @@
 
 import BN from 'bn.js';
 
-import { bytesToHex } from '../utils';
+import { bytesToHex } from '../utils/common';
 import { Address } from '../utils/Address';
 
 

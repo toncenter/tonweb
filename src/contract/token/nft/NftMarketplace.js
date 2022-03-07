@@ -1,6 +1,6 @@
 const {Contract} = require("../../contract.ts");
 const {Cell} = require("../../../boc");
-const {Address} = require("../../../utils");
+const {Address} = require("../../../utils/common");
 const {parseAddress} = require('./NftUtils.js');
 
 /**

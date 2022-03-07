@@ -10,7 +10,7 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 // PROVIDERS //
 //===========//
 
-import { HttpProvider, StackElement } from './providers';
+import { HttpProvider, StackElement } from './providers/http-provider';
 
 export {
     CellObject,
@@ -21,7 +21,7 @@ export {
     StackElement,
     // defaultHost,
 
-} from './providers';
+} from './providers/http-provider';
 
 import {
     BlockSubscription,
@@ -48,7 +48,7 @@ export {
 import { Address, AddressType } from './utils/Address';
 export { AddressType } from './utils/Address';
 
-import * as utilsExports from './utils';
+import * as utilsExports from './utils/common';
 
 const utils = {
     ...utilsExports,
@@ -178,7 +178,7 @@ const NFT = require('./contract/token/nft').default;
 const JETTON = require('./contract/token/ft').default;
 
 
-const version = '0.0.32';
+const version = '0.0.33';
 
 
 export default class TonWeb {
@@ -295,6 +295,4 @@ export default class TonWeb {
 
 }
 
-if (typeof window !== 'undefined') {
-    (window as any).TonWeb = TonWeb;
-}
+// @todo: set window.TonWeb = TonWeb via webpack

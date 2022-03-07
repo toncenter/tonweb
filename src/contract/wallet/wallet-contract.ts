@@ -4,7 +4,7 @@ import nacl from 'tweetnacl';
 
 import { Contract, ContractMethods, ContractOptions, Method } from '../contract';
 import { Cell } from '../../boc';
-import { HttpProvider } from '../../providers/index';
+import { HttpProvider } from '../../providers/http-provider';
 import { Address, AddressType } from '../../utils/Address';
 
 

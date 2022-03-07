@@ -1,4 +1,4 @@
-const {base64ToBytes, Address} = require("../../../utils");
+const {base64ToBytes, Address} = require("../../../utils/common");
 const {Cell} = require("../../../boc");
 
 const SNAKE_DATA_PREFIX = 0x00;

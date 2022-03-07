@@ -4,8 +4,8 @@ import ethUnit from 'ethjs-unit';
 
 
 const isCryptoAvailable = (
-    typeof window !== 'undefined' &&
-    Boolean(window.crypto?.subtle)
+    typeof self !== 'undefined' &&
+    Boolean(self.crypto?.subtle)
 );
 
 let myCrypto = null;
@@ -220,16 +220,18 @@ export function bytesToBase64(bytes: Uint8Array): string {
 }
 
 export function base64toString(base64: string): string {
-    if (typeof window === 'undefined') {
-        return Buffer.from(base64, 'base64').toString('binary'); // todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
+    if (typeof self === 'undefined') {
+        // @todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
+        return Buffer.from(base64, 'base64').toString('binary');
     } else {
         return atob(base64);
     }
 }
 
 export function stringToBase64(str: string): string {
-    if (typeof window === 'undefined') {
-        return Buffer.from(str, 'binary').toString('base64'); // todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
+    if (typeof self === 'undefined') {
+        // @todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
+        return Buffer.from(str, 'binary').toString('base64');
     } else {
         return btoa(str);
     }

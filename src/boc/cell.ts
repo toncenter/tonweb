@@ -9,7 +9,7 @@ import {
     readNBytesUIntFromArray,
     sha256,
 
-} from '../utils';
+} from '../utils/common';
 
 
 type IndexHashmap = Record<string, number>;

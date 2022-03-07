@@ -1,6 +1,6 @@
 const {Contract} = require("../../contract.ts");
 const {Cell} = require("../../../boc");
-const {Address, bytesToBase64} = require("../../../utils");
+const {Address, bytesToBase64} = require("../../../utils/common");
 const {parseAddress} = require('./NftUtils.js');
 const {createOffchainUriCell, serializeUri, parseOffchainUriCell} = require("./NftUtils");
 

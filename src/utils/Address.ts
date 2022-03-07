@@ -7,7 +7,7 @@ const {
     base64toString,
     stringToBase64,
 
-} = require("./index");
+} = require("./common");
 
 
 export type AddressType = (Address | string);

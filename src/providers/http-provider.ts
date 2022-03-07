@@ -51,12 +51,7 @@ export type CellObject = any;
 export type SliceObject = any;
 
 
-let XMLHttpRequest;
-if (typeof window === 'undefined') {
-    XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
-} else {
-    XMLHttpRequest = window.XMLHttpRequest;
-}
+// @todo: set `fetch` to "node-fetch" in Node.js via Webpack
 
 const SHARD_ID_ALL = '-9223372036854775808'; // 0x8000000000000000
 
@@ -347,34 +342,21 @@ export class HttpProvider {
      * @private
      */
     private sendImpl(apiUrl: string, request: any): Promise<any> {
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', apiUrl, true);
-
-            xhr.onload = () => {
-                if (xhr.status == 200) {
-                    const r = JSON.parse(xhr.responseText);
-                    if ('error' in r) {
-                        reject(r['error']);
-                    }
-                    resolve(r['result']);
-                } else {
-                    // @todo: create custom error class
-                    const error = new Error(xhr.statusText);
-                    (error as any).code = xhr.status;
-                    reject(error);
-                }
-            };
-
-            xhr.onerror = () => {
-                reject(new Error('Network Error'));
-            };
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            if (this.options.apiKey) {
-                xhr.setRequestHeader('X-API-Key', this.options.apiKey);
-            }
-            xhr.send(JSON.stringify(request));
-        });
+        const headers = {
+            'Content-Type': 'application/json',
+        };
+        if (this.options.apiKey) {
+            headers['X-API-Key'] = this.options.apiKey;
+        }
+        // @todo: use async/await/throw
+        return fetch(apiUrl, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(request),
+        })
+            .then(response => response.json())
+            .then(({ result, error }) => (result || Promise.reject(error)))
+        ;
     }
 
 }

@@ -2,9 +2,9 @@
 import BN from 'bn.js';
 
 import { Cell } from '../../../boc/index';
-import { HttpProvider } from '../../../providers/index';
+import { HttpProvider } from '../../../providers/http-provider';
 import { Address, AddressType } from '../../../utils/Address';
-import { bytesToHex, toNano } from '../../../utils/index';
+import { bytesToHex, toNano } from '../../../utils/common';
 import { Contract, Method } from '../../contract';
 import { ExternalMessage } from '../wallet-contract';
 import { WalletV4ContractBase, WalletV4ContractMethods, WalletV4ContractOptions } from './wallet-v4-contract-base';
