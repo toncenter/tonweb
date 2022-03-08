@@ -21,6 +21,11 @@ export interface BlockSubscriptionOptions {
 
 }
 
+export type BlockHandler = (
+    (blockHeader: any, blockShards?: any) =>
+        (Promise<void> | void)
+);
+
 
 const defaultMcInterval = (10 * 1000) // 10 seconds;
 const defaultShardsInterval = (1 * 1000) // 1 second;
@@ -35,11 +40,6 @@ const parseShardBlockNumber: (
   })
 );
 
-
-export type BlockHandler = (
-  (blockHeader: any, blockShards?: any) =>
-    (Promise<void> | void)
-);
 
 export class BlockSubscription {
 
@@ -101,21 +101,26 @@ export class BlockSubscription {
 
         if (!this.startMcBlockNumber) {
             this.startMcBlockNumber = (await this.provider.getMasterchainInfo()).last.seqno;
-            if (!this.startMcBlockNumber)
+            if (!this.startMcBlockNumber) {
                 throw new Error('Cannot get start mc block number from provider');
+            }
         }
-        const startMcBlockHeader = await this.provider.getMasterchainBlockHeader(this.startMcBlockNumber);
+        const startMcBlockHeader = await this.provider
+            .getMasterchainBlockHeader(this.startMcBlockNumber)
+        ;
         this.startLT = startMcBlockHeader.end_lt;
-        if (!this.startLT)
+        if (!this.startLT) {
             throw new Error('Cannot get startLT from provider');
+        }
 
         // MASTERCHAIN
 
         let isMcProcessing = false;
 
         const mcTick = async () => {
-            if (isMcProcessing)
+            if (isMcProcessing) {
                 return;
+            }
 
             isMcProcessing = true;
 
@@ -124,18 +129,23 @@ export class BlockSubscription {
                   await this.storage.getLastMasterchainBlockNumber() ||
                   this.startMcBlockNumber
                 );
-                if (!lastSavedMcBlock)
+                if (!lastSavedMcBlock) {
                     throw new Error('no init masterchain block in storage');
+                }
 
                 const lastMcBlock = (await this.provider.getMasterchainInfo()).last.seqno;
-                if (!lastMcBlock)
+                if (!lastMcBlock) {
                     throw new Error('invalid last masterchain block from provider');
+                }
 
                 for (let i = lastSavedMcBlock + 1; i < lastMcBlock; i++) {
                     const blockShards = await this.provider.getBlockShards(i);
                     const blockHeader = await this.provider.getMasterchainBlockHeader(i);
                     await this.onBlock(blockHeader, blockShards);
-                    await this.storage.insertBlocks(i, blockShards.shards.map(parseShardBlockNumber));
+                    await this.storage.insertBlocks(
+                        i,
+                        blockShards.shards.map(parseShardBlockNumber)
+                    );
                 }
             } catch (error) {
                 console.error(error);
@@ -153,33 +163,56 @@ export class BlockSubscription {
         let isShardsProcessing = false;
 
         const shardsTick = async () => {
-            if (isShardsProcessing) return;
+            if (isShardsProcessing) {
+                return;
+            }
 
             isShardsProcessing = true;
             try {
                 const shardBlock = await this.storage.getUnprocessedShardBlock();
                 if (shardBlock) {
                     const {workchain, shardId, shardBlockNumber} = shardBlock;
-                    const blockHeader = await this.provider.getBlockHeader(workchain, shardId, shardBlockNumber);
+                    const blockHeader = await this.provider.getBlockHeader(
+                        workchain,
+                        shardId,
+                        shardBlockNumber
+                    );
                     if (blockHeader.end_lt < this.startLT) {
-                        await this.storage.setBlockProcessed(workchain, shardId, shardBlockNumber, []);
+                        await this.storage.setBlockProcessed(
+                            workchain,
+                            shardId,
+                            shardBlockNumber,
+                            []
+                        );
                     } else {
                         await this.onBlock(blockHeader);
-                        const prevBlocks = blockHeader.prev_blocks.map(parseShardBlockNumber);
-                        await this.storage.setBlockProcessed(workchain, shardId, shardBlockNumber, prevBlocks);
+                        const prevBlocks = blockHeader.prev_blocks
+                            .map(parseShardBlockNumber)
+                        ;
+                        await this.storage.setBlockProcessed(
+                            workchain,
+                            shardId,
+                            shardBlockNumber,
+                            prevBlocks
+                        );
                     }
                 }
-            } catch (e) {
-                console.log(e);
+            } catch (error) {
+                console.log(error);
             }
             isShardsProcessing = false;
         }
 
-        this.shardsIntervalId = setInterval(shardsTick, this.shardsInterval);
+        this.shardsIntervalId = setInterval(
+            shardsTick,
+            this.shardsInterval
+        );
+
     }
 
     public stop() {
         clearInterval(this.mcIntervalId);
         clearInterval(this.shardsIntervalId);
     }
+
 }
