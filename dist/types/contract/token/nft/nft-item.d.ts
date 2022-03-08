@@ -4,8 +4,8 @@ import { HttpProvider } from '../../../providers/http-provider';
 import { Address } from '../../../utils/Address';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
 export interface NftItemOptions extends ContractOptions {
-    index: number;
-    collectionAddress: Address;
+    index?: number;
+    collectionAddress?: Address;
 }
 export interface NftItemMethods extends ContractMethods {
     getData: () => Promise<NftItemData>;

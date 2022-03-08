@@ -5,12 +5,12 @@ import { Address } from '../../../utils/Address';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
 import { NftItem } from './nft-item';
 export interface NftCollectionOptions extends ContractOptions {
-    ownerAddress: Address;
-    collectionContentUri: string;
-    nftItemContentBaseUri: string;
-    nftItemCodeHex: string;
-    royalty: number;
-    royaltyAddress: Address;
+    ownerAddress?: Address;
+    collectionContentUri?: string;
+    nftItemContentBaseUri?: string;
+    nftItemCodeHex?: string;
+    royalty?: number;
+    royaltyAddress?: Address;
     cell?: Cell;
 }
 export interface NftCollectionMethods extends ContractMethods {

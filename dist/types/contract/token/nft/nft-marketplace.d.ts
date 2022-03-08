@@ -3,7 +3,7 @@ import { HttpProvider } from '../../../providers/http-provider';
 import { Address } from '../../../utils/Address';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
 export interface NftMarketplaceOptions extends ContractOptions {
-    ownerAddress: Address;
+    ownerAddress?: Address;
     cell?: Cell;
 }
 export interface NftMarketplaceMethods extends ContractMethods {

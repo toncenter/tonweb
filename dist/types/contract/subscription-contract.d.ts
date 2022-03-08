@@ -4,13 +4,13 @@ import { HttpProvider } from '../providers/http-provider';
 import { Address } from '../utils/Address';
 import { Contract, ContractMethods, ContractOptions, Method } from './contract';
 export interface SubscriptionContractOptions extends ContractOptions {
-    wallet: Address;
-    beneficiary: Address;
-    amount: BN;
-    period: number;
-    timeout: number;
-    startAt: number;
-    subscriptionId: number;
+    wallet?: Address;
+    beneficiary?: Address;
+    amount?: BN;
+    period?: number;
+    timeout?: number;
+    startAt?: number;
+    subscriptionId?: number;
 }
 export interface SubscriptionContractMethods extends ContractMethods {
     pay: () => Method;

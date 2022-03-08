@@ -4,12 +4,12 @@ import { HttpProvider } from '../../../providers/http-provider';
 import { Address } from '../../../utils/Address';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
 export interface NftSaleOptions extends ContractOptions {
-    marketplaceAddress: Address;
-    nftAddress: Address;
-    fullPrice: BN;
-    marketplaceFee: BN;
-    royaltyAddress: Address;
-    royaltyAmount: BN;
+    marketplaceAddress?: Address;
+    nftAddress?: Address;
+    fullPrice?: BN;
+    marketplaceFee?: BN;
+    royaltyAddress?: Address;
+    royaltyAmount?: BN;
 }
 export interface NftSaleMethods extends ContractMethods {
     getData: () => Promise<NftSaleData>;
