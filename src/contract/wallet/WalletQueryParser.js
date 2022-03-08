@@ -42,16 +42,24 @@ function parseWalletV3TransferBody(slice) {
     if (!createdAt.eq(new BN(0))) throw new Error('invalid createdAt');
 
     // order stateInit
-    if (order.loadBit()) throw Error('stateInit doesnt supported');
-
-    // order body
     if (order.loadBit()) {
-        order = order.loadRef();
+        order.loadRef();  // don't parse stateInit
     }
 
-    const op = order.loadUint(32);
-    const payloadBytes = order.loadBits(order.getFreeBits());
-    const payload = op.eq(new BN(0)) ? new TextDecoder().decode(payloadBytes) : '';
+    // order body
+    let payload = null;
+
+    if (order.getFreeBits() > 0) {
+        if (order.loadBit()) {
+            order = order.loadRef();
+        }
+
+        if (order.getFreeBits() > 32) {
+            const op = order.loadUint(32);
+            const payloadBytes = order.loadBits(order.getFreeBits());
+            payload = op.eq(new BN(0)) ? new TextDecoder().decode(payloadBytes) : '';
+        }
+    }
 
     // console.log(bytesToHex(signature));
     // console.log(walletId);
@@ -99,7 +107,9 @@ function parseWalletV3TransferQuery(cell) {
 
     // stateInit
 
-    if (slice.loadBit()) throw Error('stateInit doesnt supported');
+    if (slice.loadBit()) {
+        slice.loadRef(); // don't parse stateInit
+    }
 
     // body
 

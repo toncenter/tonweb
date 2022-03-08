@@ -49,10 +49,10 @@ async function init() {
 
     // Get transaction and parse
 
-    const transactions = await tonweb.provider.getTransactions(walletAddress);
+    const transactions = await tonweb.provider.getTransactions('EQCf2JlHO9h75KuqMQQVth0hxSdav0XT3pBPbb8CQof8flk7');
 
     try {
-        const tx = transactions[1];
+        const tx = transactions[2];
         const inMsgBody = TonWeb.utils.base64ToBytes(tx.in_msg.msg_data.body);
         const parsed = WalletClass.parseTransferBody(TonWeb.boc.Cell.oneFromBoc(inMsgBody).beginParse());
 
