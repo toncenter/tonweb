@@ -11,12 +11,12 @@ import { createOffchainUriCell, parseAddress, parseOffchainUriCell, serializeUri
 
 
 export interface NftCollectionOptions extends ContractOptions {
-    ownerAddress: Address;
-    collectionContentUri: string;
-    nftItemContentBaseUri: string;
-    nftItemCodeHex: string;
-    royalty: number;
-    royaltyAddress: Address;
+    ownerAddress?: Address;
+    collectionContentUri?: string;
+    nftItemContentBaseUri?: string;
+    nftItemCodeHex?: string;
+    royalty?: number;
+    royaltyAddress?: Address;
     cell?: Cell;
 }
 

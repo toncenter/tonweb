@@ -9,12 +9,12 @@ import { parseAddress } from './utils';
 
 
 export interface NftSaleOptions extends ContractOptions {
-    marketplaceAddress: Address;
-    nftAddress: Address;
-    fullPrice: BN;
-    marketplaceFee: BN;
-    royaltyAddress: Address;
-    royaltyAmount: BN;
+    marketplaceAddress?: Address;
+    nftAddress?: Address;
+    fullPrice?: BN;
+    marketplaceFee?: BN;
+    royaltyAddress?: Address;
+    royaltyAmount?: BN;
 }
 
 export interface NftSaleMethods extends ContractMethods {

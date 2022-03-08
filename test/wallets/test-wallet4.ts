@@ -1,16 +1,27 @@
-const TonWeb = require('./index');
-const { SubscriptionContract } = require('./contract/subscription-contract');
 
-async function init() {
+import TonWeb from '../../src/index';
+
+
+const { SubscriptionContract } = TonWeb;
+
+
+(async () => {
+
     const BENEFICIARY = 'EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG';
 
     // Create testnet tonweb
 
-    const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC'));
+    const testnetProvider = new TonWeb.HttpProvider(
+        'https://testnet.toncenter.com/api/v2/jsonRPC'
+    );
+
+    const tonweb = new TonWeb(testnetProvider);
 
     // Create v4 wallet
 
-    const seed = TonWeb.utils.hexToBytes('607cdaf518cd38050b536005bea2667d008d5dda1027f9549479f4a42ac315c4');
+    const seed = TonWeb.utils.hexToBytes(
+        '607cdaf518cd38050b536005bea2667d008d5dda1027f9549479f4a42ac315c4'
+    );
 
     const keyPair = TonWeb.utils.nacl.sign.keyPair.fromSeed(seed);
     console.log('wallet public key =', TonWeb.utils.bytesToHex(keyPair.publicKey));
@@ -18,7 +29,7 @@ async function init() {
     const WalletClass = tonweb.wallet.all['v4R2'];
     const wallet = new WalletClass(tonweb.provider, {
         publicKey: keyPair.publicKey,
-        wc: 0
+        wc: 0,
     });
 
     // Get wallet address
@@ -127,7 +138,9 @@ async function init() {
         console.log('walletGetMethods:');
         const pubkey = (await wallet.methods.getPublicKey()).toString(16);
         console.log('publicKey', pubkey);
-        if (pubkey !== 'c204f35296aadbd0b4c7e905dcd087a94733d284456f05813e9184059a61a9fd') throw new Error('invalid pubkey');
+        if (pubkey !== 'c204f35296aadbd0b4c7e905dcd087a94733d284456f05813e9184059a61a9fd') {
+            throw new Error('invalid pubkey');
+        }
         const walletId = await wallet.methods.getWalletId();
         console.log('walletId', walletId);
         if (walletId !== 698983191) throw new Error('invalid walletId');
@@ -156,11 +169,11 @@ async function init() {
         const WalletClass = tonweb.wallet.all['v3R1'];
         const wallet = new WalletClass(tonweb.provider, {
             publicKey: keyPair.publicKey,
-            wc: 0
+            wc: 0,
         });
-        console.log(await wallet.getAddress().toString(true, true, true))
+        console.log((await wallet.getAddress()).toString(true, true, true));
         const seqno = (await wallet.methods.seqno().call()) || 0;
-        console.log({seqno})
+        console.log({ seqno });
 
         const body = new TonWeb.boc.BitString(32 + 64);
         body.writeUint(0x64737472, 32); // op
@@ -187,9 +200,9 @@ async function init() {
             publicKey: keyPair.publicKey,
             wc: 0
         });
-        console.log(await wallet.getAddress().toString(true, true, true))
+        console.log((await wallet.getAddress()).toString(true, true, true))
         const seqno = (await wallet.methods.seqno().call()) || 0;
-        console.log({seqno})
+        console.log({ seqno });
 
         const body = new TonWeb.boc.Cell();
         body.bits.writeUint(0x706c7567, 32); // op
@@ -212,6 +225,4 @@ async function init() {
     // await selfDestruct();
     // await requestPayment();
 
-}
-
-init();
+})();

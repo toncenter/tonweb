@@ -8,13 +8,13 @@ import { Contract, ContractMethods, ContractOptions, Method } from './contract';
 
 
 export interface SubscriptionContractOptions extends ContractOptions {
-    wallet: Address;
-    beneficiary: Address;
-    amount: BN;
-    period: number;
-    timeout: number;
-    startAt: number;
-    subscriptionId: number;
+    wallet?: Address;
+    beneficiary?: Address;
+    amount?: BN;
+    period?: number;
+    timeout?: number;
+    startAt?: number;
+    subscriptionId?: number;
 }
 
 export interface SubscriptionContractMethods extends ContractMethods {
@@ -93,13 +93,6 @@ export class SubscriptionContract extends Contract<
 
     public async getSubscriptionData(): Promise<SubscriptionData> {
 
-        const parseAddress = (
-            tuple => (
-                tuple[0].toNumber() + ':' +
-                tuple[1].toString(16)
-            )
-        );
-
         const myAddress = await this.getAddress();
 
         const result = await this.provider.call2(
@@ -130,6 +123,14 @@ export class SubscriptionContract extends Contract<
             failedAttempts,
             subscriptionId,
         };
+
+
+        function parseAddress(tuple): string {
+            return (
+                tuple[0].toNumber() + ':' +
+                tuple[1].toString(16)
+            );
+        }
 
     }
 

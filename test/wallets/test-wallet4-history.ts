@@ -1,17 +1,16 @@
-const TonWeb = require('./index');
 
-const getRawBody = (msg) => {
-    const msg_data = msg?.msg_data;
-    if (msg_data && msg_data['@type'] === 'msg.dataRaw' && msg_data.body) {
-        return msg_data.body;
-    }
-    return null;
-}
+import TonWeb from '../../src/index';
 
-async function init() {
-    const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC'));
 
-    const txs = await tonweb.getTransactions('EQAtPMPoGXJzm6zvqeRcK6IzgJa8RpISp0xpMPgOgj5ggPtQ');
+(async () => {
+
+    const tonweb = new TonWeb(
+        new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC')
+    );
+
+    const txs = await tonweb.getTransactions(
+        'EQAtPMPoGXJzm6zvqeRcK6IzgJa8RpISp0xpMPgOgj5ggPtQ'
+    );
 
     // console.log(txs)
 
@@ -56,6 +55,14 @@ async function init() {
             }
         }
     }
-}
 
-init();
+})();
+
+
+function getRawBody(msg) {
+    const msg_data = msg?.msg_data;
+    if (msg_data && msg_data['@type'] === 'msg.dataRaw' && msg_data.body) {
+        return msg_data.body;
+    }
+    return null;
+}

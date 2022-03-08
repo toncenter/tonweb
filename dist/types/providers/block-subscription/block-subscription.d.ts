@@ -40,7 +40,7 @@ export declare class BlockSubscription {
      * Start masterchain block number from which we start to process blocks.
      * if not specified, the subscription starts from the last block of the network at the time of launch.
      */
-    private readonly options;
+    private readonly options?;
     private startMcBlockNumber;
     private readonly mcInterval;
     private readonly shardsInterval;
@@ -75,7 +75,7 @@ export declare class BlockSubscription {
      * Start masterchain block number from which we start to process blocks.
      * if not specified, the subscription starts from the last block of the network at the time of launch.
      */
-    options: BlockSubscriptionOptions);
+    options?: BlockSubscriptionOptions);
     start(): Promise<void>;
     stop(): void;
 }

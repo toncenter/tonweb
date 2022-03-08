@@ -9,8 +9,8 @@ import { parseAddress } from './utils';
 
 
 export interface NftItemOptions extends ContractOptions {
-    index: number;
-    collectionAddress: Address;
+    index?: number;
+    collectionAddress?: Address;
 }
 
 export interface NftItemMethods extends ContractMethods {

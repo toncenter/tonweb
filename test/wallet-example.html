@@ -7,6 +7,9 @@
 <body>
 <script src="../dist/tonweb.js"></script>
 <script>
+
+    // import TonWeb from '../src/index';
+
     async function example() {
         const nacl = TonWeb.utils.nacl; // use nacl library for key pairs
         const tonweb = new TonWeb();
@@ -34,8 +37,8 @@
         const deployFee = await deploy.estimateFee()  // get estimate fee of deploy
         console.log(deployFee);
 
-        const deploySended = await deploy.send() // deploy wallet contract to blockchain
-        console.log(deploySended);
+        const deploySent = await deploy.send() // deploy wallet contract to blockchain
+        console.log(deploySent);
 
         const deployQuery = await deploy.getQuery();   // get deploy query Cell
         console.log(deployQuery);
@@ -56,8 +59,8 @@
         const transferFee = await transfer.estimateFee();   // get estimate fee of transfer
         console.log(transferFee);
 
-        const transferSended = await transfer.send();  // send transfer query to blockchain
-        console.log(transferSended);
+        const transferSent = await transfer.send();  // send transfer query to blockchain
+        console.log(transferSent);
 
         const transferQuery = await transfer.getQuery(); // get transfer query Cell
         console.log(transferQuery);

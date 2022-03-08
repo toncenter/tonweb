@@ -4,7 +4,7 @@ import { HttpProvider } from '../../providers/http-provider';
 import { WalletContract, WalletContractMethods, WalletContractOptions } from '../wallet/wallet-contract';
 export interface LockupWalletV1Options extends WalletContractOptions {
     walletId?: number;
-    config: LockupWalletV1Config;
+    config?: LockupWalletV1Config;
 }
 export interface LockupWalletV1Methods extends WalletContractMethods {
     getPublicKey: () => Promise<BN>;

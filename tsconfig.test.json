@@ -1,19 +1,17 @@
 {
   "extends": "./tsconfig.common.json",
   "compilerOptions": {
-    "rootDir": "src/",
-    "outDir": "dist/",
-    "declarationDir": "dist/types/",
+    "rootDir": "./",
     "typeRoots": [
       "node_modules/@types",
       "types"
     ],
     "noEmitOnError": true,
-    "declaration": true,
-    "emitDeclarationOnly": true
+    "noEmit": true
   },
   "include": [
-    "src/"
+    "src/",
+    "test/"
   ],
   "exclude": [
     "node_modules/"

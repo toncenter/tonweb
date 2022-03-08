@@ -9,7 +9,7 @@ import { WalletContract, WalletContractMethods, WalletContractOptions } from '..
 
 export interface LockupWalletV1Options extends WalletContractOptions {
     walletId?: number;
-    config: LockupWalletV1Config;
+    config?: LockupWalletV1Config;
 }
 
 export interface LockupWalletV1Methods extends WalletContractMethods {
