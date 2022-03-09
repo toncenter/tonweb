@@ -108,7 +108,9 @@ function parseWalletV3TransferQuery(cell) {
     // stateInit
 
     if (slice.loadBit()) {
-        slice.loadRef(); // don't parse stateInit
+        if (slice.loadBit()) {
+            slice.loadRef(); // don't parse stateInit
+        }
     }
 
     // body

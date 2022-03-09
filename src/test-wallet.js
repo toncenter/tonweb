@@ -25,7 +25,7 @@ async function init() {
         secretKey: keyPair.secretKey,
         toAddress: 'EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG',
         amount: TonWeb.utils.toNano(0.01), // 0.01 TON
-        seqno: 1,
+        seqno: 0,
         payload: 'The aim of this text is to provide a brief',
         expireAt: Math.floor(Date.now() / 1000) + 60 // now + 60 seconds
     });

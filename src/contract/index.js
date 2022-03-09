@@ -187,7 +187,7 @@ class Contract {
             commonMsgInfo.bits.writeBit(true);
             //-1:  need at least one bit for body
             // TODO we also should check for free refs here
-            if (commonMsgInfo.bits.getFreeBits() - 1 >= stateInit.bits.getUsedBits()) {
+            if (false && (commonMsgInfo.bits.getFreeBits() - 1 >= stateInit.bits.getUsedBits())) {
                 commonMsgInfo.bits.writeBit(false);
                 commonMsgInfo.writeCell(stateInit);
             } else {
