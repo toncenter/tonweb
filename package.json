@@ -1,56 +1,64 @@
 {
-    "name": "tonweb",
-    "version": "0.0.33",
-    "description": "TonWeb - JavaScript API for TON blockchain",
-    "main": "dist/__todo__.js",
-    "types": "dist/types/index.d.ts",
-    "scripts": {
-        "build:types": "tsc -p ./tsconfig.lib.json"
+  "name": "tonweb",
+  "version": "0.0.33",
+  "description": "TonWeb - JavaScript API for TON blockchain",
+  "main": "dist/__todo__.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "build:types": "tsc -p ./tsconfig.lib.json",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": [
+    "API",
+    "Blockchain",
+    "TON"
+  ],
+  "author": {
+    "name": "tolya-yanot",
+    "url": "https://github.com/tolya-yanot"
+  },
+  "contributors": [
+    {
+      "name": "rulon"
     },
-    "keywords": [
-        "API",
-        "Blockchain",
-        "TON"
-    ],
-    "author": {
-        "name": "tolya-yanot",
-        "url": "https://github.com/tolya-yanot"
-    },
-    "contributors": [
-        {
-            "name": "rulon"
-        },
-        {
-            "name": "Slava Fomin II",
-            "email": "slava@fomin.io",
-            "url": "https://github.com/slavafomin"
-        }
-    ],
-    "license": "GPL-3.0",
-    "bugs": {
-        "url": "https://github.com/toncenter/tonweb/issues"
-    },
-    "homepage": "https://github.com/toncenter/tonweb#readme",
-    "repository": "https://github.com/toncenter/tonweb",
-    "engines": {
-        "node": ">=15"
-    },
-    "dependencies": {
-        "@ledgerhq/hw-transport-web-ble": "5.48.0",
-        "@ledgerhq/hw-transport-webhid": "5.48.0",
-        "@ledgerhq/hw-transport-webusb": "5.48.0",
-        "bn.js": "5.1.1",
-        "ethjs-unit": "0.1.6",
-        "isomorphic-webcrypto": "2.3.8",
-        "node-fetch": "2.6.7",
-        "tweetnacl": "1.0.3"
-    },
-    "devDependencies": {
-        "@types/bn.js": "^5.1.0",
-        "@types/ledgerhq__hw-transport": "^4.21.4",
-        "@types/ledgerhq__hw-transport-webusb": "^4.70.1",
-        "@types/node": "^15.14.9",
-        "buffer": "6.0.3",
-        "typescript": "^4.6.2"
+    {
+      "name": "Slava Fomin II",
+      "email": "slava@fomin.io",
+      "url": "https://github.com/slavafomin"
     }
+  ],
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/toncenter/tonweb/issues"
+  },
+  "homepage": "https://github.com/toncenter/tonweb#readme",
+  "repository": "https://github.com/toncenter/tonweb",
+  "engines": {
+    "node": ">=15"
+  },
+  "dependencies": {
+    "@ledgerhq/hw-transport-web-ble": "5.48.0",
+    "@ledgerhq/hw-transport-webhid": "5.48.0",
+    "@ledgerhq/hw-transport-webusb": "5.48.0",
+    "bn.js": "5.1.1",
+    "ethjs-unit": "0.1.6",
+    "isomorphic-webcrypto": "2.3.8",
+    "node-fetch": "2.6.7",
+    "tweetnacl": "1.0.3"
+  },
+  "devDependencies": {
+    "@sinonjs/fake-timers": "^9.1.1",
+    "@types/bn.js": "^5.1.0",
+    "@types/jest": "^27.4.1",
+    "@types/ledgerhq__hw-transport": "^4.21.4",
+    "@types/ledgerhq__hw-transport-webusb": "^4.70.1",
+    "@types/node": "^15.14.9",
+    "buffer": "6.0.3",
+    "jest": "^27.5.1",
+    "jest-junit": "^13.0.0",
+    "ts-jest": "^27.1.3",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.2"
+  }
 }

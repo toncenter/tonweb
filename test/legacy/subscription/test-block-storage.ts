@@ -1,6 +1,6 @@
 
-import TonWeb from '../../src/index';
-import { BlockStorage, ShardBlock, SubscriptionData } from '../../src/index';
+import TonWeb from '../../../src/index';
+import { BlockStorage, ShardBlock, SubscriptionData } from '../../../src/index';
 
 
 const Address = TonWeb.utils.Address;

@@ -73,7 +73,7 @@ export class HttpProvider {
     /**
      * @todo: change params type to Array<any>
      */
-    public send(method: string, params: any): Promise<any> {
+    public send(method: string, params: any): Promise<Response> {
         return this.sendImpl(
             this.host,
             { id: 1, jsonrpc: '2.0', method, params }

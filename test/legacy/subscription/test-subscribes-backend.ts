@@ -1,5 +1,5 @@
 
-import TonWeb from '../../src/index';
+import TonWeb from '../../../src/index';
 import { TestBlocksStorage } from './test-block-storage';
 
 

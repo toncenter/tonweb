@@ -1,5 +1,5 @@
 
-import TonWeb from '../../src/index';
+import TonWeb from '../../../src/index';
 
 const NftCollection = TonWeb.token.nft.NftCollection;
 const NftItem = TonWeb.token.nft.NftItem;
