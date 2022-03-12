@@ -1,6 +1,5 @@
 const utils = require("./utils");
-const Address = require("./utils/Address").default;
-utils.Address = Address;
+const Address = utils.Address;
 const boc = require("./boc");
 const AppTon = require("./ledger/AppTon");
 const HttpProvider = require("./providers").default;
