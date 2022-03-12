@@ -10,6 +10,7 @@ export { LogFunction, } from './providers/block-subscription/in-memory-block-sto
 export { ShardBlock, BlockStorage, } from './providers/block-subscription/block-storage';
 import { Address, AddressType } from './utils/Address';
 export { AddressType } from './utils/Address';
+import { ParsedTransferUrl } from './utils/common';
 import { BitString } from './boc/bit-string';
 import { Cell } from './boc/cell';
 import { Contract } from './contract/contract';
@@ -59,6 +60,8 @@ export default class TonWeb {
         stringToBase64(str: string): string;
         base64ToBytes(base64: string): Uint8Array;
         readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
+        parseTransferUrl(url: string): ParsedTransferUrl;
+        formatTransferUrl(address: string, amount?: string, text?: string): string;
     };
     static Address: typeof Address;
     static boc: {
@@ -120,6 +123,8 @@ export default class TonWeb {
         stringToBase64(str: string): string;
         base64ToBytes(base64: string): Uint8Array;
         readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
+        parseTransferUrl(url: string): ParsedTransferUrl;
+        formatTransferUrl(address: string, amount?: string, text?: string): string;
     };
     Address: typeof Address;
     boc: {
