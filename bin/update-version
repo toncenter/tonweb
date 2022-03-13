@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Takes version from the project manifest
+# and inserts it to to the source code.
+# Must be run before building the source.
+
+set -e
+set -o pipefail
+
+SCRIPT_PATH="$(dirname "$0")"
+PROJECT_PATH="${SCRIPT_PATH}/.."
+
+VERSION=$(jq -r '.version' < "${PROJECT_PATH}/package.json")
+
+sed -i -r \
+  "s/const version\s*=.*/const version = '${VERSION}';/" \
+  "${PROJECT_PATH}/src/index.ts"
+
+echo "Updated version to: ${VERSION}"

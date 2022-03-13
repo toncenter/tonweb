@@ -269,8 +269,9 @@ const NFT = {
 
 // -----
 
-
-const version = '0.0.33';
+// This version is updated by build script automatically,
+// do not edit it or change the expression format.
+const version = '0.0.35';
 
 
 export default class TonWeb {

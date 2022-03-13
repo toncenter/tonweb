@@ -1,10 +1,11 @@
 {
   "name": "tonweb",
-  "version": "0.0.33",
+  "version": "0.0.35",
   "description": "TonWeb - JavaScript API for TON blockchain",
   "main": "dist/__todo__.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
+    "build": "./bin/update-version && npm run build:types",
     "build:types": "tsc -p ./tsconfig.lib.json",
     "test": "jest",
     "test:coverage": "jest --coverage"
