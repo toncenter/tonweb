@@ -10,6 +10,8 @@ export { LogFunction, } from './providers/block-subscription/in-memory-block-sto
 export { ShardBlock, BlockStorage, } from './providers/block-subscription/block-storage';
 import { Address, AddressType } from './utils/Address';
 export { AddressType } from './utils/Address';
+import { formatTransferUrl, parseTransferUrl } from './utils/transfer-url';
+export { ParsedTransferUrl } from './utils/transfer-url';
 import { BitString } from './boc/bit-string';
 import { Cell } from './boc/cell';
 import { Contract } from './contract/contract';
@@ -44,6 +46,8 @@ export default class TonWeb {
         BN: typeof BN;
         nacl: nacl;
         Address: typeof Address;
+        formatTransferUrl: typeof formatTransferUrl;
+        parseTransferUrl: typeof parseTransferUrl;
         sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
         toNano(amount: string | number | BN): BN;
         fromNano(amount: string | number | BN): string;
@@ -105,6 +109,8 @@ export default class TonWeb {
         BN: typeof BN;
         nacl: nacl;
         Address: typeof Address;
+        formatTransferUrl: typeof formatTransferUrl;
+        parseTransferUrl: typeof parseTransferUrl;
         sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
         toNano(amount: string | number | BN): BN;
         fromNano(amount: string | number | BN): string;

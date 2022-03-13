@@ -11,8 +11,8 @@ export interface TransferMethodParams {
     toAddress: AddressType;
     amount: (BN | number);
     seqno: number;
-    payload: (string | Uint8Array | Cell);
-    sendMode: number;
+    payload?: (string | Uint8Array | Cell);
+    sendMode?: number;
     stateInit?: Cell;
 }
 export interface WalletContractMethods extends ContractMethods {

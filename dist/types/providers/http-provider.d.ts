@@ -38,7 +38,7 @@ export declare class HttpProvider {
     /**
      * @todo: change params type to Array<any>
      */
-    send(method: string, params: any): Promise<any>;
+    send(method: string, params: any): Promise<Response>;
     /**
      * Use this method to get information about address:
      * balance, code, data, last_transaction_id.

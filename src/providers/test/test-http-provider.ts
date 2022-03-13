@@ -1,5 +1,5 @@
 
-import { HttpProvider } from './http-provider';
+import { HttpProvider } from '../http-provider';
 
 
 /**

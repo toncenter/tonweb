@@ -1,7 +1,7 @@
 
 import nacl from 'tweetnacl';
 
-import { TestHttpProvider } from '../../../providers/test-http-provider';
+import { TestHttpProvider } from '../../../providers/test/test-http-provider';
 import { bytesToBase64 } from '../../../utils/common';
 import { TransferMethodParams } from '../wallet-contract';
 import { WalletV4ContractR2 } from './wallet-v4-contract-r2';
