@@ -10,7 +10,7 @@ const {createOffchainUriCell, serializeUri, parseOffchainUriCell} = require("./N
 class NftCollection extends Contract {
     /**
      * @param provider
-     * @param options   {{ownerAddress: Address, collectionContentUri: string, nftItemContentBaseUri: string, nftItemCodeHex: string, royalty: number, royaltyAddress: Address, address?: Address | string, cell?: Cell}}
+     * @param options   {{ownerAddress: Address, collectionContentUri: string, nftItemContentBaseUri: string, nftItemCodeHex: string, royalty: number, royaltyAddress: Address, address?: Address | string, code?: Cell}}
      */
     constructor(provider, options) {
         options.wc = 0;
