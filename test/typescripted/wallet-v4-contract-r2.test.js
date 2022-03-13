@@ -14,9 +14,9 @@ FakeTimers.install();
 
     const testProvider = new TestHttpProvider();
 
-    // Address: UQC63Lo54ZfLTGo12UECZc8Ba3g-dEVhvzy7Vroe43-AQzAe
+    // noinspection JSCheckFunctionSignatures
     const keyPair = nacl.sign.keyPair.fromSeed(
-        new Uint8Array(32)
+        Uint8Array.from('12345678912345678912345678912345')
     );
 
     const wallet = new TonWeb.Wallets.all.v4R2(
@@ -25,17 +25,40 @@ FakeTimers.install();
         }
     );
 
-    const method = wallet.methods.transfer({
-        secretKey: keyPair.secretKey,
-        toAddress: 'UQC63Lo54ZfLTGo12UECZc8Ba3g-dEVhvzy7Vroe43-AQzAe',
-        amount: 1050,
-        seqno: 1,
-    });
+    const results = {
+        address: (await wallet.getAddress()).toString(true, true),
+    };
 
-    const queryCell = await method.getQuery();
-    const queryBoc = await queryCell.toBoc();
-    const queryBocB64 = utils.bytesToBase64(queryBoc);
+    await (async () => {
+        const method = wallet.methods.transfer({
+            secretKey: keyPair.secretKey,
+            toAddress: 'UQAXQH-lFETZ9KncaE4qs0XVTAYMMC2AGSKPNKhvt_Do45ym',
+            amount: 1050,
+            seqno: 0,
+        });
 
-    console.log(queryBocB64);
+        const queryCell = await method.getQuery();
+        const queryBoc = await queryCell.toBoc();
+
+        results.queryBocB64Seqno0 = utils.bytesToBase64(queryBoc);
+
+    })();
+
+    await (async () => {
+        const method = wallet.methods.transfer({
+            secretKey: keyPair.secretKey,
+            toAddress: 'UQAXQH-lFETZ9KncaE4qs0XVTAYMMC2AGSKPNKhvt_Do45ym',
+            amount: 1050,
+            seqno: 1,
+        });
+
+        const queryCell = await method.getQuery();
+        const queryBoc = await queryCell.toBoc();
+
+        results.queryBocB64Seqno1 = utils.bytesToBase64(queryBoc);
+
+    })();
+
+    console.log(JSON.stringify(results, null, 4));
 
 })();
