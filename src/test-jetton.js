@@ -17,7 +17,7 @@ const init = async () => {
     console.log('wallet address=', walletAddress.toString(true, true, true));
 
     const minter = new JettonMinter(tonweb.provider, {
-        ownerAddress: walletAddress,
+        adminAddress: walletAddress,
         jettonContentUri: 'http://localhost/nft-marketplace/my_collection.json',
         jettonWalletCodeHex: JettonWallet.codeHex
     });
@@ -31,8 +31,8 @@ const init = async () => {
         console.log(
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
-                toAddress: minterAddress.toString(true, true, false),
-                amount: TonWeb.utils.toNano(1),
+                toAddress: minterAddress.toString(true, true, true),
+                amount: TonWeb.utils.toNano(0.5),
                 seqno: seqno,
                 payload: null, // body
                 sendMode: 3,
@@ -44,7 +44,7 @@ const init = async () => {
     const getMinterInfo = async () => {
         const data = await minter.getJettonData();
         data.totalSupply = data.totalSupply.toString();
-        data.ownerAddress = data.ownerAddress.toString(true, true, true);
+        data.adminAddress = data.adminAddress.toString(true, true, true);
         console.log(data);
     }
 
@@ -59,17 +59,33 @@ const init = async () => {
                 amount: TonWeb.utils.toNano('0.05'),
                 seqno: seqno,
                 payload: await minter.createMintBody({
-                    amount: TonWeb.utils.toNano(100500),
+                    tokenAmount: TonWeb.utils.toNano(100500),
                     destination: walletAddress,
+                    amount: TonWeb.utils.toNano('0.04')
                 }),
                 sendMode: 3,
             }).send()
         );
     }
 
+    const JETTON_WALLET_ADDRESS = 'EQCR6jds5cVILKR7W-vq2Z6uqW71I8ySYTjhXZYw3cTg5nOR';
+
+    const jettonWallet = new JettonWallet(tonweb.provider, {
+        address: JETTON_WALLET_ADDRESS
+    });
+
+    const getJettonWalletInfo = async () => {
+        const data = await jettonWallet.getData();
+        data.balance = data.balance.toString();
+        data.ownerAddress = data.ownerAddress.toString(true, true, true);
+        data.jettonMinterAddress = data.jettonMinterAddress.toString(true, true, true);
+        console.log(data);
+    }
+
     // await deployMinter();
     // await getMinterInfo();
     // await mint();
+    // await getJettonWalletInfo();
 }
 
 init();
