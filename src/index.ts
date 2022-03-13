@@ -56,11 +56,17 @@ export { AddressType } from './utils/Address';
 
 import * as utilsExports from './utils/common';
 
+import { formatTransferUrl, parseTransferUrl } from './utils/transfer-url';
+export { ParsedTransferUrl } from './utils/transfer-url';
+
+
 const utils = {
     ...utilsExports,
     BN,
     nacl,
     Address,
+    formatTransferUrl,
+    parseTransferUrl,
 };
 
 
