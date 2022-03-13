@@ -26,4 +26,7 @@ export default <Config.InitialOptions>{
             tsconfig: 'tsconfig.test.json',
         },
     },
+    setupFiles: [
+        '<rootDir>/test/setup.ts',
+    ],
 };
