@@ -44,8 +44,9 @@ export class Cell {
      */
     public static oneFromBoc(serializedBoc: (string | Uint8Array)): Cell {
         const cells = deserializeBoc(serializedBoc);
-        if (cells.length !== 1)
+        if (cells.length !== 1) {
             throw new Error(`Expected 1 root cell, but have ${cells.length} cells`);
+        }
         return cells[0];
     }
 
@@ -366,8 +367,9 @@ async function treeWalk(
 
 function parseBocHeader(serializedBoc) {
     // snake_case is used to match TON docs
-    if (serializedBoc.length < 4 + 1)
-        throw 'Not enough bytes for magic prefix';
+    if (serializedBoc.length < 4 + 1) {
+        throw new Error('Not enough bytes for magic prefix');
+    }
     const inputData = serializedBoc; // Save copy for crc32
     const prefix = serializedBoc.slice(0, 4);
     serializedBoc = serializedBoc.slice(4);
@@ -395,8 +397,9 @@ function parseBocHeader(serializedBoc) {
         size_bytes = serializedBoc[0];
     }
     serializedBoc = serializedBoc.slice(1);
-    if (serializedBoc.length < 1 + 5 * size_bytes)
-        throw 'Not enough bytes for encoding cells counters';
+    if (serializedBoc.length < 1 + 5 * size_bytes) {
+        throw new Error('Not enough bytes for encoding cells counters');
+    }
     const offset_bytes = serializedBoc[0];
     serializedBoc = serializedBoc.slice(1);
     const cells_num = readNBytesUIntFromArray(size_bytes, serializedBoc);
@@ -407,8 +410,9 @@ function parseBocHeader(serializedBoc) {
     serializedBoc = serializedBoc.slice(size_bytes);
     const tot_cells_size = readNBytesUIntFromArray(offset_bytes, serializedBoc);
     serializedBoc = serializedBoc.slice(offset_bytes);
-    if (serializedBoc.length < roots_num * size_bytes)
-        throw 'Not enough bytes for encoding root cells hashes';
+    if (serializedBoc.length < roots_num * size_bytes) {
+        throw new Error('Not enough bytes for encoding root cells hashes');
+    }
     let root_list = [];
     for (let c = 0; c < roots_num; c++) {
         root_list.push(readNBytesUIntFromArray(size_bytes, serializedBoc));
@@ -417,28 +421,33 @@ function parseBocHeader(serializedBoc) {
     let index: (number[] | false) = false;
     if (has_idx) {
         index = [];
-        if (serializedBoc.length < offset_bytes * cells_num)
-            throw 'Not enough bytes for index encoding';
+        if (serializedBoc.length < offset_bytes * cells_num) {
+            throw new Error('Not enough bytes for index encoding');
+        }
         for (let c = 0; c < cells_num; c++) {
             index.push(readNBytesUIntFromArray(offset_bytes, serializedBoc));
             serializedBoc = serializedBoc.slice(offset_bytes);
         }
     }
 
-    if (serializedBoc.length < tot_cells_size)
-        throw 'Not enough bytes for cells data';
+    if (serializedBoc.length < tot_cells_size) {
+        throw new Error('Not enough bytes for cells data');
+    }
     const cells_data = serializedBoc.slice(0, tot_cells_size);
     serializedBoc = serializedBoc.slice(tot_cells_size);
     if (hash_crc32) {
-        if (serializedBoc.length < 4)
-            throw 'Not enough bytes for crc32c hashsum';
+        if (serializedBoc.length < 4) {
+            throw new Error('Not enough bytes for crc32c hashsum');
+        }
         const length = inputData.length;
-        if (!compareBytes(crc32c(inputData.slice(0, length - 4)), serializedBoc.slice(0, 4)))
-            throw 'Crc32c hashsum mismatch';
+        if (!compareBytes(crc32c(inputData.slice(0, length - 4)), serializedBoc.slice(0, 4))) {
+            throw new Error('Crc32c hashsum mismatch');
+        }
         serializedBoc = serializedBoc.slice(4);
     }
-    if (serializedBoc.length)
-        throw 'Too much bytes in BoC serialization';
+    if (serializedBoc.length) {
+        throw new Error('Too much bytes in BoC serialization');
+    }
     return {
         has_idx: has_idx, hash_crc32: hash_crc32, has_cache_bits: has_cache_bits, flags: flags, size_bytes: size_bytes,
         off_bytes: offset_bytes, cells_num: cells_num, roots_num: roots_num, absent_num: absent_num,
@@ -448,8 +457,9 @@ function parseBocHeader(serializedBoc) {
 }
 
 function deserializeCellData(cellData, referenceIndexSize) {
-    if (cellData.length < 2)
-        throw 'Not enough bytes to encode cell descriptors';
+    if (cellData.length < 2) {
+        throw new Error('Not enough bytes to encode cell descriptors');
+    }
     const d1 = cellData[0], d2 = cellData[1];
     cellData = cellData.slice(2);
     // @todo: remove/use unused variable `level`
@@ -460,8 +470,9 @@ function deserializeCellData(cellData, referenceIndexSize) {
     const fulfilledBytes = !(d2 % 2);
     let cell = new Cell();
     cell.isExotic = isExotic;
-    if (cellData.length < dataBytesize + referenceIndexSize * refNum)
-        throw 'Not enough bytes to encode cell data';
+    if (cellData.length < dataBytesize + referenceIndexSize * refNum) {
+        throw new Error('Not enough bytes to encode cell data');
+    }
     cell.bits.setTopUppedArray(cellData.slice(0, dataBytesize), fulfilledBytes);
     cellData = cellData.slice(dataBytesize);
     for (let r = 0; r < refNum; r++) {
@@ -499,7 +510,7 @@ function deserializeBoc(serializedBoc) {
         for (let ri = 0; ri < c.refs.length; ri++) {
             const r = c.refs[ri];
             if (r < ci) {
-                throw 'Topological order is broken';
+                throw new Error('Topological order is broken');
             }
             c.refs[ri] = cellsArray[r];
         }

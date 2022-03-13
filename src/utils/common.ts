@@ -72,14 +72,16 @@ export function hexToBytes(hex: string): Uint8Array {
     hex = hex.toLowerCase();
     const length2 = hex.length;
     if (length2 % 2 !== 0) {
-        throw 'hex string must have length a multiple of 2';
+        throw new Error('hex string must have length a multiple of 2');
     }
     const length = length2 / 2;
     const result = new Uint8Array(length);
     for (let i = 0; i < length; i++) {
         const i2 = i * 2;
         const b = hex.substring(i2, i2 + 2);
-        if (!to_byte_map.hasOwnProperty(b)) throw new Error('invalid hex character ' + b);
+        if (!to_byte_map.hasOwnProperty(b)) {
+            throw new Error('invalid hex character ' + b);
+        }
         result[i] = to_byte_map[b];
     }
     return result;

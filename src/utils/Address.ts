@@ -7,7 +7,7 @@ const {
     base64toString,
     stringToBase64,
 
-} = require("./common");
+} = require('./common');
 
 
 export type AddressType = (Address | string);
@@ -31,13 +31,13 @@ const test_flag = 0x80;
 function parseFriendlyAddress(addressString: string): ParsedAddress {
     const data = stringToBytes(base64toString(addressString));
     if (data.length !== 36) { // 1byte tag + 1byte workchain + 32 bytes hash + 2 byte crc
-        throw "Unknown address type: byte length is not equal to 36";
+        throw new Error('Unknown address type: byte length is not equal to 36');
     }
     const addr = data.slice(0, 34);
     const crc = data.slice(34, 36);
     const calcedCrc = crc16(addr);
     if (!(calcedCrc[0] === crc[0] && calcedCrc[1] === crc[1])) {
-        throw "Wrong crc16 hashsum";
+        throw new Error('Wrong crc16 hashsum');
     }
     let tag = addr[0];
     let isTestOnly = false;
@@ -47,7 +47,7 @@ function parseFriendlyAddress(addressString: string): ParsedAddress {
         tag = tag ^ test_flag;
     }
     if ((tag !== bounceable_tag) && (tag !== non_bounceable_tag))
-        throw "Unknown address tag";
+        throw new Error('Unknown address tag');
 
     isBounceable = tag === bounceable_tag;
 
@@ -57,10 +57,17 @@ function parseFriendlyAddress(addressString: string): ParsedAddress {
     } else {
         workchain = addr[1];
     }
-    if (workchain !== 0 && workchain !== -1) throw new Error('Invalid address wc ' + workchain);
+    if (workchain !== 0 && workchain !== -1) {
+        throw new Error('Invalid address wc ' + workchain);
+    }
 
     const hashPart = addr.slice(2, 34);
-    return {isTestOnly, isBounceable, workchain, hashPart};
+    return {
+        isTestOnly,
+        isBounceable,
+        workchain,
+        hashPart,
+    };
 }
 
 export class Address {
@@ -88,7 +95,7 @@ export class Address {
     constructor(anyForm: AddressType) {
 
         if (anyForm == null) {
-            throw "Invalid address";
+            throw new Error('Invalid address');
         }
 
         if (anyForm instanceof Address) {
@@ -101,19 +108,26 @@ export class Address {
             return;
         }
 
-        if (anyForm.search(/\-/) > 0 || anyForm.search(/_/) > 0) {
+        // @todo: use `includes()` instead of `search()`
+        if (anyForm.search(/-/) > 0 || anyForm.search(/_/) > 0) {
             this.isUrlSafe = true;
-            anyForm = anyForm.replace(/\-/g, '+').replace(/_/g, '\/');
+            anyForm = anyForm.replace(/-/g, '+').replace(/_/g, '\/');
         } else {
             this.isUrlSafe = false;
         }
         if (anyForm.indexOf(':') > -1) {
             const arr = anyForm.split(':');
-            if (arr.length !== 2) throw new Error('Invalid address ' + anyForm);
+            if (arr.length !== 2) {
+                throw new Error('Invalid address ' + anyForm);
+            }
             const wc = parseInt(arr[0]);
-            if (wc !== 0 && wc !== -1) throw new Error('Invalid address wc ' + anyForm);
+            if (wc !== 0 && wc !== -1) {
+                throw new Error('Invalid address wc ' + anyForm);
+            }
             const hex = arr[1];
-            if (hex.length !== 64) throw new Error('Invalid address hex ' + anyForm);
+            if (hex.length !== 64) {
+                throw new Error('Invalid address hex ' + anyForm);
+            }
             this.isUserFriendly = false;
             this.wc = wc;
             this.hashPart = hexToBytes(hex);
@@ -151,7 +165,7 @@ export class Address {
         }
 
         if (!isUserFriendly) {
-            return this.wc + ":" + bytesToHex(this.hashPart);
+            return this.wc + ':' + bytesToHex(this.hashPart);
         } else {
             let tag = isBounceable ? bounceable_tag : non_bounceable_tag;
             if (isTestOnly) {
