@@ -68,7 +68,9 @@ const init = async () => {
         );
     }
 
-    const JETTON_WALLET_ADDRESS = 'EQCR6jds5cVILKR7W-vq2Z6uqW71I8ySYTjhXZYw3cTg5nOR';
+    const JETTON_WALLET_ADDRESS = 'EQBIIxndZHvxYR9vYxxf6T_V207wstz_a0MsD3Edf1ssstn0';
+    // const JETTON_WALLET_ADDRESS = 'EQAFeJKruIRXk25m_jfCGSYu2v7wJHvJx12N0r3D9dnp_1Gq';
+    console.log('jettonWalletAddress=', JETTON_WALLET_ADDRESS);
 
     const jettonWallet = new JettonWallet(tonweb.provider, {
         address: JETTON_WALLET_ADDRESS
@@ -82,10 +84,54 @@ const init = async () => {
         console.log(data);
     }
 
+    const transfer = async () => {
+        const seqno = (await wallet.methods.seqno().call()) || 0;
+        console.log({seqno})
+
+        console.log(
+            await wallet.methods.transfer({
+                secretKey: keyPair.secretKey,
+                toAddress: JETTON_WALLET_ADDRESS,
+                amount: TonWeb.utils.toNano(0.4),
+                seqno: seqno,
+                payload: await jettonWallet.createTransferBody({
+                    tokenAmount: TonWeb.utils.toNano('500'),
+                    toAddress: new TonWeb.utils.Address(WALLET2_ADDRESS),
+                    forwardAmount: TonWeb.utils.toNano(0.1),
+                    forwardPayload: new TextEncoder().encode('gift'),
+                    responseAddress: walletAddress
+                }),
+                sendMode: 3,
+            }).send()
+        );
+    }
+
+
+    const burn = async () => {
+        const seqno = (await wallet.methods.seqno().call()) || 0;
+        console.log({seqno})
+
+        console.log(
+            await wallet.methods.transfer({
+                secretKey: keyPair.secretKey,
+                toAddress: JETTON_WALLET_ADDRESS,
+                amount: TonWeb.utils.toNano(0.4),
+                seqno: seqno,
+                payload: await jettonWallet.createBurnBody({
+                    tokenAmount: TonWeb.utils.toNano('400'),
+                    responseAddress: walletAddress
+                }),
+                sendMode: 3,
+            }).send()
+        );
+    }
+
     // await deployMinter();
     // await getMinterInfo();
     // await mint();
     // await getJettonWalletInfo();
+    // await transfer();
+    // await burn();
 }
 
 init();
