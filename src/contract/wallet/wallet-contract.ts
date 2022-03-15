@@ -2,7 +2,7 @@
 import BN from 'bn.js';
 import nacl from 'tweetnacl';
 
-import { Contract, ContractMethods, ContractOptions, Method } from '../contract';
+import { Contract, ContractMethods, ContractOptions, Method, Query } from '../contract';
 import { Cell } from '../../boc/cell';
 import { HttpProvider } from '../../providers/http-provider';
 import { Address, AddressType } from '../../utils/Address';
@@ -105,6 +105,9 @@ export class WalletContract<
                         seqno = (await provider.call2(address.toString(), 'seqno')).toNumber();
                     } catch (error) {
                         // Ignoring the error
+                        // @todo: it doesn't look like a
+                        //        good idea to silently ignore
+                        //        the errors
                     }
                     return seqno;
                 }
@@ -130,11 +133,16 @@ export class WalletContract<
     }
 
     /**
-     * External message for initialization
-     * @param secretKey  {Uint8Array} nacl.KeyPair.secretKey
-     * @return {{address: Address, message: Cell, body: Cell, sateInit: Cell, code: Cell, data: Cell}}
+     * Creates external message for contract initialization.
      */
-    public async createInitExternalMessage(secretKey) {
+    public async createInitExternalMessage(
+        secretKey: Uint8Array
+
+    ): Promise<Query> {
+
+        // @todo: we should return ExternalMessage instead of Query
+        //        but we will need to add `signature` to the result
+
         if (!this.options.publicKey) {
             const keyPair = nacl.sign.keyPair.fromSecretKey(secretKey)
             this.options.publicKey = keyPair.publicKey;

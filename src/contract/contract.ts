@@ -189,7 +189,7 @@ export class Contract<
 
         if (stateInit) {
             commonMsgInfo.bits.writeBit(true);
-            //-1:  need at least one bit for body
+            // -1: need at least one bit for body
             // @todo: we also should check for free refs here
             if (commonMsgInfo.bits.getFreeBits() - 1 >= stateInit.bits.getUsedBits()) {
                 commonMsgInfo.bits.writeBit(false);
