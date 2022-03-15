@@ -95,6 +95,9 @@ export class WalletContract<
             ),
 
             seqno: () => ({
+                // @todo: we do we have sub-method here?
+                //        should we rename `seqno` to `getSeqno`
+                //        and return the result directly?
                 call: async () => {
                     const address = await this.getAddress();
                     let seqno: number;
