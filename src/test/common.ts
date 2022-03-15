@@ -2,6 +2,7 @@
 import nacl from 'tweetnacl';
 
 import { TestHttpProvider } from '../providers/test/test-http-provider';
+import { Address } from '../utils/Address';
 
 
 /**
@@ -19,5 +20,8 @@ export const testSeedArray = (
 export const testKeyPair = nacl.sign.keyPair.fromSeed(
     testSeedArray
 );
+
+export const testAddressStr = 'UQBhK88OC8wm21NbmS3ElxpJqybSQHZN8FdXWISVP8SWeiMn';
+export const testAddress = new Address(testAddressStr);
 
 export const testProvider = new TestHttpProvider();
