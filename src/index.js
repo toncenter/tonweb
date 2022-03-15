@@ -1,6 +1,5 @@
 const utils = require("./utils");
-const Address = require("./utils/Address").default;
-utils.Address = Address;
+const Address = utils.Address;
 const boc = require("./boc");
 const AppTon = require("./ledger/AppTon");
 const HttpProvider = require("./providers").default;
@@ -14,7 +13,7 @@ const {SubscriptionContract} = require("./contract/subscription/index");
 const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
 const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
 const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
-const version = '0.0.33';
+const version = '0.0.35';
 
 class TonWeb {
     constructor(provider) {
