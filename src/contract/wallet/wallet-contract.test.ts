@@ -17,6 +17,7 @@ import { TransferMethodParams, WalletContract, WalletContractOptions } from './w
 
 interface WalletTestDescriptor {
     constructor: typeof WalletContract;
+    name: string;
     address: string;
     transferQueryBoc64: {
         seqno0: string;
@@ -42,6 +43,7 @@ interface WalletTestDescriptor {
 const wallets: WalletTestDescriptor[] = [
     {
         constructor: SimpleWalletContractR1 as typeof WalletContract,
+        name: 'simpleR1',
         address: 'UQCf-xXXVDL87MAmMNFmxVUuohYIaXfLRjQXZ8Czp_Wo4KGM',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAAQwAAAAAbgCyANgD0YgBP/Yrrqhl+dmATGGizYqqXUQsENLvloxoLs+BZ0/rUcARmHC0GF4v7v2ia5PQYlR3yUiENZSC+Jqz/m55HhKG7LIjuA6izVQ8bbmbRDuqks+xfX8e5Y0NZoY+FF2C6nGiAGAAAAAAcAECAwCE/wAg3aTyYIECANcYINcLH+1E0NMf0//RURK68qEi+QFUEET5EPKi+AAB0x8xINdKltMH1AL7AN7RpMjLH8v/ye1UAEgAAAAAbkBe/GUa5GDCuc1VaDzCLxheNOgRQZpXvPCHAR7umAcAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAyMokRQ==',
@@ -60,6 +62,7 @@ const wallets: WalletTestDescriptor[] = [
     },
     {
         constructor: SimpleWalletContractR2 as typeof WalletContract,
+        name: 'simpleR2',
         address: 'UQBDKdqxQ7GfG1Od7Hwlsb0b9SdkcOjr9fIu4sPJjfriMbDn',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAARsAAAAAbgDBAOcD0YgAhlO1YodjPjanO9j4S2N6N+pOyOHR1+vkXcWHkxv1xGIRmHC0GF4v7v2ia5PQYlR3yUiENZSC+Jqz/m55HhKG7LIjuA6izVQ8bbmbRDuqks+xfX8e5Y0NZoY+FF2C6nGiAGAAAAAAcAECAwCi/wAg3SCCAUyXupcw7UTQ1wsf4KTyYIECANcYINcLH+1E0NMf0//RURK68qEi+QFUEET5EPKi+AAB0x8xINdKltMH1AL7AN7RpMjLH8v/ye1UAEgAAAAAbkBe/GUa5GDCuc1VaDzCLxheNOgRQZpXvPCHAR7umAcAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAgdDRPw==',
@@ -78,6 +81,7 @@ const wallets: WalletTestDescriptor[] = [
     },
     {
         constructor: SimpleWalletContractR3 as typeof WalletContract,
+        name: 'simpleR3',
         address: 'UQDBDSLkInEXo_76hVZ0_zj09_rAinsXvDysWTGUX4UnWuc9',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAAScAAAAAbgDNAPMD0YgBghpFyETiL0f99Qqs6f5x6e/1gRT2L3h5WLJjKL8KTrQRmHC0GF4v7v2ia5PQYlR3yUiENZSC+Jqz/m55HhKG7LIjuA6izVQ8bbmbRDuqks+xfX8e5Y0NZoY+FF2C6nGiAGAAAAAAcAECAwC6/wAg3SCCAUyXuiGCATOcurGccbDtRNDTH9cL/+ME4KTyYIECANcYINcLH+1E0NMf0//RURK68qEi+QFUEET5EPKi+AAB0x8xINdKltMH1AL7AN7RpMjLH8v/ye1UAEgAAAAAbkBe/GUa5GDCuc1VaDzCLxheNOgRQZpXvPCHAR7umAcAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAA0YZWQw==',
@@ -96,6 +100,7 @@ const wallets: WalletTestDescriptor[] = [
     },
     {
         constructor: WalletV2ContractR1 as typeof WalletContract,
+        name: 'v2R1',
         address: 'UQBqaW_l01UTgXodOeJXEDHBBw0GfgCO_imXDn3Oo8EmiUOV',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAASMAAAAAcgDJAO8D2YgA1NLfy6aqJwL0OnPEriBjgg4aDPwBHfxTLhz7nUeCTRIRiGMlQ7IhKLIq+ILAAxQnNEehl7PETZ+1epQfI8i3/xNkFRZp3lstMXfKyNMgylvldZzQeE1Tmpw9HAfscd52YQAAAAAf////4HABAgMAqv8AIN0gggFMl7qXMO1E0NcLH+Ck8mCDCNcYINMf0x8B+CO78mPtRNDTH9P/0VExuvKhA/kBVBBC+RDyovgAApMg10qW0wfUAvsA6NGkyMsfy//J7VQASAAAAABuQF78ZRrkYMK5zVVoPMIvGF406BFBmle88IcBHu6YBwBkQgAwleeHBeYTbamtzJbiS40k1ZNpIDsm+CurrEJKn+JLPRAg0AAAAAAAAAAAAAAAAABTZd8j',
@@ -114,6 +119,7 @@ const wallets: WalletTestDescriptor[] = [
     },
     {
         constructor: WalletV2ContractR2 as typeof WalletContract,
+        name: 'v2R2',
         address: 'UQCcSX5DqU2kmjtzsprXaKVfYhFTpUnzLvaZAeQT_f_fHI_s',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAAS8AAAAAcgDVAPsD2YgBOJL8h1KbSTR252U1rtFKvsQip0qT5l3tMgPIJ/v/vjgRiGMlQ7IhKLIq+ILAAxQnNEehl7PETZ+1epQfI8i3/xNkFRZp3lstMXfKyNMgylvldZzQeE1Tmpw9HAfscd52YQAAAAAf////4HABAgMAwv8AIN0gggFMl7ohggEznLqxnHGw7UTQ0x/XC//jBOCk8mCDCNcYINMf0x8B+CO78mPtRNDTH9P/0VExuvKhA/kBVBBC+RDyovgAApMg10qW0wfUAvsA6NGkyMsfy//J7VQASAAAAABuQF78ZRrkYMK5zVVoPMIvGF406BFBmle88IcBHu6YBwBkQgAwleeHBeYTbamtzJbiS40k1ZNpIDsm+CurrEJKn+JLPRAg0AAAAAAAAAAAAAAAAACRGNmc',
@@ -132,6 +138,7 @@ const wallets: WalletTestDescriptor[] = [
     },
     {
         constructor: WalletV3ContractR1 as typeof WalletContract,
+        name: 'v3R1',
         address: 'UQDBk9eyBPS8hRgkiia-_fcI7RvTFeaSJe-kU3Uu9Vk0iMRt',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAATYAAAAAdgDYAQID4YgBgyevZAnpeQowSRRNffvuEdo3pivNJEvfSKbqXeqyaRARgAPLAYDSdGohsRZBI7DkyHYR9iHffT7Uf9Qg9IZ7E4iEFbvonQF/vizRbAWqdCpM02X5tPG5cEOBcypTz3JxoOU1NGL/////4AAAAABwAQIDAMD/ACDdIIIBTJe6lzDtRNDXCx/gpPJggwjXGCDTH9Mf0x/4IxO78mPtRNDTH9Mf0//RUTK68qFRRLryogT5AVQQVfkQ8qP4AJMg10qW0wfUAvsA6NEBpMjLH8sfy//J7VQAUAAAAAApqaMXbkBe/GUa5GDCuc1VaDzCLxheNOgRQZpXvPCHAR7umAcAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAA/tvrZA==',
@@ -150,6 +157,7 @@ const wallets: WalletTestDescriptor[] = [
     },
     {
         constructor: WalletV3ContractR2 as typeof WalletContract,
+        name: 'v3R2',
         address: 'UQCU89Iml8w3kH99CfW6C0cN78h3AqGuOYs3CK-5fdfagR6C',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAAUUAAAAAdgDnARED4YgBKeekTS+YbyD++hPrdBaOG9+Q7gVDXHMWbhFfcvuvtQIRgAPLAYDSdGohsRZBI7DkyHYR9iHffT7Uf9Qg9IZ7E4iEFbvonQF/vizRbAWqdCpM02X5tPG5cEOBcypTz3JxoOU1NGL/////4AAAAABwAQIDAN7/ACDdIIIBTJe6IYIBM5y6sZ9xsO1E0NMf0x8x1wv/4wTgpPJggwjXGCDTH9Mf0x/4IxO78mPtRNDTH9Mf0//RUTK68qFRRLryogT5AVQQVfkQ8qP4AJMg10qW0wfUAvsA6NEBpMjLH8sfy//J7VQAUAAAAAApqaMXbkBe/GUa5GDCuc1VaDzCLxheNOgRQZpXvPCHAR7umAcAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAuUEbxA==',
@@ -168,6 +176,7 @@ const wallets: WalletTestDescriptor[] = [
     },
     {
         constructor: WalletV4ContractR1 as typeof WalletContract,
+        name: 'v4R1',
         address: 'UQBvyw32ljifmyOUweifrTOlL6-nxrvsevTDzK0gCj4vd4Ir',
         transferQueryBoc64: {
             seqno0: 'te6ccsECGAEAA8sAAAAAdwCEAIkAjgEKATQBXwGqAa8BtAG5AdoB3wHuAf0CCAI3ArkC8gMqA2UDbAOXA+OIAN+WG+0scT82RymD0T9aZ0pfX0+Nd9j16YeZWkAUfF7uEZ72DzocWaLbNDfF4HXijOGLe5ydJ3vYddZXFwCTCQecHNjauZoxBAunU0gCybotb7gRhNWVu/y/QHKx05xsGgFFNTRi/////+AAAAAAAHABFhcBFP8A9KQT9LzyyAsCAgEgAxECAUgECAPu0AHQ0wMBcbCRW+Ah10nBIJFb4AHTHyGCEHBsdWe9IoIQYmxuY72wIoIQZHN0cr2wkl8D4AL6QDAg+kQByMoHy//J0O1E0IEBQNch9AQwXIEBCPQKb6Exs5JfBeAE0z/IJYIQcGx1Z7qRMeMNJIIQYmxuY7rjAAQFBgcAUAH6APQEMIIQcGx1Z4MesXCAGFAFywUnzxZQA/oC9AASy2nLH1IQyz8AUvgnbyKCEGJsbmODHrFwgBhQBcsFJ88WJPoCFMtqE8sfUjDLPwH6AvQAAJKCEGRzdHK6jjUEgQEI9Fkw7UTQgQFA1yDIAc8W9ADJ7VSCEGRzdHKDHrFwgBhQBMsFWM8WIvoCEstqyx/LP5QQNF8E4smAQPsAAgEgCRACASAKDwIBWAsMAD2ynftRNCBAUDXIfQEMALIygfL/8nQAYEBCPQKb6ExgAgEgDQ4AGa3OdqJoQCBrkOuF/8AAGa8d9qJoQBBrkOuFj8AAEbjJftRNDXCx+ABZvSQrb2omhAgKBrkPoCGEcNQICEekk30pkQzmkD6f+YN4EoAbeBAUiYcVnzGEBPjygwjXGCDTH9Mf0x8C+CO78mPtRNDTH9Mf0//0BNFRQ7ryoVFRuvKiBfkBVBBk+RDyo/gAJKTIyx9SQMsfUjDL/1IQ9ADJ7VT4DwHTByHAAJ9sUZMg10qW0wfUAvsA6DDgIcAB4wAhwALjAAHAA5Ew4w0DpMjLHxLLH8v/EhMUFQBu0gf6ANTUIvkABcjKBxXL/8nQd3SAGMjLBcsCIs8WUAX6AhTLaxLMzMlx+wDIQBSBAQj0UfKnAgBsgQEI1xjIVCAlgQEI9FHyp4IQbm90ZXB0gBjIywXLAlAEzxaCEAX14QD6AhPLahLLH8lx+wACAHKBAQjXGDBSAoEBCPRZ8qf4JYIQZHN0cnB0gBjIywXLAlAFzxaCEAX14QD6AhTLahPLHxLLP8lz+wAACvQAye1UAFEAAAAAKamjF25AXvxlGuRgwrnNVWg8wi8YXjToEUGaV7zwhwEe7pgHQABkQgAwleeHBeYTbamtzJbiS40k1ZNpIDsm+CurrEJKn+JLPRAg0AAAAAAAAAAAAAAAAAC+hTbf',
@@ -186,6 +195,7 @@ const wallets: WalletTestDescriptor[] = [
     },
     {
         constructor: WalletV4ContractR2 as typeof WalletContract,
+        name: 'v4R2',
         address: 'UQAXQH-lFETZ9KncaE4qs0XVTAYMMC2AGSKPNKhvt_Do45ym',
         transferQueryBoc64: {
             seqno0: 'te6ccsECFwEAA6oAAAAAdwCEAIkAjgEFAUMBigGPAZQBmQG6Ab8BzgHdAegCFwKZAtIDDANEA0sDdgPjiAAugP9KKImz6VO40JxVZouqmAwYYFsAMkUeaVDfb+HRxhGe9g86HFmi2zQ3xeB14ozhi3ucnSd72HXWVxcAkwkHnBzY2rmaMQQLp1NIAsm6LW+4EYTVlbv8v0BysdOcbBoBRTU0Yv/////gAAAAAABwARUWART/APSkE/S88sgLAgIBIAMQAgFIBAcC5tAB0NMDIXGwkl8E4CLXScEgkl8E4ALTHyGCEHBsdWe9IoIQZHN0cr2wkl8F4AP6QDAg+kQByMoHy//J0O1E0IEBQNch9AQwXIEBCPQKb6Exs5JfB+AF0z/IJYIQcGx1Z7qSODDjDQOCEGRzdHK6kl8G4w0FBgB4AfoA9AQw+CdvIjBQCqEhvvLgUIIQcGx1Z4MesXCAGFAEywUmzxZY+gIZ9ADLaRfLH1Jgyz8gyYBA+wAGAIpQBIEBCPRZMO1E0IEBQNcgyAHPFvQAye1UAXKwjiOCEGRzdHKDHrFwgBhQBcsFUAPPFiP6AhPLassfyz/JgED7AJJfA+ICASAIDwIBIAkOAgFYCgsAPbKd+1E0IEBQNch9AQwAsjKB8v/ydABgQEI9ApvoTGACASAMDQAZrc52omhAIGuQ64X/wAAZrx32omhAEGuQ64WPwAARuMl+1E0NcLH4AFm9JCtvaiaECAoGuQ+gIYRw1AgIR6STfSmRDOaQPp/5g3gSgBt4EBSJhxWfMYQE+PKDCNcYINMf0x/THwL4I7vyZO1E0NMf0x/T//QE0VFDuvKhUVG68qIF+QFUEGT5EPKj+AAkpMjLH1JAyx9SMMv/UhD0AMntVPgPAdMHIcAAn2xRkyDXSpbTB9QC+wDoMOAhwAHjACHAAuMAAcADkTDjDQOkyMsfEssfy/8REhMUAG7SB/oA1NQi+QAFyMoHFcv/ydB3dIAYyMsFywIizxZQBfoCFMtrEszMyXP7AMhAFIEBCPRR8qcCAHCBAQjXGPoA0z/IVCBHgQEI9FHyp4IQbm90ZXB0gBjIywXLAlAGzxZQBPoCFMtqEssfyz/Jc/sAAgBsgQEI1xj6ANM/MFIkgQEI9Fnyp4IQZHN0cnB0gBjIywXLAlAFzxZQA/oCE8tqyx8Syz/Jc/sAAAr0AMntVABRAAAAACmpoxduQF78ZRrkYMK5zVVoPMIvGF406BFBmle88IcBHu6YB0AAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAz41++w==',
@@ -215,6 +225,16 @@ for (const test of wallets) {
     const className = test.constructor.name;
 
     describe(className, () => {
+
+        it(`getName()`, async () => {
+
+            expect(
+                createWallet().getName()
+
+            ).toEqual(test.name);
+
+        });
+
 
         it(`getAddress()`, async () => {
 
