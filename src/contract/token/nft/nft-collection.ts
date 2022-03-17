@@ -17,7 +17,6 @@ export interface NftCollectionOptions extends ContractOptions {
     nftItemCodeHex?: string;
     royalty?: number;
     royaltyAddress?: Address;
-    cell?: Cell;
 }
 
 export interface NftCollectionMethods extends ContractMethods {

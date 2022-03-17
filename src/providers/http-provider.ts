@@ -185,6 +185,8 @@ export class HttpProvider {
     /**
      * Invokes get-method of smart contract.
      *
+     * @todo: rename to `runGetMethodRaw()`
+     *
      * {@link https://toncenter.com/api/v2/#/run%20method/run_get_method_runGetMethod_post}
      */
     public async call(
@@ -220,6 +222,8 @@ export class HttpProvider {
 
     /**
      * Invokes get-method of smart contract.
+     *
+     * @todo: rename to `runGetMethod()`
      *
      * {@link https://toncenter.com/api/v2/#/run%20method/run_get_method_runGetMethod_post}
      */
