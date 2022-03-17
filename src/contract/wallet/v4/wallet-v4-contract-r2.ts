@@ -3,7 +3,7 @@ import BN from 'bn.js';
 
 import { Cell } from '../../../boc/cell';
 import { HttpProvider } from '../../../providers/http-provider';
-import { Address, AddressType } from '../../../utils/Address';
+import { Address, AddressType } from '../../../utils/address';
 import { bytesToHex, toNano } from '../../../utils/common';
 import { Contract, Method } from '../../contract';
 import { ExternalMessage } from '../wallet-contract';

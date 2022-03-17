@@ -2,7 +2,7 @@
 import BN from 'bn.js';
 
 import { bytesToHex } from '../utils/common';
-import { Address } from '../utils/Address';
+import { Address } from '../utils/address';
 
 
 export class BitString {

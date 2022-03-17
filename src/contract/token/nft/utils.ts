@@ -1,7 +1,7 @@
 
 import { BitString } from '../../../boc/bit-string';
 import { Cell } from '../../../boc/cell';
-import { Address } from '../../../utils/Address';
+import { Address } from '../../../utils/address';
 
 
 export const SNAKE_DATA_PREFIX = 0x00;

@@ -51,8 +51,8 @@ export {
 // UTILS //
 //=======//
 
-import { Address, AddressType } from './utils/Address';
-export { AddressType } from './utils/Address';
+import { Address, AddressType } from './utils/address';
+export { AddressType } from './utils/address';
 
 import * as utilsExports from './utils/common';
 

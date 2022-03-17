@@ -1,7 +1,7 @@
 
 import BN from 'bn.js';
 
-import { Address } from './Address';
+import { Address } from './address';
 
 
 export interface ParsedTransferUrl {

@@ -6,7 +6,7 @@ import { Cell } from '../boc/cell';
 import { Contract, Method, Query } from '../contract/contract';
 import { WalletContract } from '../contract/wallet/wallet-contract';
 import TonWeb, { AddressType } from '../index';
-import { Address } from '../utils/Address';
+import { Address } from '../utils/address';
 import { bytesToHex } from '../utils/common';
 
 

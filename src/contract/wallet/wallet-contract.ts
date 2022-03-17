@@ -5,7 +5,7 @@ import nacl from 'tweetnacl';
 import { Contract, ContractMethods, ContractOptions, Method, Query } from '../contract';
 import { Cell } from '../../boc/cell';
 import { HttpProvider } from '../../providers/http-provider';
-import { Address, AddressType } from '../../utils/Address';
+import { Address, AddressType } from '../../utils/address';
 
 
 export interface WalletContractOptions extends ContractOptions {

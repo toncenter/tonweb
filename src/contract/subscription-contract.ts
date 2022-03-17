@@ -3,7 +3,7 @@ import BN from 'bn.js';
 
 import { Cell } from '../boc/cell';
 import { HttpProvider } from '../providers/http-provider';
-import { Address } from '../utils/Address';
+import { Address } from '../utils/address';
 import { Contract, ContractMethods, ContractOptions, Method } from './contract';
 
 
