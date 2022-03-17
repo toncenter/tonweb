@@ -14,6 +14,7 @@ export class WalletV2ContractR2 extends WalletV2ContractBase {
         super(provider, options);
     }
 
+
     public getName(): string {
         return 'v2R2';
     }

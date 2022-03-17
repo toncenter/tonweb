@@ -16,6 +16,7 @@ export class SimpleWalletContractR1 extends WalletContract {
         super(provider, options);
     }
 
+
     public getName(): string {
         return 'simpleR1';
     }

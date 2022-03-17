@@ -16,6 +16,7 @@ export class WalletV3ContractR2 extends WalletV3ContractBase {
         }
     }
 
+
     public getName(): string {
         return 'v3R2';
     }
