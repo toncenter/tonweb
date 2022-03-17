@@ -157,6 +157,10 @@ const testAddress = 'UQBhK88OC8wm21NbmS3ElxpJqybSQHZN8FdXWISVP8SWeiMn';
         })();
 
         await (async () => {
+            result.name = wallet.getName();
+        })();
+
+        await (async () => {
 
             const payload = new TonWeb.boc.Cell();
 
