@@ -1,6 +1,6 @@
 import { Cell } from '../../../boc/cell';
 import { HttpProvider } from '../../../providers/http-provider';
-import { Address } from '../../../utils/Address';
+import { Address } from '../../../utils/address';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
 export interface NftMarketplaceOptions extends ContractOptions {
     ownerAddress?: Address;

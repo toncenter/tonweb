@@ -1,7 +1,7 @@
 import BN from 'bn.js';
 import { Cell } from '../../../boc/cell';
 import { HttpProvider } from '../../../providers/http-provider';
-import { AddressType } from '../../../utils/Address';
+import { AddressType } from '../../../utils/address';
 import { Method } from '../../contract';
 import { ExternalMessage } from '../wallet-contract';
 import { WalletV4ContractBase, WalletV4ContractMethods, WalletV4ContractOptions } from './wallet-v4-contract-base';

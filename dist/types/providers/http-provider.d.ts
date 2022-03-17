@@ -38,7 +38,7 @@ export declare class HttpProvider {
     /**
      * @todo: change params type to Array<any>
      */
-    send(method: string, params: any): Promise<any>;
+    send(method: string, params: any): Promise<Response>;
     /**
      * Use this method to get information about address:
      * balance, code, data, last_transaction_id.
@@ -102,6 +102,8 @@ export declare class HttpProvider {
     /**
      * Invokes get-method of smart contract.
      *
+     * @todo: rename to `runGetMethodRaw()`
+     *
      * {@link https://toncenter.com/api/v2/#/run%20method/run_get_method_runGetMethod_post}
      */
     call(
@@ -119,6 +121,8 @@ export declare class HttpProvider {
     params?: StackElement[]): Promise<any>;
     /**
      * Invokes get-method of smart contract.
+     *
+     * @todo: rename to `runGetMethod()`
      *
      * {@link https://toncenter.com/api/v2/#/run%20method/run_get_method_runGetMethod_post}
      */
