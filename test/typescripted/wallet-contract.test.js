@@ -4,9 +4,11 @@ const nacl = require('tweetnacl');
 const TonWeb = require('../../src');
 const { TestHttpProvider } = require('./test-http-provider');
 const utils = TonWeb.utils;
+const Lockup = TonWeb.LockupWallets;
 
 const FakeTimers = require('@sinonjs/fake-timers');
 FakeTimers.install();
+
 
 const testProvider = new TestHttpProvider();
 
@@ -17,18 +19,44 @@ const keyPair = nacl.sign.keyPair.fromSeed(
 
 const testAddress = 'UQBhK88OC8wm21NbmS3ElxpJqybSQHZN8FdXWISVP8SWeiMn';
 
+const wallets = [
+    TonWeb.Wallets.all.simpleR1,
+    TonWeb.Wallets.all.simpleR2,
+    TonWeb.Wallets.all.simpleR3,
+    TonWeb.Wallets.all.v2R1,
+    TonWeb.Wallets.all.v2R2,
+    TonWeb.Wallets.all.v3R1,
+    TonWeb.Wallets.all.v3R2,
+    TonWeb.Wallets.all.v4R1,
+    TonWeb.Wallets.all.v4R2,
+    Lockup.LockupWalletV1,
+];
+
 
 (async () => {
 
-    //=======//
-    // SEQNO //
-    //=======//
+    let results = [];
 
-    for (const WalletType of TonWeb.Wallets.list) {
+    for (const WalletType of wallets) {
+
+        let walletExtraOptions = {};
+
+        if (WalletType.name === 'LockupWalletV1') {
+            walletExtraOptions = {
+                config: {
+                    config_public_key: utils.bytesToBase64(keyPair.publicKey),
+                },
+            };
+        }
+
+        //====================//
+        // SEQNO (PUBLIC KEY) //
+        //====================//
 
         let wallet = new WalletType(
             testProvider, {
                 publicKey: keyPair.publicKey,
+                ...walletExtraOptions,
             }
         );
 
@@ -39,9 +67,14 @@ const testAddress = 'UQBhK88OC8wm21NbmS3ElxpJqybSQHZN8FdXWISVP8SWeiMn';
         testProvider.calls = [];
 
 
+        //=================//
+        // SEQNO (ADDRESS) //
+        //=================//
+
         wallet = new WalletType(
             testProvider, {
                 address: testAddress,
+                ...walletExtraOptions,
             }
         );
 
@@ -51,20 +84,15 @@ const testAddress = 'UQBhK88OC8wm21NbmS3ElxpJqybSQHZN8FdXWISVP8SWeiMn';
         console.log(JSON.stringify(testProvider.calls, null, 4));
         testProvider.calls = [];
 
-    }
 
+        //===============//
+        // OTHER METHODS //
+        //===============//
 
-    //==================//
-    // TRANSFER, DEPLOY //
-    //==================//
-
-    let results = [];
-
-    for (const WalletType of TonWeb.Wallets.list) {
-
-        const wallet = new WalletType(
+        wallet = new WalletType(
             testProvider, {
                 publicKey: keyPair.publicKey,
+                ...walletExtraOptions,
             }
         );
 
