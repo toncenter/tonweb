@@ -1,8 +1,10 @@
 
 import { Cell } from '../../boc/cell';
+import { HttpProvider } from '../../providers/http-provider';
 import { TestHttpProvider } from '../../providers/test/test-http-provider';
 import { testAddress, testAddressStr, testKeyPair, testProvider } from '../../test/common';
 import { bytesToBase64 } from '../../utils/common';
+import { LockupWalletV1 } from '../lockup/lockup-wallet-v1';
 import { SimpleWalletContractR1 } from './simple/simple-wallet-contract-r1';
 import { SimpleWalletContractR2 } from './simple/simple-wallet-contract-r2';
 import { SimpleWalletContractR3 } from './simple/simple-wallet-contract-r3';
@@ -212,6 +214,25 @@ const wallets: WalletTestDescriptor[] = [
         },
         deployQueryBoc64: 'te6ccsECFgEAA3QAAAAAdQCCAIcAjAEDAUEBiAGNAZIBlwG4Ab0BzAHbAeYCFQKXAtADCgNCA0kC4YgALoD/SiiJs+lTuNCcVWaLqpgMGGBbADJFHmlQ32/h0cYRnRC34EtfMGF6tZdxKsmGRvnH0WoDO71L27frgUXQuEiEXihqpxOQelnGXJ0HxYTiQHlsvGZUTSD4800uAnCCwOU1NGL/////4AAAAAAQARUBFP8A9KQT9LzyyAsCAgEgAxACAUgEBwLm0AHQ0wMhcbCSXwTgItdJwSCSXwTgAtMfIYIQcGx1Z70ighBkc3RyvbCSXwXgA/pAMCD6RAHIygfL/8nQ7UTQgQFA1yH0BDBcgQEI9ApvoTGzkl8H4AXTP8glghBwbHVnupI4MOMNA4IQZHN0crqSXwbjDQUGAHgB+gD0BDD4J28iMFAKoSG+8uBQghBwbHVngx6xcIAYUATLBSbPFlj6Ahn0AMtpF8sfUmDLPyDJgED7AAYAilAEgQEI9Fkw7UTQgQFA1yDIAc8W9ADJ7VQBcrCOI4IQZHN0coMesXCAGFAFywVQA88WI/oCE8tqyx/LP8mAQPsAkl8D4gIBIAgPAgEgCQ4CAVgKCwA9sp37UTQgQFA1yH0BDACyMoHy//J0AGBAQj0Cm+hMYAIBIAwNABmtznaiaEAga5Drhf/AABmvHfaiaEAQa5DrhY/AABG4yX7UTQ1wsfgAWb0kK29qJoQICga5D6AhhHDUCAhHpJN9KZEM5pA+n/mDeBKAG3gQFImHFZ8xhAT48oMI1xgg0x/TH9MfAvgju/Jk7UTQ0x/TH9P/9ATRUUO68qFRUbryogX5AVQQZPkQ8qP4ACSkyMsfUkDLH1Iwy/9SEPQAye1U+A8B0wchwACfbFGTINdKltMH1AL7AOgw4CHAAeMAIcAC4wABwAORMOMNA6TIyx8Syx/L/xESExQAbtIH+gDU1CL5AAXIygcVy//J0Hd0gBjIywXLAiLPFlAF+gIUy2sSzMzJc/sAyEAUgQEI9FHypwIAcIEBCNcY+gDTP8hUIEeBAQj0UfKnghBub3RlcHSAGMjLBcsCUAbPFlAE+gIUy2oSyx/LP8lz+wACAGyBAQjXGPoA0z8wUiSBAQj0WfKnghBkc3RycHSAGMjLBcsCUAXPFlAD+gITy2rLHxLLP8lz+wAACvQAye1UAFEAAAAAKamjF25AXvxlGuRgwrnNVWg8wi8YXjToEUGaV7zwhwEe7pgHQNwk0lM=',
     },
+    {
+        constructor: LockupWalletV1 as typeof WalletContract,
+        name: 'lockup-0.1',
+        address: 'UQDcBQLPldzl_TvBatQUDICmH3YfhURWLk1qKQ2PwBNOSfpT',
+        transferQueryBoc64: {
+            seqno0: 'te6ccsECIQEAA1cAAAAAdgCDAIgAjQCSAJcAnAEdASUBMgE8AUgBYQFmAWsBiAGsAdEB1gHbAeAB+QH+AgwCGgIfAioCOAJFAsEC1wMjA+GIAbgKBZ8rucv6d4LVqCgZAUw+7D8KiKxcmtRSGx+AJpySEYADywGA0nRqIbEWQSOw5Mh2EfYh330+1H/UIPSGexOIhBW76J0Bf74s0WwFqnQqTNNl+bTxuXBDgXMqU89ycaDlNTRi/////+AAAAAAcAEfIAEU/wD0pBP0vPLICwICASADHQIBSAQSAgLNBQ0CASAGDAIBIAcLA/cAdDTAwFxsJJfA+D6QDAhxwCSXwPgAdMfIcECkl8E4PADUbTwAYIQgur5xFKwvbCSXwzggCiCEILq+cQbuhry9IAhK4IQO5rKAL7y9AeDCNcYgCAh+QFUEDb5EBLy9NMfgCmCEDc6qfQTuhLy9NMA0x8wAeMPEEgQN14ygCAkKAAwQOUgK8AUAFhA3QQrwBQgQV1BWABAQJEMA8ATtVAATCHXSfSob6VsMYAAtXtRNDTH9Mf0//T//QE+gD0BPoA9ATRgCASAOEQIBIA8QADUCMjKHxfKHxXL/xPL//QAAfoC9AAB+gL0AMmAAQxRIqBTE4Ag9A5voZb6ANEToAKRMOLIUAP6AkATgCD0QwGAARUjh4igCD0lm+lIJMwI7uRMeIgmDX6ANEToUATkmwh4rPmMIAgEgExwCASAUGQIBIBUWAC21GH4AbYiGioJgngDGIH4Axj8E7eILMAIBWBcYABetznaiaGmfmOuF/8AAF6x49qJoaY+Y64WPwAIBSBobABGzJftRNDXCx+AAF7HRvgjggEIw+1D2IAAVven3gBiCQvhHgAwB8vKDCNcYINMf0x/TH4AkA/gjuxPy8vADgCJRqboa8vSAI1G3uhvy9IAfC/kBVBDF+RAa8vT4AFBX+CPwBlCY+CPwBiBxKJMg10qOi9MHMdRRG9s8ErAB6DCSKaDfcvsCBpMg10qW0wfUAvsA6NEDpEdoFBVDMPAE7VQeACgB0NMDAXiwklt/4PpAMfpAMAHwAQCTAAAAACmpoxduQF78ZRrkYMK5zVVoPMIvGF406BFBmle88IcBHu6YB25AXvxlGuRgwrnNVWg8wi8YXjToEUGaV7zwhwEe7pgHABAAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAApIBX0A==',
+            seqno1: 'te6ccsEBAgEApwAAcwHfiAG4CgWfK7nL+neC1agoGQFMPuw/CoisXJrUUhsfgCackgO40I7yAP5KBVYZSEPBElrAQLJMDwKmFqvotV86hRMVEpP2O7TB2ohSh6+PHfmTmJbguZmozI7OBZQLmjHUswhZTU0YuAAAAeAAAAAIHAEAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAwYmmlQ==',
+            seqno1SendMode: 'te6ccsEBAgEApwAAcwHfiAG4CgWfK7nL+neC1agoGQFMPuw/CoisXJrUUhsfgCackgNkQrxZtZruCZHO5W8SWcaMGcTI2974586W5Vhbp7jw/yNLZpKmWQJZIPk065/tnoJwnGa/UxWArvigOkoSpeBJTU0YuAAAAeAAAAANFAEAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAJ1q8zw==',
+            seqno1PayloadStr: 'te6ccsEBAgEAsAAAcwHfiAG4CgWfK7nL+neC1agoGQFMPuw/CoisXJrUUhsfgCackgK2kz8EDEhYeCtXyD8t4mYDhABBvfPUrpqndnU2kJ4T5xtANurtooUvPOh+gitsSoDgQfGV5WRhMhLLyNU7+7ARTU0YuAAAAeAAAAAIHAEAdkIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAAAAAAE1BUkNPZkv7wA==',
+            seqno1PayloadBytes: 'te6ccsEBAgEAqwAAcwHfiAG4CgWfK7nL+neC1agoGQFMPuw/CoisXJrUUhsfgCackgYcXYUgqGh8CuIV0VMtLfZBmiXKd2J8eHmPnbMW7dsFfQeK7f3vlF+qMdKTSjMZEN9g/8upvwxLYWXr97T/S8gpTU0YuAAAAeAAAAAIHAEAbEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAAQMDByI5xrg=',
+            seqno1PayloadCell: 'te6ccsEBAgEA0gAAcwHfiAG4CgWfK7nL+neC1agoGQFMPuw/CoisXJrUUhsfgCackgcnxHrY9AiFYGJ8aribUAvVbOxkpHjufcXiZ2rYthizHL8JwWwFmhcdXs7evMgBhuZrrYR/idsnI1dkxgtfHzBxTU0YuAAAAeAAAAAIHAEAuUIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAApgMRKJqCpIafABhK88OC8wm21NbmS3ElxpJqybSQHZN8FdXWISVP8SWeoIiJOr0=',
+        },
+        getSeqNo: {
+            publicKey: {
+                address: '0:dc0502cf95dce5fd3bc16ad4140c80a61f761f8544562e4d6a290d8fc0134e49',
+            },
+        },
+        deployQueryBoc64: 'te6ccsECIAEAAyEAAAAAdACBAIYAiwCQAJUAmgEbASMBMAE6AUYBXwFkAWkBhgGqAc8B1AHZAd4B9wH8AgoCGAIdAigCNgJDAr8C1QLfiAG4CgWfK7nL+neC1agoGQFMPuw/CoisXJrUUhsfgCackhGGZPcBo8N6bK0h6wjJ3PMy798q87+ZiFkqjBk4D81FUqs6AigwVsROUgUbLv3Gm+u73pR+h1wcyM0JK8QZcmthBTU0Yv/////gAAAAEAEfART/APSkE/S88sgLAgIBIAMdAgFIBBICAs0FDQIBIAYMAgEgBwsD9wB0NMDAXGwkl8D4PpAMCHHAJJfA+AB0x8hwQKSXwTg8ANRtPABghCC6vnEUrC9sJJfDOCAKIIQgur5xBu6GvL0gCErghA7msoAvvL0B4MI1xiAICH5AVQQNvkQEvL00x+AKYIQNzqp9BO6EvL00wDTHzAB4w8QSBA3XjKAICQoADBA5SArwBQAWEDdBCvAFCBBXUFYAEBAkQwDwBO1UABMIddJ9KhvpWwxgAC1e1E0NMf0x/T/9P/9AT6APQE+gD0BNGAIBIA4RAgEgDxAANQIyMofF8ofFcv/E8v/9AAB+gL0AAH6AvQAyYABDFEioFMTgCD0Dm+hlvoA0ROgApEw4shQA/oCQBOAIPRDAYABFSOHiKAIPSWb6UgkzAju5Ex4iCYNfoA0ROhQBOSbCHis+YwgCASATHAIBIBQZAgEgFRYALbUYfgBtiIaKgmCeAMYgfgDGPwTt4gswAgFYFxgAF63OdqJoaZ+Y64X/wAAXrHj2omhpj5jrhY/AAgFIGhsAEbMl+1E0NcLH4AAXsdG+COCAQjD7UPYgABW96feAGIJC+EeADAHy8oMI1xgg0x/TH9MfgCQD+CO7E/Ly8AOAIlGpuhry9IAjUbe6G/L0gB8L+QFUEMX5EBry9PgAUFf4I/AGUJj4I/AGIHEokyDXSo6L0wcx1FEb2zwSsAHoMJIpoN9y+wIGkyDXSpbTB9QC+wDo0QOkR2gUFUMw8ATtVB4AKAHQ0wMBeLCSW3/g+kAx+kAwAfABAJMAAAAAKamjF25AXvxlGuRgwrnNVWg8wi8YXjToEUGaV7zwhwEe7pgHbkBe/GUa5GDCuc1VaDzCLxheNOgRQZpXvPCHAR7umAcAEGIMa4E=',
+    },
 ];
 
 
@@ -336,7 +357,7 @@ for (const test of wallets) {
         it(`seqno (public-key)`, async () => {
 
             await testSeqno({
-                contractOptions: {
+                walletOptions: {
                     publicKey: testKeyPair.publicKey,
                 },
                 expectedAddress: test.getSeqNo.publicKey.address,
@@ -347,7 +368,7 @@ for (const test of wallets) {
         it(`seqno (address)`, async () => {
 
             await testSeqno({
-                contractOptions: {
+                walletOptions: {
                     address: testAddressStr,
                 },
                 expectedAddress: testAddressStr,
@@ -418,12 +439,34 @@ for (const test of wallets) {
     });
 
 
-    function createWallet(): WalletContract {
-        return new test.constructor(
-            testProvider, {
-                publicKey: testKeyPair.publicKey,
-            }
-        );
+    function createWallet(args?: {
+        provider?: HttpProvider;
+        options?: Partial<WalletContractOptions>;
+
+    }): WalletContract {
+
+        const defaultOptions: WalletContractOptions = {
+            publicKey: testKeyPair.publicKey,
+        };
+
+        const {
+            provider = testProvider,
+            options = defaultOptions,
+
+        } = (args || {});
+
+        switch (test.constructor.name) {
+            case 'LockupWalletV1':
+                Object.assign(options, {
+                    config: {
+                        config_public_key: bytesToBase64(testKeyPair.publicKey),
+                    },
+                });
+                break;
+        }
+
+        return new test.constructor(provider, options);
+
     }
 
     async function getTransferQueryBocString(
@@ -448,23 +491,23 @@ for (const test of wallets) {
     }
 
     async function testSeqno(options: {
-        contractOptions: WalletContractOptions;
+        walletOptions: WalletContractOptions;
         expectedAddress: string;
 
     }) {
 
         const {
-            contractOptions,
+            walletOptions,
             expectedAddress,
 
         } = options;
 
         const provider = new TestHttpProvider();
 
-        const wallet = new test.constructor(
+        const wallet = createWallet({
             provider,
-            contractOptions
-        );
+            options: walletOptions,
+        });
 
         await wallet.methods.seqno().call();
 
