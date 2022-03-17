@@ -1,7 +1,11 @@
 
+import BN from 'bn.js';
+
 import { Cell } from '../../../boc/cell';
 import { HttpProvider } from '../../../providers/http-provider';
+import { Address } from '../../../utils/Address';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
+import { parseAddress } from '../nft/utils';
 
 
 export interface JettonWalletOptions extends ContractOptions {
@@ -9,6 +13,13 @@ export interface JettonWalletOptions extends ContractOptions {
 }
 
 export interface JettonWalletMethods extends ContractMethods {
+}
+
+export interface WalletData {
+    balance: BN;
+    ownerAddress: Address;
+    jettonMinterAddress: Address;
+    tokenWalletCode: Cell;
 }
 
 
@@ -41,6 +52,23 @@ export class JettonWallet extends Contract<
         );
 
         super(provider, options);
+
+    }
+
+
+    public async getData(): Promise<WalletData> {
+        const myAddress = await this.getAddress();
+        const result = await this.provider.call2(
+            myAddress.toString(),
+            'get_wallet_data'
+        );
+
+        return {
+            balance: result[0],
+            ownerAddress: parseAddress(result[1]),
+            jettonMinterAddress: parseAddress(result[2]),
+            tokenWalletCode: result[3],
+        };
 
     }
 
