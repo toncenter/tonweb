@@ -28,12 +28,3 @@ export declare function base64toString(base64: string): string;
 export declare function stringToBase64(str: string): string;
 export declare function base64ToBytes(base64: string): Uint8Array;
 export declare function readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
-
-export declare interface ParsedTransferUrl {
-    address: string;
-    amount?: string;
-    text?: string
-}
-
-export declare function parseTransferUrl(url: string): ParsedTransferUrl;
-export declare function formatTransferUrl(address: string, amount?: string, text?: string): string;
