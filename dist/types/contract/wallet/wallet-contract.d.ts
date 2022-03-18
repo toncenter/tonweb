@@ -1,8 +1,8 @@
 import BN from 'bn.js';
-import { Contract, ContractMethods, ContractOptions, Method } from '../contract';
+import { Contract, ContractMethods, ContractOptions, Method, Query } from '../contract';
 import { Cell } from '../../boc/cell';
 import { HttpProvider } from '../../providers/http-provider';
-import { Address, AddressType } from '../../utils/Address';
+import { Address, AddressType } from '../../utils/address';
 export interface WalletContractOptions extends ContractOptions {
     publicKey?: Uint8Array;
 }
@@ -46,19 +46,9 @@ export declare class WalletContract<WalletType extends WalletContractOptions = W
      */
     getName(): string;
     /**
-     * External message for initialization
-     * @param secretKey  {Uint8Array} nacl.KeyPair.secretKey
-     * @return {{address: Address, message: Cell, body: Cell, sateInit: Cell, code: Cell, data: Cell}}
+     * Creates external message for contract initialization.
      */
-    createInitExternalMessage(secretKey: any): Promise<{
-        address: Address;
-        message: Cell;
-        body: Cell;
-        signingMessage: Cell;
-        stateInit: Cell;
-        code: Cell;
-        data: Cell;
-    }>;
+    createInitExternalMessage(secretKey: Uint8Array): Promise<Query>;
     createTransferMessage(
     /**
      * `nacl.KeyPair.secretKey`

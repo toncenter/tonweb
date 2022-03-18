@@ -8,8 +8,8 @@ import { InMemoryBlockStorage } from './providers/block-subscription/in-memory-b
 export { BlockHandler, BlockSubscriptionOptions, } from './providers/block-subscription/block-subscription';
 export { LogFunction, } from './providers/block-subscription/in-memory-block-storage';
 export { ShardBlock, BlockStorage, } from './providers/block-subscription/block-storage';
-import { Address, AddressType } from './utils/Address';
-export { AddressType } from './utils/Address';
+import { Address, AddressType } from './utils/address';
+export { AddressType } from './utils/address';
 import { formatTransferUrl, parseTransferUrl } from './utils/transfer-url';
 export { ParsedTransferUrl } from './utils/transfer-url';
 import { BitString } from './boc/bit-string';

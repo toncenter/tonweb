@@ -1,7 +1,7 @@
 import BN from 'bn.js';
 import { Cell } from '../../../boc/cell';
 import { HttpProvider } from '../../../providers/http-provider';
-import { Address } from '../../../utils/Address';
+import { Address } from '../../../utils/address';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
 import { NftItem } from './nft-item';
 export interface NftCollectionOptions extends ContractOptions {
@@ -11,7 +11,6 @@ export interface NftCollectionOptions extends ContractOptions {
     nftItemCodeHex?: string;
     royalty?: number;
     royaltyAddress?: Address;
-    cell?: Cell;
 }
 export interface NftCollectionMethods extends ContractMethods {
     getCollectionData: () => Promise<CollectionData>;
