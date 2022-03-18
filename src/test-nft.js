@@ -37,7 +37,7 @@ async function init() {
         console.log(
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
-                toAddress: nftCollectionAddress.toString(true, true, false), // non-bounceable
+                toAddress: nftCollectionAddress.toString(true, true, true),
                 amount: TonWeb.utils.toNano(1),
                 seqno: seqno,
                 payload: null, // body
