@@ -50,7 +50,7 @@ const A = {
 const WA = {
     EMPTY_STRING: '',
     TYPE: Date as any,
-    LENGTH: A.F_NS_NB_NT.substring(0, 10),
+    PARTIAL: A.F_NS_NB_NT.substring(0, 24),
     CHECKSUM: (
         A.F_NS_NB_NT
             .substring(0, A.F_NS_NB_NT.length - 1) + 'X'
@@ -65,6 +65,7 @@ const WA = {
         A.F_NS_NB_NT,
         data => (data[1] = 10)
     ),
+    EXTRA_CHAR: A.F_NS_NB_NT + 'X',
     EXTRA_CHARS: A.F_NS_NB_NT + 'typo',
 };
 
@@ -134,8 +135,8 @@ describe('Address', () => {
         });
 
         it('should throw on incorrect string length', () => {
-            expect(() => $A(WA.LENGTH)).toThrow(
-                /Incorrect address format.*byte length/
+            expect(() => $A(WA.PARTIAL)).toThrow(
+                /address.*should contain.*48 characters/
             );
         });
 
@@ -292,9 +293,19 @@ describe('Address', () => {
 
         });
 
+        it('should throw on string with single extra character', () => {
+
+            // Single extra character could be ignored by
+            // the base64 decoding process of the address.
+            expect(() => $A(WA.EXTRA_CHAR)).toThrow(
+                /address.*should contain.*48 characters/
+            );
+
+        });
+
         it('should throw on string with extra characters', () => {
             expect(() => $A(WA.EXTRA_CHARS)).toThrow(
-                /Incorrect address.*byte length/
+                /address.*should contain.*48 characters/
             );
         });
 
