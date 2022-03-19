@@ -203,7 +203,7 @@ export class WalletContract<
 
     ): Promise<ExternalMessage> {
 
-        const payloadCell = this.parsePayload(payload);
+        const payloadCell = this.serializePayload(payload);
 
         const orderHeader = Contract.createInternalMessageHeader(
             new Address(address),
@@ -314,7 +314,7 @@ export class WalletContract<
     }
 
 
-    private parsePayload(
+    private serializePayload(
         payload?: (string | Uint8Array | Cell)
 
     ): Cell {
@@ -329,11 +329,12 @@ export class WalletContract<
 
         let payloadCell = new Cell();
 
+        // @todo: throw more meaningful error
+        //        on cell bytes overflow
+
         if (typeof payload === 'string') {
             payloadCell.bits.writeUint(0, 32);
-            payloadCell.bits.writeBytes(
-                new TextEncoder().encode(payload)
-            );
+            payloadCell.bits.writeString(payload);
 
         } else {
             payloadCell.bits.writeBytes(payload)

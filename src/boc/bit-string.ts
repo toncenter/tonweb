@@ -209,17 +209,14 @@ export class BitString {
     }
 
     /**
-     * Represents the specified ASCII string as bytes and writes
+     * Represents the specified multibyte string as bytes and writes
      * them to the bit-string, starting at the current index and
      * advances the current index cursor by the number of bits written.
-     * Using non-ASCII characters will cause an error.
-     *
-     * @todo: detect non-ASCII characters and throw more specific error?
      */
-    public writeString(asciiString: string) {
-        for (let i = 0; i < asciiString.length; i++) {
-            this.writeUint8(asciiString.charCodeAt(i));
-        }
+    public writeString(value: string) {
+        this.writeBytes(
+            new TextEncoder().encode(value)
+        );
     }
 
     /**
