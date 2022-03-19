@@ -100,14 +100,11 @@ export declare class BitString {
      */
     writeBytes(values: Uint8Array): void;
     /**
-     * Represents the specified ASCII string as bytes and writes
+     * Represents the specified multibyte string as bytes and writes
      * them to the bit-string, starting at the current index and
      * advances the current index cursor by the number of bits written.
-     * Using non-ASCII characters will cause an error.
-     *
-     * @todo: detect non-ASCII characters and throw more specific error?
      */
-    writeString(asciiString: string): void;
+    writeString(value: string): void;
     /**
      * Writes the specified amount in nanograms to the
      * bit-string, starting at the current index and advances

@@ -66,5 +66,5 @@ export declare class WalletContract<WalletType extends WalletContractOptions = W
      * @todo: improve the description
      */
     secretKey: Uint8Array, seqno: number, dummySignature?: boolean): Promise<ExternalMessage>;
-    private parsePayload;
+    private serializePayload;
 }
