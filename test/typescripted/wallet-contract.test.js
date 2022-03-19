@@ -102,6 +102,10 @@ const wallets = [
         };
 
 
+        //===================//
+        // TRANSFER: SEQNO 0 //
+        //===================//
+
         await (async () => {
             const method = wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
@@ -116,6 +120,11 @@ const wallets = [
             result.queryBocB64Seqno0 = utils.bytesToBase64(queryBoc);
 
         })();
+
+
+        //===================//
+        // TRANSFER: SEQNO 1 //
+        //===================//
 
         await (async () => {
             const method = wallet.methods.transfer({
@@ -132,6 +141,11 @@ const wallets = [
 
         })();
 
+
+        //==============================//
+        // TRANSFER: SEQNO 1, SEND MODE //
+        //==============================//
+
         await (async () => {
             const method = wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
@@ -147,6 +161,11 @@ const wallets = [
             result.queryBocB64Seqno1SendMode = utils.bytesToBase64(queryBoc);
 
         })();
+
+
+        //=================//
+        // PAYLOAD: STRING //
+        //=================//
 
         await (async () => {
             const method = wallet.methods.transfer({
@@ -166,6 +185,34 @@ const wallets = [
 
         })();
 
+
+        //===========================//
+        // PAYLOAD: MULTIBYTE STRING //
+        //===========================//
+
+        await (async () => {
+            const method = wallet.methods.transfer({
+                secretKey: keyPair.secretKey,
+                toAddress: testAddress,
+                amount: 1050,
+                seqno: 1,
+                payload: '1B: A, 2B: Ω, 3B: ಄, 4B: 𓅱',
+            });
+
+            const queryCell = await method.getQuery();
+            const queryBoc = await queryCell.toBoc();
+
+            result.queryBocB64Seqno1PayloadMBStr = (
+                utils.bytesToBase64(queryBoc)
+            );
+
+        })();
+
+
+        //================//
+        // PAYLOAD: BYTES //
+        //================//
+
         await (async () => {
             const method = wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
@@ -184,9 +231,10 @@ const wallets = [
 
         })();
 
-        await (async () => {
-            result.name = wallet.getName();
-        })();
+
+        //===============//
+        // PAYLOAD: CELL //
+        //===============//
 
         await (async () => {
 
@@ -219,6 +267,20 @@ const wallets = [
 
         })();
 
+
+        //==========//
+        // GET NAME //
+        //==========//
+
+        await (async () => {
+            result.name = wallet.getName();
+        })();
+
+
+        //========//
+        // DEPLOY //
+        //========//
+
         await (async () => {
 
             const queryCell = (await wallet
@@ -234,7 +296,10 @@ const wallets = [
 
         })();
 
-        results.push(result);
+        results.push({
+            name: result.name,
+            queryBocB64Seqno1PayloadMBStr: result.queryBocB64Seqno1PayloadMBStr,
+        });
 
     }
 
