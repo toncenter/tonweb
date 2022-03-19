@@ -129,9 +129,16 @@ export class WalletV4ContractR2 extends WalletV4ContractBase<
     }
 
     public async getWalletId(): Promise<number> {
+
         const myAddress = await this.getAddress();
-        const id = await this.provider.call2(myAddress.toString(), 'get_subwallet_id');
+
+        const id = await this.provider.call2(
+            myAddress.toString(),
+            'get_subwallet_id'
+        );
+
         return id.toNumber();
+
     }
 
     public async isPluginInstalled(

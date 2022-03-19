@@ -169,7 +169,7 @@ export class HttpProvider {
 
     ): Promise<any> {
 
-        return this.send('sendBoc', {'boc': base64});
+        return this.send('sendBoc', { boc: base64 });
 
     };
 
