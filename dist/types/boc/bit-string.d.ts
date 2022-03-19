@@ -10,6 +10,7 @@ export declare class BitString {
     length: number;
     array: Uint8Array;
     cursor: number;
+    private textEncoder;
     constructor(
     /**
      * A length of bit string in bits.
