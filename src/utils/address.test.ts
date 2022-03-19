@@ -65,6 +65,7 @@ const WA = {
         A.F_NS_NB_NT,
         data => (data[1] = 10)
     ),
+    EXTRA_CHARS: A.F_NS_NB_NT + 'typo',
 };
 
 /**
@@ -289,6 +290,12 @@ describe('Address', () => {
 
             }
 
+        });
+
+        it('should throw on string with extra characters', () => {
+            expect(() => $A(WA.EXTRA_CHARS)).toThrow(
+                /Incorrect address.*byte length/
+            );
         });
 
     });
