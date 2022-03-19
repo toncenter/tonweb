@@ -178,12 +178,16 @@ class BitString {
     }
 
     /**
-     * @param s {string}
+     * Represents the specified multibyte string as bytes and writes
+     * them to the bit-string, starting at the current index and
+     * advances the current index cursor by the number of bits written.
+     *
+     * @param value {string}
      */
-    writeString(s) {
-        for (let i = 0; i < s.length; i++) {
-            this.writeUint8(s.charCodeAt(i));
-        }
+    writeString(value) {
+        this.writeBytes(
+            new TextEncoder().encode(value)
+        );
     }
 
     /**
