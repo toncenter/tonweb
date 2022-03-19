@@ -16,6 +16,9 @@ export class BitString {
     public cursor = 0;
 
 
+    private textEncoder = new TextEncoder();
+
+
     constructor(
         /**
          * A length of bit string in bits.
@@ -215,7 +218,7 @@ export class BitString {
      */
     public writeString(value: string) {
         this.writeBytes(
-            new TextEncoder().encode(value)
+            this.textEncoder.encode(value)
         );
     }
 
