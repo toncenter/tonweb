@@ -39,10 +39,6 @@ export interface SeqnoMethodResult {
     call: () => Promise<number | undefined>;
 }
 
-export type DeployMethod = (
-    (secretKey: Uint8Array) => Method
-);
-
 export interface ExternalMessage {
     address: Address;
     signature: Uint8Array;
@@ -63,9 +59,6 @@ export class WalletContract<
     MethodsType extends WalletContractMethods = WalletContractMethods
 
 > extends Contract<WalletType, MethodsType> {
-
-    public readonly deploy: DeployMethod;
-
 
     constructor(
         provider: HttpProvider,
@@ -113,13 +106,6 @@ export class WalletContract<
                 }
             })
         }
-
-        this.deploy = (
-            secretKey => Contract.createMethod(
-                provider,
-                this.createInitExternalMessage(secretKey)
-            )
-        );
 
     }
 
@@ -227,6 +213,13 @@ export class WalletContract<
             dummySignature
         );
 
+    }
+
+    public deploy(secretKey: Uint8Array): Method {
+        return Contract.createMethod(
+            this.provider,
+            this.createInitExternalMessage(secretKey)
+        );
     }
 
 
