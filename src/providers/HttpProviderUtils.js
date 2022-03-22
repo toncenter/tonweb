@@ -44,7 +44,7 @@ class HttpProviderUtils {
 
     static parseResponse(result) {
         if (result.exit_code !== 0) {
-            const err = new Error('parse response error')
+            const err = new Error('http provider parse response error')
             err.result = result
             throw err
         }

@@ -184,8 +184,10 @@ class WalletContract extends Contract {
             if (payload.refs) { // is Cell
                 payloadCell = payload;
             } else if (typeof payload === 'string') {
-                payloadCell.bits.writeUint(0, 32);
-                payloadCell.bits.writeString(payload);
+                if (payload.length > 0) {
+                    payloadCell.bits.writeUint(0, 32);
+                    payloadCell.bits.writeString(payload);
+                }
             } else {
                 payloadCell.bits.writeBytes(payload)
             }
