@@ -332,6 +332,16 @@ describe('Address', () => {
 
         }
 
+        for (const [key, addressStr] of Object.entries(A)) {
+
+            it(`should preserve the original [${key}] format`, () => {
+                expect(addressStr).toEqual(
+                    $A(addressStr).toString()
+                );
+            });
+
+        }
+
     });
 
     describe('static isValid()', () => {

@@ -78,25 +78,12 @@ export class Address {
 
 
     public toString(
-        isUserFriendly?: boolean,
-        isUrlSafe?: boolean,
-        isBounceable?: boolean,
-        isTestOnly?: boolean
+        isUserFriendly = this.isUserFriendly,
+        isUrlSafe = this.isUrlSafe,
+        isBounceable = this.isBounceable,
+        isTestOnly = this.isTestOnly
 
     ): string {
-
-        if (isUserFriendly === undefined) {
-            isUserFriendly = this.isUserFriendly;
-        }
-        if (isUrlSafe === undefined) {
-            isUrlSafe = this.isUrlSafe;
-        }
-        if (isBounceable === undefined) {
-            isBounceable = this.isBounceable;
-        }
-        if (isTestOnly === undefined) {
-            isTestOnly = this.isTestOnly;
-        }
 
         if (!isUserFriendly) {
             return this.wc + ':' + bytesToHex(this.hashPart);
