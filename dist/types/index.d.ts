@@ -8,9 +8,10 @@ import { InMemoryBlockStorage } from './providers/block-subscription/in-memory-b
 export { BlockHandler, BlockSubscriptionOptions, } from './providers/block-subscription/block-subscription';
 export { LogFunction, } from './providers/block-subscription/in-memory-block-storage';
 export { ShardBlock, BlockStorage, } from './providers/block-subscription/block-storage';
-import { Address, AddressType } from './utils/Address';
-export { AddressType } from './utils/Address';
-import { ParsedTransferUrl } from './utils/common';
+import { Address, AddressType } from './utils/address';
+export { AddressType } from './utils/address';
+import { formatTransferUrl, parseTransferUrl } from './utils/transfer-url';
+export { ParsedTransferUrl } from './utils/transfer-url';
 import { BitString } from './boc/bit-string';
 import { Cell } from './boc/cell';
 import { Contract } from './contract/contract';
@@ -45,6 +46,8 @@ export default class TonWeb {
         BN: typeof BN;
         nacl: nacl;
         Address: typeof Address;
+        formatTransferUrl: typeof formatTransferUrl;
+        parseTransferUrl: typeof parseTransferUrl;
         sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
         toNano(amount: string | number | BN): BN;
         fromNano(amount: string | number | BN): string;
@@ -60,8 +63,6 @@ export default class TonWeb {
         stringToBase64(str: string): string;
         base64ToBytes(base64: string): Uint8Array;
         readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
-        parseTransferUrl(url: string): ParsedTransferUrl;
-        formatTransferUrl(address: string, amount?: string, text?: string): string;
     };
     static Address: typeof Address;
     static boc: {
@@ -108,6 +109,8 @@ export default class TonWeb {
         BN: typeof BN;
         nacl: nacl;
         Address: typeof Address;
+        formatTransferUrl: typeof formatTransferUrl;
+        parseTransferUrl: typeof parseTransferUrl;
         sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
         toNano(amount: string | number | BN): BN;
         fromNano(amount: string | number | BN): string;
@@ -123,8 +126,6 @@ export default class TonWeb {
         stringToBase64(str: string): string;
         base64ToBytes(base64: string): Uint8Array;
         readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
-        parseTransferUrl(url: string): ParsedTransferUrl;
-        formatTransferUrl(address: string, amount?: string, text?: string): string;
     };
     Address: typeof Address;
     boc: {

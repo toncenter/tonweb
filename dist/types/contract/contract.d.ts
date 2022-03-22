@@ -1,7 +1,7 @@
 import BN from 'bn.js';
 import { Cell } from '../boc/cell';
 import { HttpProvider } from '../providers/http-provider';
-import { Address, AddressType } from '../utils/Address';
+import { Address, AddressType } from '../utils/address';
 export interface ContractOptions {
     code?: Cell;
     address?: AddressType;

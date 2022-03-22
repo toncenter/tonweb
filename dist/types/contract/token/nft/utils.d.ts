@@ -1,5 +1,5 @@
 import { Cell } from '../../../boc/cell';
-import { Address } from '../../../utils/Address';
+import { Address } from '../../../utils/address';
 export declare const SNAKE_DATA_PREFIX = 0;
 export declare const CHUNK_DATA_PREFIX = 1;
 export declare const ONCHAIN_CONTENT_PREFIX = 0;
