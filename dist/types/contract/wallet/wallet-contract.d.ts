@@ -24,7 +24,6 @@ export declare type SeqnoMethod = (() => SeqnoMethodResult);
 export interface SeqnoMethodResult {
     call: () => Promise<number | undefined>;
 }
-export declare type DeployMethod = ((secretKey: Uint8Array) => Method);
 export interface ExternalMessage {
     address: Address;
     signature: Uint8Array;
@@ -39,7 +38,6 @@ export interface ExternalMessage {
  * Abstract standard wallet class.
  */
 export declare class WalletContract<WalletType extends WalletContractOptions = WalletContractOptions, MethodsType extends WalletContractMethods = WalletContractMethods> extends Contract<WalletType, MethodsType> {
-    readonly deploy: DeployMethod;
     constructor(provider: HttpProvider, options: WalletContractOptions);
     /**
      * Returns name of the contract.
@@ -55,6 +53,7 @@ export declare class WalletContract<WalletType extends WalletContractOptions = W
      * @todo: improve the description
      */
     secretKey: Uint8Array, address: AddressType, nanograms: (BN | number), seqno: number, payload?: (string | Uint8Array | Cell), sendMode?: number, dummySignature?: boolean, stateInit?: Cell): Promise<ExternalMessage>;
+    deploy(secretKey: Uint8Array): Method;
     /**
      * Returns cell that contains wallet data.
      */
@@ -66,5 +65,5 @@ export declare class WalletContract<WalletType extends WalletContractOptions = W
      * @todo: improve the description
      */
     secretKey: Uint8Array, seqno: number, dummySignature?: boolean): Promise<ExternalMessage>;
-    private parsePayload;
+    private serializePayload;
 }

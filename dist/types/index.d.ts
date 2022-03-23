@@ -1,6 +1,7 @@
-import BN from 'bn.js';
+import BN_JS from 'bn.js';
 import nacl from 'tweetnacl';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+export declare type BN = BN_JS;
 import { HttpProvider, StackElement } from './providers/http-provider';
 export { CellObject, EstimateFeeBody, HttpProviderOptions, SliceObject, StackElement, } from './providers/http-provider';
 import { BlockSubscription } from './providers/block-subscription/block-subscription';
@@ -17,7 +18,7 @@ import { Cell } from './boc/cell';
 import { Contract } from './contract/contract';
 export { ContractMethods, ContractOptions, Method, Query, StateInit, } from './contract/contract';
 import { Wallets } from './contract/wallet/wallets';
-export { DeployMethod, ExternalMessage, SeqnoMethod, SeqnoMethodResult, TransferMethod, TransferMethodParams, WalletContractMethods, WalletContractOptions, } from './contract/wallet/wallet-contract';
+export { ExternalMessage, SeqnoMethod, SeqnoMethodResult, TransferMethod, TransferMethodParams, WalletContractMethods, WalletContractOptions, } from './contract/wallet/wallet-contract';
 export { WalletV3ContractOptions, } from './contract/wallet/v3/wallet-v3-contract-base';
 export { WalletV4ContractOptions, WalletV4ContractMethods, } from './contract/wallet/v4/wallet-v4-contract-base';
 export { WalletV4ContractR2Methods, DeployAndInstallPluginParams, SetPluginParams, } from './contract/wallet/v4/wallet-v4-contract-r2';
@@ -43,14 +44,14 @@ export default class TonWeb {
     provider: HttpProvider;
     static version: string;
     static utils: {
-        BN: typeof BN;
+        BN: typeof BN_JS;
         nacl: nacl;
         Address: typeof Address;
         formatTransferUrl: typeof formatTransferUrl;
         parseTransferUrl: typeof parseTransferUrl;
         sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
-        toNano(amount: string | number | BN): BN;
-        fromNano(amount: string | number | BN): string;
+        toNano(amount: string | number | BN_JS): BN_JS;
+        fromNano(amount: string | number | BN_JS): string;
         bytesToHex(buffer: Uint8Array): string;
         hexToBytes(hex: string): Uint8Array;
         stringToBytes(str: string, size?: number): Uint8Array;
@@ -106,14 +107,14 @@ export default class TonWeb {
     };
     version: string;
     utils: {
-        BN: typeof BN;
+        BN: typeof BN_JS;
         nacl: nacl;
         Address: typeof Address;
         formatTransferUrl: typeof formatTransferUrl;
         parseTransferUrl: typeof parseTransferUrl;
         sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
-        toNano(amount: string | number | BN): BN;
-        fromNano(amount: string | number | BN): string;
+        toNano(amount: string | number | BN_JS): BN_JS;
+        fromNano(amount: string | number | BN_JS): string;
         bytesToHex(buffer: Uint8Array): string;
         hexToBytes(hex: string): Uint8Array;
         stringToBytes(str: string, size?: number): Uint8Array;
