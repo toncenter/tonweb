@@ -342,6 +342,8 @@ describe('Address', () => {
 
         }
 
+        // @todo: add tests that modifies address flags directly
+
     });
 
     describe('static isValid()', () => {
