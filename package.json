@@ -39,6 +39,7 @@
     "tweetnacl": "1.0.3"
   },
   "devDependencies": {
+    "@sinonjs/fake-timers": "^9.1.1",
     "buffer": "6.0.3",
     "webpack": "5.70.0",
     "webpack-cli": "3.3.12"

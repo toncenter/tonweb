@@ -43,7 +43,12 @@ class HttpProviderUtils {
     }
 
     static parseResponse(result) {
-        if (result.exit_code !== 0) throw new Error(result);
+        if (result.exit_code !== 0) {
+            const err = new Error('http provider parse response error')
+            err.result = result
+            throw err
+        }
+
         const arr = result.stack.map(HttpProviderUtils.parseResponseStack);
         return arr.length === 1 ? arr[0] : arr;
     }

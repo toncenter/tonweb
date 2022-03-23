@@ -10,6 +10,9 @@ const test_flag = 0x80;
  * @return {{isTestOnly: boolean, workchain: number, hashPart: Uint8Array, isBounceable: boolean}}
  */
 function parseFriendlyAddress(addressString) {
+    if (addressString.length !== 48) {
+        throw new Error(`User-friendly address should contain strictly 48 characters`);
+    }
     const data = stringToBytes(base64toString(addressString));
     if (data.length !== 36) { // 1byte tag + 1byte workchain + 32 bytes hash + 2 byte crc
         throw "Unknown address type: byte length is not equal to 36";
