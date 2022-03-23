@@ -1,9 +1,14 @@
 
-import BN from 'bn.js';
+import BN_JS from 'bn.js';
 import nacl from 'tweetnacl';
 import BluetoothTransport from '@ledgerhq/hw-transport-web-ble';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+
+
+// Exporting BN as type-only, we have had
+// to rename the original import for this to work
+export type BN = BN_JS;
 
 
 //===========//
@@ -62,7 +67,7 @@ export { ParsedTransferUrl } from './utils/transfer-url';
 
 const utils = {
     ...utilsExports,
-    BN,
+    BN: BN_JS,
     nacl,
     Address,
     formatTransferUrl,
@@ -102,7 +107,6 @@ export {
 import { Wallets } from './contract/wallet/wallets';
 
 export {
-    DeployMethod,
     ExternalMessage,
     SeqnoMethod,
     SeqnoMethodResult,
