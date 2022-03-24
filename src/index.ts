@@ -1,5 +1,29 @@
 
-import BN_JS from 'bn.js';
+/**
+ * This is a single-entry point of the library.
+ * All the public runtime symbols as well as types that should
+ * be available to the library users must be exported from here.
+ * We do not support importing symbols from deep inside the
+ * library.
+ *
+ * All the symbols and their structure that are exported
+ * from this file must be 100% compatible with the code
+ * in the "master" branch of the library, because, we are
+ * using this file to generate typing declarations for the
+ * vanilla version of the tonweb.
+ *
+ * We are importing concrete implementation (runtime symbols)
+ * with the dollar prefix (like $BN below), this essentially
+ * allows us to use the name w/o prefix to export the types
+ * with the same name. We can't just export the runtime symbols
+ * directly, because they are not available in the vanilla
+ * version of the library — this will lead to incorrect typings.
+ * So we have to use this workaround for now. After migrating to
+ * TypeScript version completely, we would be able to export all
+ * the symbols and their types directly under the same name.
+ */
+
+import $BN from 'bn.js';
 import nacl from 'tweetnacl';
 import BluetoothTransport from '@ledgerhq/hw-transport-web-ble';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
@@ -8,29 +32,43 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
 // Exporting BN as type-only, we have had
 // to rename the original import for this to work
-export type BN = BN_JS;
+export type BN = $BN;
 
 
-//===========//
-// PROVIDERS //
-//===========//
+//===============//
+// HTTP PROVIDER //
+//===============//
 
-import { HttpProvider, StackElement } from './providers/http-provider';
-
-export {
-    CellObject,
-    EstimateFeeBody,
-    // HttpProvider,
-    HttpProviderOptions,
-    SliceObject,
+import {
+    HttpProvider as $HttpProvider,
     StackElement,
-    // defaultHost,
 
 } from './providers/http-provider';
 
-import { BlockSubscription } from './providers/block-subscription/block-subscription';
+export type HttpProvider = $HttpProvider;
 
-import { InMemoryBlockStorage } from './providers/block-subscription/in-memory-block-storage';
+export {
+    // HttpProvider,
+    // defaultHost,
+    CellObject,
+    EstimateFeeBody,
+    HttpProviderOptions,
+    SliceObject,
+    StackElement,
+
+} from './providers/http-provider';
+
+
+//====================//
+// BLOCK SUBSCRIPTION //
+//====================//
+
+import {
+    BlockSubscription as $BlockSubscription,
+
+} from './providers/block-subscription/block-subscription';
+
+export type BlockSubscription = $BlockSubscription;
 
 export {
     // BlockSubscription,
@@ -38,6 +76,13 @@ export {
     BlockSubscriptionOptions,
 
 } from './providers/block-subscription/block-subscription';
+
+import {
+    InMemoryBlockStorage as $InMemoryBlockStorage,
+
+} from './providers/block-subscription/in-memory-block-storage';
+
+export type InMemoryBlockStorage = $InMemoryBlockStorage;
 
 export {
     // InMemoryBlockStorage,
@@ -56,20 +101,35 @@ export {
 // UTILS //
 //=======//
 
-import { Address, AddressType } from './utils/address';
-export { AddressType } from './utils/address';
+import {
+    Address as $Address,
+    AddressType,
+
+} from './utils/address';
+
+export type Address = $Address;
+
+export {
+    // Address,
+    AddressType,
+
+} from './utils/address';
 
 import * as utilsExports from './utils/common';
 
-import { formatTransferUrl, parseTransferUrl } from './utils/transfer-url';
-export { ParsedTransferUrl } from './utils/transfer-url';
+import {
+    formatTransferUrl,
+    parseTransferUrl,
 
+} from './utils/transfer-url';
+
+export { ParsedTransferUrl } from './utils/transfer-url';
 
 const utils = {
     ...utilsExports,
-    BN: BN_JS,
+    BN: $BN,
     nacl,
-    Address,
+    Address: $Address,
     formatTransferUrl,
     parseTransferUrl,
 };
@@ -79,18 +139,27 @@ const utils = {
 // BOC //
 //=====//
 
-import { BitString } from './boc/bit-string';
-import { Cell } from './boc/cell';
-const boc = { BitString, Cell };
+import { BitString as $BitString } from './boc/bit-string';
+export type BitString = $BitString;
+
+import { Cell as $Cell } from './boc/cell';
+export type Cell = $Cell;
+
+const boc = {
+    BitString: $BitString,
+    Cell: $Cell,
+};
 
 
 //==========//
 // CONTRACT //
 //==========//
 
-import { Contract } from './contract/contract';
+import { Contract as $Contract } from './contract/contract';
+export type Contract = $Contract;
 
 export {
+    // Contract,
     ContractMethods,
     ContractOptions,
     Method,
@@ -104,9 +173,27 @@ export {
 // WALLETS //
 //=========//
 
-import { Wallets } from './contract/wallet/wallets';
+import {
+    Wallets as $Wallets,
+
+} from './contract/wallet/wallets';
+
+export type Wallets = $Wallets;
+
+
+//=================//
+// WALLET CONTRACT //
+//=================//
+
+import {
+    WalletContract as $WalletContract,
+
+} from './contract/wallet/wallet-contract';
+
+export type WalletContract = $WalletContract;
 
 export {
+    // WalletContract,
     ExternalMessage,
     SeqnoMethod,
     SeqnoMethodResult,
@@ -117,10 +204,139 @@ export {
 
 } from './contract/wallet/wallet-contract';
 
+
+//===================//
+// WALLET: SIMPLE R1 //
+//===================//
+
+import {
+    SimpleWalletContractR1 as $SimpleWalletContractR1,
+
+} from './contract/wallet/simple/simple-wallet-contract-r1';
+
+export type SimpleWalletContractR1 = $SimpleWalletContractR1;
+
+export {
+    // SimpleWalletContractR1,
+
+} from './contract/wallet/simple/simple-wallet-contract-r1';
+
+
+//===================//
+// WALLET: SIMPLE R2 //
+//===================//
+
+import {
+    SimpleWalletContractR2 as $SimpleWalletContractR2,
+
+} from './contract/wallet/simple/simple-wallet-contract-r2';
+
+export type SimpleWalletContractR2 = $SimpleWalletContractR2;
+
+export {
+    // SimpleWalletContractR2,
+
+} from './contract/wallet/simple/simple-wallet-contract-r2';
+
+
+//===================//
+// WALLET: SIMPLE R3 //
+//===================//
+
+import {
+    SimpleWalletContractR3 as $SimpleWalletContractR3,
+
+} from './contract/wallet/simple/simple-wallet-contract-r3';
+
+export type SimpleWalletContractR3 = $SimpleWalletContractR3;
+
+export {
+    // SimpleWalletContractR3,
+
+} from './contract/wallet/simple/simple-wallet-contract-r3';
+
+
+//===============//
+// WALLET: V2 R1 //
+//===============//
+
+import {
+    WalletV2ContractR1 as $WalletV2ContractR1
+
+} from './contract/wallet/v2/wallet-v2-contract-r1';
+
+export type WalletV2ContractR1 = $WalletV2ContractR1;
+
+export {
+    // WalletV2ContractR1,
+
+} from './contract/wallet/v2/wallet-v2-contract-r1';
+
+
+//===============//
+// WALLET: V2 R2 //
+//===============//
+
+import {
+    WalletV2ContractR2 as $WalletV2ContractR2
+
+} from './contract/wallet/v2/wallet-v2-contract-r2';
+
+export type WalletV2ContractR2 = $WalletV2ContractR2;
+
+export {
+    // WalletV2ContractR2,
+
+} from './contract/wallet/v2/wallet-v2-contract-r2';
+
+
+//============//
+// WALLET: V3 //
+//============//
+
 export {
     WalletV3ContractOptions,
 
 } from './contract/wallet/v3/wallet-v3-contract-base';
+
+
+//===============//
+// WALLET: V3 R1 //
+//===============//
+
+import {
+    WalletV3ContractR1 as $WalletV3ContractR1
+
+} from './contract/wallet/v3/wallet-v3-contract-r1';
+
+export type WalletV3ContractR1 = $WalletV3ContractR1;
+
+export {
+    // WalletV3ContractR1,
+
+} from './contract/wallet/v3/wallet-v3-contract-r1';
+
+
+//===============//
+// WALLET: V3 R2 //
+//===============//
+
+import {
+    WalletV3ContractR2 as $WalletV3ContractR2,
+
+} from './contract/wallet/v3/wallet-v3-contract-r2';
+
+export type WalletV3ContractR2 = $WalletV3ContractR2;
+
+export {
+    // WalletV3ContractR2,
+
+} from './contract/wallet/v3/wallet-v3-contract-r2';
+
+
+//============//
+// WALLET: V4 //
+//============//
 
 export {
     WalletV4ContractOptions,
@@ -128,7 +344,37 @@ export {
 
 } from './contract/wallet/v4/wallet-v4-contract-base';
 
+
+//===============//
+// WALLET: V4 R1 //
+//===============//
+
+import {
+    WalletV4ContractR1 as $WalletV4ContractR1,
+
+} from './contract/wallet/v4/wallet-v4-contract-r1';
+
+export type WalletV4ContractR1 = $WalletV4ContractR1;
+
 export {
+    // WalletV4ContractR1,
+
+} from './contract/wallet/v4/wallet-v4-contract-r1';
+
+
+//===============//
+// WALLET: V4 R2 //
+//===============//
+
+import {
+    WalletV4ContractR2 as $WalletV4ContractR2
+
+} from './contract/wallet/v4/wallet-v4-contract-r2';
+
+export type WalletV4ContractR2 = $WalletV4ContractR2;
+
+export {
+    // WalletV4ContractR2,
     WalletV4ContractR2Methods,
     DeployAndInstallPluginParams,
     SetPluginParams,
@@ -140,7 +386,12 @@ export {
 // SUBSCRIPTION //
 //==============//
 
-import { SubscriptionContract } from './contract/subscription-contract';
+import {
+    SubscriptionContract as $SubscriptionContract,
+
+} from './contract/subscription-contract';
+
+export type SubscriptionContract = $SubscriptionContract;
 
 export {
     // SubscriptionContract,
@@ -156,11 +407,17 @@ export {
 // LOCKUP //
 //========//
 
-import { LockupWalletV1 } from './contract/lockup/lockup-wallet-v1';
+import {
+    LockupWalletV1 as $LockupWalletV1,
+
+} from './contract/lockup/lockup-wallet-v1';
+
+export type LockupWalletV1 = $LockupWalletV1;
+
 import * as lockup from './contract/lockup';
 
 const LockupWallets = {
-    LockupWalletV1,
+    LockupWalletV1: $LockupWalletV1,
     all: lockup.all,
     list: lockup.list,
 };
@@ -178,10 +435,12 @@ export {
 // LEDGER //
 //========//
 
-import { AppTon } from './ledger/app-ton';
+import { AppTon as $LedgerAppTon } from './ledger/app-ton';
+
+export type LedgerAppTon = $LedgerAppTon;
 
 export {
-    // AppTon,
+    // AppTon as LedgerAppTon,
     AppConfiguration,
     GetAddressResult,
     GetPublicKeyResult,
@@ -194,30 +453,50 @@ export {
 // JETTON //
 //========//
 
-import { JettonWallet } from './contract/token/ft/jetton-wallet';
-import { JettonMinter } from './contract/token/ft/jetton-minter';
-const JETTON = { JettonWallet, JettonMinter };
+import {
+    JettonWallet as $JettonWallet,
+
+} from './contract/token/ft/jetton-wallet';
+
+export type JettonWallet = $JettonWallet;
+
+import {
+    JettonMinter as $JettonMinter,
+
+} from './contract/token/ft/jetton-minter';
+
+export type JettonMinter = $JettonMinter;
+
+const JETTON = {
+    JettonWallet: $JettonWallet,
+    JettonMinter: $JettonMinter,
+};
 
 export {
+    // JettonWallet,
     JettonWalletMethods,
     JettonWalletOptions,
-    // JettonWallet,
 
 } from './contract/token/ft/jetton-wallet';
 
 export {
+    // JettonMinter,
     JettonMinterMethods,
     JettonMinterOptions,
-    // JettonMinter,
 
 } from './contract/token/ft/jetton-minter';
 
 
-//=====//
-// NFT //
-//=====//
+//=================//
+// NFT: COLLECTION //
+//=================//
 
-import { NftCollection } from './contract/token/nft/nft-collection';
+import {
+    NftCollection as $NftCollection,
+
+} from './contract/token/nft/nft-collection';
+
+export type NftCollection = $NftCollection;
 
 export {
     // NftCollection,
@@ -232,7 +511,17 @@ export {
 
 } from './contract/token/nft/nft-collection';
 
-import { NftItem } from './contract/token/nft/nft-item';
+
+//===========//
+// NFT: ITEM //
+//===========//
+
+import {
+    NftItem as $NftItem,
+
+} from './contract/token/nft/nft-item';
+
+export type NftItem = $NftItem;
 
 export {
     // NftItem,
@@ -244,7 +533,17 @@ export {
 
 } from './contract/token/nft/nft-item';
 
-import { NftMarketplace } from './contract/token/nft/nft-marketplace';
+
+//==================//
+// NFT: MARKETPLACE //
+//==================//
+
+import {
+    NftMarketplace as $NftMarketplace,
+
+} from './contract/token/nft/nft-marketplace';
+
+export type NftMarketplace = $NftMarketplace;
 
 export {
     // NftMarketplace,
@@ -253,22 +552,37 @@ export {
 
 } from './contract/token/nft/nft-marketplace';
 
-import { NftSale } from './contract/token/nft/nft-sale';
+
+//===========//
+// NFT: SALE //
+//===========//
+
+import {
+    NftSale as $NftSale,
+
+} from './contract/token/nft/nft-sale';
+
+export type NftSale = $NftSale;
 
 export {
-    CreateCancelBodyParams,
     // NftSale,
+    CreateCancelBodyParams,
     NftSaleMethods,
     NftSaleOptions,
     NftSaleData,
 
 } from './contract/token/nft/nft-sale';
 
+
+//=====//
+// NFT //
+//=====//
+
 const NFT = {
-    NftCollection,
-    NftItem,
-    NftMarketplace,
-    NftSale,
+    NftCollection: $NftCollection,
+    NftItem: $NftItem,
+    NftMarketplace: $NftMarketplace,
+    NftSale: $NftSale,
 };
 
 // -----
@@ -282,21 +596,21 @@ export default class TonWeb {
 
     public static version = version;
     public static utils = utils;
-    public static Address = Address;
+    public static Address = $Address;
     public static boc = boc;
-    public static HttpProvider = HttpProvider;
-    public static Contract = Contract;
-    public static Wallets = Wallets;
+    public static HttpProvider = $HttpProvider;
+    public static Contract = $Contract;
+    public static Wallets = $Wallets;
     public static LockupWallets = LockupWallets;
-    public static SubscriptionContract = SubscriptionContract;
-    public static BlockSubscription = BlockSubscription;
-    public static InMemoryBlockStorage = InMemoryBlockStorage;
+    public static SubscriptionContract = $SubscriptionContract;
+    public static BlockSubscription = $BlockSubscription;
+    public static InMemoryBlockStorage = $InMemoryBlockStorage;
 
     public static ledger = {
         TransportWebUSB,
         TransportWebHID,
         BluetoothTransport,
-        AppTon,
+        AppTon: $LedgerAppTon,
     };
 
     public static token = {
@@ -308,16 +622,16 @@ export default class TonWeb {
 
     public version = version;
     public utils = utils;
-    public Address = Address;
+    public Address = $Address;
     public boc = boc;
-    public Contract = Contract;
-    public BlockSubscription = BlockSubscription;
-    public InMemoryBlockStorage = InMemoryBlockStorage;
-    public wallet = new Wallets(this.provider);
+    public Contract = $Contract;
+    public BlockSubscription = $BlockSubscription;
+    public InMemoryBlockStorage = $InMemoryBlockStorage;
+    public wallet = new $Wallets(this.provider);
     public lockupWallet = LockupWallets;
 
 
-    constructor(public provider = new HttpProvider()) {
+    constructor(public provider = new $HttpProvider()) {
     }
 
 
