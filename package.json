@@ -5,8 +5,9 @@
   "main": "src/index.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx webpack --mode=none"
+    "build": "./bin/update-version && npx webpack --mode=none",
+    "prepack": "npm run build",
+    "test": ":"
   },
   "keywords": [
     "TON",
