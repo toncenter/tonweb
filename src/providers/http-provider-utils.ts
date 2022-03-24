@@ -65,7 +65,10 @@ export class HttpProviderUtils {
      */
     public static parseResponse(result) {
         if (result.exit_code !== 0) {
-            throw new Error(result);
+            // @todo: use custom error class
+            const error = new Error('Failed to parse response');
+            (error as any).result = result;
+            throw error;
         }
         const arr = (result.stack
             .map(HttpProviderUtils.parseResponseStack)
