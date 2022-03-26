@@ -10,7 +10,6 @@ export declare class BitString {
     length: number;
     array: Uint8Array;
     cursor: number;
-    private textEncoder;
     constructor(
     /**
      * A length of bit string in bits.
@@ -105,7 +104,7 @@ export declare class BitString {
      * them to the bit-string, starting at the current index and
      * advances the current index cursor by the number of bits written.
      */
-    writeString(value: string): void;
+    writeString(text: string): void;
     /**
      * Writes the specified amount in nanograms to the
      * bit-string, starting at the current index and advances

@@ -1,6 +1,7 @@
 
 import { BitString } from '../../../boc/bit-string';
 import { Cell } from '../../../boc/cell';
+import { textEncoder } from '../../../utils/text-encoding';
 import { Address } from '../../../utils/address';
 
 
@@ -11,7 +12,7 @@ export const OFFCHAIN_CONTENT_PREFIX = 0x01;
 
 
 export function serializeUri(uri: string): Uint8Array {
-    return new TextEncoder().encode(encodeURI(uri));
+    return textEncoder.encode(encodeURI(uri));
 }
 
 export function parseUri(bytes: Uint8Array): string {

@@ -2,8 +2,7 @@
 import { Cell } from '../../boc/cell';
 import { HttpProvider } from '../../providers/http-provider';
 import { TestHttpProvider } from '../../providers/test/test-http-provider';
-import { testAddress, testAddressStr, testKeyPair, testProvider } from '../../test/common';
-import { bytesToBase64 } from '../../utils/common';
+import { bytesToBase64 } from '../../utils/base64';
 import { LockupWalletV1 } from '../lockup/lockup-wallet-v1';
 import { SimpleWalletContractR1 } from './simple/simple-wallet-contract-r1';
 import { SimpleWalletContractR2 } from './simple/simple-wallet-contract-r2';
@@ -14,7 +13,21 @@ import { WalletV3ContractR1 } from './v3/wallet-v3-contract-r1';
 import { WalletV3ContractR2 } from './v3/wallet-v3-contract-r2';
 import { WalletV4ContractR1 } from './v4/wallet-v4-contract-r1';
 import { WalletV4ContractR2 } from './v4/wallet-v4-contract-r2';
-import { TransferMethodParams, WalletContract, WalletContractOptions } from './wallet-contract';
+
+import {
+    testAddress,
+    testAddressStr,
+    testKeyPair,
+    testProvider,
+
+} from '../../test/common';
+
+import {
+    TransferMethodParams,
+    WalletContract,
+    WalletContractOptions,
+
+} from './wallet-contract';
 
 
 interface WalletTestDescriptor {

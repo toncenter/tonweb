@@ -87,6 +87,11 @@ export function hexToBytes(hex: string): Uint8Array {
     return result;
 }
 
+
+/**
+ * @deprecated: this function is no longer used in the library
+ *              and will be deleted in the future
+ */
 export function stringToBytes(str: string, size = 1): Uint8Array {
     let buf;
     let bufView;
@@ -174,79 +179,6 @@ export function concatBytes(a: Uint8Array, b: Uint8Array): Uint8Array {
 export function compareBytes(a: Uint8Array, b: Uint8Array): boolean {
     // TODO Make it smarter
     return a.toString() === b.toString();
-}
-
-const base64abc = (() => {
-    const abc = []
-    const A = 'A'.charCodeAt(0);
-    const a = 'a'.charCodeAt(0);
-    const n = '0'.charCodeAt(0);
-    for (let i = 0; i < 26; ++i) {
-        abc.push(String.fromCharCode(A + i));
-    }
-    for (let i = 0; i < 26; ++i) {
-        abc.push(String.fromCharCode(a + i));
-    }
-    for (let i = 0; i < 10; ++i) {
-        abc.push(String.fromCharCode(n + i));
-    }
-    abc.push('+');
-    abc.push('/');
-    return abc;
-})();
-
-export function bytesToBase64(bytes: Uint8Array): string {
-    let result = '';
-    let i;
-    const l = bytes.length;
-    for (i = 2; i < l; i += 3) {
-        result += base64abc[bytes[i - 2] >> 2];
-        result += base64abc[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)];
-        result += base64abc[((bytes[i - 1] & 0x0f) << 2) | (bytes[i] >> 6)];
-        result += base64abc[bytes[i] & 0x3f];
-    }
-    if (i === l + 1) {
-        // 1 octet missing
-        result += base64abc[bytes[i - 2] >> 2];
-        result += base64abc[(bytes[i - 2] & 0x03) << 4];
-        result += '==';
-    }
-    if (i === l) {
-        // 2 octets missing
-        result += base64abc[bytes[i - 2] >> 2];
-        result += base64abc[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)];
-        result += base64abc[(bytes[i - 1] & 0x0f) << 2];
-        result += '=';
-    }
-    return result;
-}
-
-export function base64toString(base64: string): string {
-    if (typeof self === 'undefined') {
-        // @todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
-        return Buffer.from(base64, 'base64').toString('binary');
-    } else {
-        return atob(base64);
-    }
-}
-
-export function stringToBase64(str: string): string {
-    if (typeof self === 'undefined') {
-        // @todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
-        return Buffer.from(str, 'binary').toString('base64');
-    } else {
-        return btoa(str);
-    }
-}
-
-export function base64ToBytes(base64: string): Uint8Array {
-    const binary_string = base64toString(base64);
-    const len = binary_string.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binary_string.charCodeAt(i);
-    }
-    return bytes;
 }
 
 export function readNBytesUIntFromArray(

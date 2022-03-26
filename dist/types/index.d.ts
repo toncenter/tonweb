@@ -38,6 +38,7 @@ export { ShardBlock, BlockStorage, } from './providers/block-subscription/block-
 import { Address as $Address, AddressType } from './utils/address';
 export declare type Address = $Address;
 export { AddressType, } from './utils/address';
+import { base64ToBytes, bytesToBase64, base64toString, stringToBase64 } from './utils/base64';
 import { formatTransferUrl, parseTransferUrl } from './utils/transfer-url';
 export { ParsedTransferUrl } from './utils/transfer-url';
 import { BitString as $BitString } from './boc/bit-string';
@@ -112,6 +113,10 @@ export default class TonWeb {
     provider: $HttpProvider;
     static version: string;
     static utils: {
+        base64ToBytes: typeof base64ToBytes;
+        bytesToBase64: typeof bytesToBase64;
+        base64toString: typeof base64toString;
+        stringToBase64: typeof stringToBase64;
         BN: typeof $BN;
         nacl: nacl;
         Address: typeof $Address;
@@ -127,10 +132,6 @@ export default class TonWeb {
         crc16(data: ArrayLike<number>): Uint8Array;
         concatBytes(a: Uint8Array, b: Uint8Array): Uint8Array;
         compareBytes(a: Uint8Array, b: Uint8Array): boolean;
-        bytesToBase64(bytes: Uint8Array): string;
-        base64toString(base64: string): string;
-        stringToBase64(str: string): string;
-        base64ToBytes(base64: string): Uint8Array;
         readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
     };
     static Address: typeof $Address;
@@ -175,6 +176,10 @@ export default class TonWeb {
     };
     version: string;
     utils: {
+        base64ToBytes: typeof base64ToBytes;
+        bytesToBase64: typeof bytesToBase64;
+        base64toString: typeof base64toString;
+        stringToBase64: typeof stringToBase64;
         BN: typeof $BN;
         nacl: nacl;
         Address: typeof $Address;
@@ -190,10 +195,6 @@ export default class TonWeb {
         crc16(data: ArrayLike<number>): Uint8Array;
         concatBytes(a: Uint8Array, b: Uint8Array): Uint8Array;
         compareBytes(a: Uint8Array, b: Uint8Array): boolean;
-        bytesToBase64(bytes: Uint8Array): string;
-        base64toString(base64: string): string;
-        stringToBase64(str: string): string;
-        base64ToBytes(base64: string): Uint8Array;
         readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
     };
     Address: typeof $Address;

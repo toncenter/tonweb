@@ -1,14 +1,7 @@
 
+import { base64ToBytes, bytesToBase64 } from './base64';
 import { Workchain, WorkchainId } from './workchain';
-
-import {
-    base64toString, bytesToBase64,
-    bytesToHex,
-    crc16,
-    hexToBytes,
-    stringToBytes,
-
-} from './common';
+import { bytesToHex, crc16, hexToBytes } from './common';
 
 
 export type AddressType = (Address | string);
@@ -218,9 +211,7 @@ export class Address {
             );
         }
 
-        const data = stringToBytes(
-            base64toString(addressString)
-        );
+        const data = base64ToBytes(addressString);
 
         // SLICING BYTES
         //

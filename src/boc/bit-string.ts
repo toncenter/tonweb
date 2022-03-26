@@ -1,6 +1,7 @@
 
 import BN from 'bn.js';
 
+import { stringToBytes } from '../utils/text-encoding';
 import { bytesToHex } from '../utils/common';
 import { Address } from '../utils/address';
 
@@ -14,9 +15,6 @@ export class BitString {
 
     // @todo: make this private
     public cursor = 0;
-
-
-    private textEncoder = new TextEncoder();
 
 
     constructor(
@@ -216,9 +214,9 @@ export class BitString {
      * them to the bit-string, starting at the current index and
      * advances the current index cursor by the number of bits written.
      */
-    public writeString(value: string) {
+    public writeString(text: string) {
         this.writeBytes(
-            this.textEncoder.encode(value)
+            stringToBytes(text)
         );
     }
 

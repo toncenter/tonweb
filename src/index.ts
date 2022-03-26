@@ -115,7 +115,15 @@ export {
 
 } from './utils/address';
 
-import * as utilsExports from './utils/common';
+import * as commonUtilsExports from './utils/common';
+
+import {
+    base64ToBytes,
+    bytesToBase64,
+    base64toString,
+    stringToBase64,
+
+} from './utils/base64';
 
 import {
     formatTransferUrl,
@@ -126,7 +134,11 @@ import {
 export { ParsedTransferUrl } from './utils/transfer-url';
 
 const utils = {
-    ...utilsExports,
+    ...commonUtilsExports,
+    base64ToBytes,
+    bytesToBase64,
+    base64toString,
+    stringToBase64,
     BN: $BN,
     nacl,
     Address: $Address,
@@ -670,7 +682,9 @@ export default class TonWeb {
      * fully packed and serialized external message.
      */
     public async sendBoc(bytes: Uint8Array) {
-        return this.provider.sendBoc(utils.bytesToBase64(bytes));
+        return this.provider.sendBoc(
+            utils.bytesToBase64(bytes)
+        );
     }
 
     /**

@@ -1,6 +1,7 @@
 /.idea/
 /coverage/
-/dist/
+/dist/*
+!/dist/types/
 /node_modules/
 /test-reports/
 

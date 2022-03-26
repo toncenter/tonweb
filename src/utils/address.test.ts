@@ -1,6 +1,7 @@
 
 import { Address, AddressType } from './address';
-import { base64toString, bytesToBase64, bytesToHex, crc16, stringToBytes } from './common';
+import { base64ToBytes, bytesToBase64 } from './base64';
+import { bytesToHex, crc16 } from './common';
 import { WorkchainId } from './workchain';
 
 
@@ -372,9 +373,7 @@ function changeFriendlyAddress(
 ): string {
 
     // Destructuring some address
-    const data = stringToBytes(
-        base64toString(address)
-    );
+    const data = base64ToBytes(address);
 
     handler(data);
 
