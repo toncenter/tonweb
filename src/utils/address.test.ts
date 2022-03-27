@@ -310,11 +310,21 @@ describe('Address', () => {
             );
         });
 
-        it('parses masterchain addresses', () => {
+        it.only('parses masterchain addresses', () => {
+
             const addressStr = (
                 '-1:3674ec71a2854a6bc36335c39eb9cc9c0a69d23cdc52c870181b4ae703bcca83'
             );
-            expect($A(addressStr).wc).toEqual(-1);
+
+            const address = $A(addressStr);
+
+            expect(address.wc).toEqual(-1);
+
+            expect(address.isUserFriendly).toEqual(false);
+            expect(address.isUrlSafe).toEqual(false);
+            expect(address.isBounceable).toEqual(false);
+            expect(address.isTestOnly).toEqual(false);
+
         });
 
     });
