@@ -7,10 +7,11 @@ import { bytesToHex, crc16, hexToBytes } from './common';
 export type AddressType = (Address | string);
 
 interface ParsedAddress {
-    isTestOnly: boolean;
     workchain: number;
     hashPart: Uint8Array;
+    isUrlSafe: boolean;
     isBounceable: boolean;
+    isTestOnly: boolean;
 }
 
 
@@ -130,21 +131,6 @@ export class Address {
 
     private initFromString(addressStr: string) {
 
-        if (
-            addressStr.includes('-') ||
-            addressStr.includes('_')
-        ) {
-            this.isUrlSafe = true;
-            addressStr = addressStr
-                .replace(/-/g, '+')
-                .replace(/_/g, '\/')
-            ;
-
-        } else {
-            this.isUrlSafe = false;
-
-        }
-
         if (addressStr.includes(':')) {
 
             // Non user-friendly address.
@@ -172,6 +158,7 @@ export class Address {
             this.isUserFriendly = false;
             this.wc = workchain;
             this.hashPart = hexToBytes(hex);
+            this.isUrlSafe = false;
             this.isTestOnly = false;
             this.isBounceable = false;
 
@@ -188,6 +175,7 @@ export class Address {
             this.hashPart = parseResult.hashPart;
 
             this.isUserFriendly = true;
+            this.isUrlSafe = parseResult.isUrlSafe;
             this.isBounceable = parseResult.isBounceable;
             this.isTestOnly = parseResult.isTestOnly;
 
@@ -209,6 +197,18 @@ export class Address {
                 `User-friendly address should contain ` +
                 `strictly 48 characters`
             );
+        }
+
+        const isUrlSafe = (
+            addressString.includes('-') ||
+            addressString.includes('_')
+        );
+
+        if (isUrlSafe) {
+            addressString = addressString
+                .replace(/-/g, '+')
+                .replace(/_/g, '\/')
+            ;
         }
 
         const data = base64ToBytes(addressString);
@@ -262,10 +262,11 @@ export class Address {
         this.checkWorkchainOrThrow(workchain);
 
         return {
-            isTestOnly,
-            isBounceable: (tag === Flags.Bounceable),
             workchain,
             hashPart,
+            isUrlSafe,
+            isBounceable: (tag === Flags.Bounceable),
+            isTestOnly,
         };
 
     }

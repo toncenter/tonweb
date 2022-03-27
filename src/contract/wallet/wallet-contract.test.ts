@@ -34,6 +34,7 @@ interface WalletTestDescriptor {
     constructor: typeof WalletContract;
     name: string;
     address: string;
+    addressMC: string;
     transferQueryBoc64: {
         seqno0: string;
         seqno1: string;
@@ -55,12 +56,17 @@ interface WalletTestDescriptor {
 /**
  * All reference values are taken from the
  * vanilla version of the library.
+ *
+ * @todo: "addressMC" values are now taken from the output
+ *        of the library directly. We need another source
+ *        of truth to validate these tests.
  */
 const wallets: WalletTestDescriptor[] = [
     {
         constructor: SimpleWalletContractR1 as typeof WalletContract,
         name: 'simpleR1',
         address: 'UQCf-xXXVDL87MAmMNFmxVUuohYIaXfLRjQXZ8Czp_Wo4KGM',
+        addressMC: '-1:9ffb15d75432fcecc02630d166c5552ea216086977cb46341767c0b3a7f5a8e0',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAAQwAAAAAbgCyANgD0YgBP/Yrrqhl+dmATGGizYqqXUQsENLvloxoLs+BZ0/rUcARmHC0GF4v7v2ia5PQYlR3yUiENZSC+Jqz/m55HhKG7LIjuA6izVQ8bbmbRDuqks+xfX8e5Y0NZoY+FF2C6nGiAGAAAAAAcAECAwCE/wAg3aTyYIECANcYINcLH+1E0NMf0//RURK68qEi+QFUEET5EPKi+AAB0x8xINdKltMH1AL7AN7RpMjLH8v/ye1UAEgAAAAAbkBe/GUa5GDCuc1VaDzCLxheNOgRQZpXvPCHAR7umAcAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAyMokRQ==',
             seqno1: 'te6ccsEBAgEAnwAAawHPiAE/9iuuqGX52YBMYaLNiqpdRCwQ0u+WjGguz4FnT+tRwAcpNOW9OSOmxgtOakct2YtWaqz8Hhox9KDokvHeQ5EfAs82Jp5rdwyH0CLQV16mUJtBTsTdQz9NrMh13SjKFcAAAAAACBwBAGRCADCV54cF5hNtqa3MluJLjSTVk2kgOyb4K6usQkqf4ks9ECDQAAAAAAAAAAAAAAAAAA+T8YM=',
@@ -81,6 +87,7 @@ const wallets: WalletTestDescriptor[] = [
         constructor: SimpleWalletContractR2 as typeof WalletContract,
         name: 'simpleR2',
         address: 'UQBDKdqxQ7GfG1Od7Hwlsb0b9SdkcOjr9fIu4sPJjfriMbDn',
+        addressMC: '-1:4329dab143b19f1b539dec7c25b1bd1bf5276470e8ebf5f22ee2c3c98dfae231',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAARsAAAAAbgDBAOcD0YgAhlO1YodjPjanO9j4S2N6N+pOyOHR1+vkXcWHkxv1xGIRmHC0GF4v7v2ia5PQYlR3yUiENZSC+Jqz/m55HhKG7LIjuA6izVQ8bbmbRDuqks+xfX8e5Y0NZoY+FF2C6nGiAGAAAAAAcAECAwCi/wAg3SCCAUyXupcw7UTQ1wsf4KTyYIECANcYINcLH+1E0NMf0//RURK68qEi+QFUEET5EPKi+AAB0x8xINdKltMH1AL7AN7RpMjLH8v/ye1UAEgAAAAAbkBe/GUa5GDCuc1VaDzCLxheNOgRQZpXvPCHAR7umAcAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAgdDRPw==',
             seqno1: 'te6ccsEBAgEAnwAAawHPiACGU7Vih2M+Nqc72PhLY3o36k7I4dHX6+RdxYeTG/XEYgcpNOW9OSOmxgtOakct2YtWaqz8Hhox9KDokvHeQ5EfAs82Jp5rdwyH0CLQV16mUJtBTsTdQz9NrMh13SjKFcAAAAAACBwBAGRCADCV54cF5hNtqa3MluJLjSTVk2kgOyb4K6usQkqf4ks9ECDQAAAAAAAAAAAAAAAAAOvAhIY=',
@@ -101,6 +108,7 @@ const wallets: WalletTestDescriptor[] = [
         constructor: SimpleWalletContractR3 as typeof WalletContract,
         name: 'simpleR3',
         address: 'UQDBDSLkInEXo_76hVZ0_zj09_rAinsXvDysWTGUX4UnWuc9',
+        addressMC: '-1:c10d22e4227117a3fefa855674ff38f4f7fac08a7b17bc3cac5931945f85275a',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAAScAAAAAbgDNAPMD0YgBghpFyETiL0f99Qqs6f5x6e/1gRT2L3h5WLJjKL8KTrQRmHC0GF4v7v2ia5PQYlR3yUiENZSC+Jqz/m55HhKG7LIjuA6izVQ8bbmbRDuqks+xfX8e5Y0NZoY+FF2C6nGiAGAAAAAAcAECAwC6/wAg3SCCAUyXuiGCATOcurGccbDtRNDTH9cL/+ME4KTyYIECANcYINcLH+1E0NMf0//RURK68qEi+QFUEET5EPKi+AAB0x8xINdKltMH1AL7AN7RpMjLH8v/ye1UAEgAAAAAbkBe/GUa5GDCuc1VaDzCLxheNOgRQZpXvPCHAR7umAcAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAA0YZWQw==',
             seqno1: 'te6ccsEBAgEAnwAAawHPiAGCGkXIROIvR/31Cqzp/nHp7/WBFPYveHlYsmMovwpOtAcpNOW9OSOmxgtOakct2YtWaqz8Hhox9KDokvHeQ5EfAs82Jp5rdwyH0CLQV16mUJtBTsTdQz9NrMh13SjKFcAAAAAACBwBAGRCADCV54cF5hNtqa3MluJLjSTVk2kgOyb4K6usQkqf4ks9ECDQAAAAAAAAAAAAAAAAAJRH3nI=',
@@ -121,6 +129,7 @@ const wallets: WalletTestDescriptor[] = [
         constructor: WalletV2ContractR1 as typeof WalletContract,
         name: 'v2R1',
         address: 'UQBqaW_l01UTgXodOeJXEDHBBw0GfgCO_imXDn3Oo8EmiUOV',
+        addressMC: '-1:6a696fe5d35513817a1d39e2571031c1070d067e008efe29970e7dcea3c12689',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAASMAAAAAcgDJAO8D2YgA1NLfy6aqJwL0OnPEriBjgg4aDPwBHfxTLhz7nUeCTRIRiGMlQ7IhKLIq+ILAAxQnNEehl7PETZ+1epQfI8i3/xNkFRZp3lstMXfKyNMgylvldZzQeE1Tmpw9HAfscd52YQAAAAAf////4HABAgMAqv8AIN0gggFMl7qXMO1E0NcLH+Ck8mCDCNcYINMf0x8B+CO78mPtRNDTH9P/0VExuvKhA/kBVBBC+RDyovgAApMg10qW0wfUAvsA6NGkyMsfy//J7VQASAAAAABuQF78ZRrkYMK5zVVoPMIvGF406BFBmle88IcBHu6YBwBkQgAwleeHBeYTbamtzJbiS40k1ZNpIDsm+CurrEJKn+JLPRAg0AAAAAAAAAAAAAAAAABTZd8j',
             seqno1: 'te6ccsEBAgEAowAAbwHXiADU0t/LpqonAvQ6c8SuIGOCDhoM/AEd/FMuHPudR4JNEgEhboCknddPXymgNr4EPkBupX46W/zobYWixxjrvuEIU7ZN9nuLsLFB/jX5ZPKsAMUBiXxua1MBZZOpIjs/mWgYAAAACAAAAeAcAQBkQgAwleeHBeYTbamtzJbiS40k1ZNpIDsm+CurrEJKn+JLPRAg0AAAAAAAAAAAAAAAAAAvHENq',
@@ -141,6 +150,7 @@ const wallets: WalletTestDescriptor[] = [
         constructor: WalletV2ContractR2 as typeof WalletContract,
         name: 'v2R2',
         address: 'UQCcSX5DqU2kmjtzsprXaKVfYhFTpUnzLvaZAeQT_f_fHI_s',
+        addressMC: '-1:9c497e43a94da49a3b73b29ad768a55f621153a549f32ef69901e413fdffdf1c',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAAS8AAAAAcgDVAPsD2YgBOJL8h1KbSTR252U1rtFKvsQip0qT5l3tMgPIJ/v/vjgRiGMlQ7IhKLIq+ILAAxQnNEehl7PETZ+1epQfI8i3/xNkFRZp3lstMXfKyNMgylvldZzQeE1Tmpw9HAfscd52YQAAAAAf////4HABAgMAwv8AIN0gggFMl7ohggEznLqxnHGw7UTQ0x/XC//jBOCk8mCDCNcYINMf0x8B+CO78mPtRNDTH9P/0VExuvKhA/kBVBBC+RDyovgAApMg10qW0wfUAvsA6NGkyMsfy//J7VQASAAAAABuQF78ZRrkYMK5zVVoPMIvGF406BFBmle88IcBHu6YBwBkQgAwleeHBeYTbamtzJbiS40k1ZNpIDsm+CurrEJKn+JLPRAg0AAAAAAAAAAAAAAAAACRGNmc',
             seqno1: 'te6ccsEBAgEAowAAbwHXiAE4kvyHUptJNHbnZTWu0Uq+xCKnSpPmXe0yA8gn+/++OAEhboCknddPXymgNr4EPkBupX46W/zobYWixxjrvuEIU7ZN9nuLsLFB/jX5ZPKsAMUBiXxua1MBZZOpIjs/mWgYAAAACAAAAeAcAQBkQgAwleeHBeYTbamtzJbiS40k1ZNpIDsm+CurrEJKn+JLPRAg0AAAAAAAAAAAAAAAAACkoGjz',
@@ -161,6 +171,7 @@ const wallets: WalletTestDescriptor[] = [
         constructor: WalletV3ContractR1 as typeof WalletContract,
         name: 'v3R1',
         address: 'UQDBk9eyBPS8hRgkiia-_fcI7RvTFeaSJe-kU3Uu9Vk0iMRt',
+        addressMC: '-1:81b37761c0022922fae092502ce0a53b6513b2b5e8edbf45f1318c59ab9c352b',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAATYAAAAAdgDYAQID4YgBgyevZAnpeQowSRRNffvuEdo3pivNJEvfSKbqXeqyaRARgAPLAYDSdGohsRZBI7DkyHYR9iHffT7Uf9Qg9IZ7E4iEFbvonQF/vizRbAWqdCpM02X5tPG5cEOBcypTz3JxoOU1NGL/////4AAAAABwAQIDAMD/ACDdIIIBTJe6lzDtRNDXCx/gpPJggwjXGCDTH9Mf0x/4IxO78mPtRNDTH9Mf0//RUTK68qFRRLryogT5AVQQVfkQ8qP4AJMg10qW0wfUAvsA6NEBpMjLH8sfy//J7VQAUAAAAAApqaMXbkBe/GUa5GDCuc1VaDzCLxheNOgRQZpXvPCHAR7umAcAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAA/tvrZA==',
             seqno1: 'te6ccsEBAgEApwAAcwHfiAGDJ69kCel5CjBJFE19++4R2jemK80kS99Ipupd6rJpEAO40I7yAP5KBVYZSEPBElrAQLJMDwKmFqvotV86hRMVEpP2O7TB2ohSh6+PHfmTmJbguZmozI7OBZQLmjHUswhZTU0YuAAAAeAAAAAIHAEAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAA12MdCg==',
@@ -181,6 +192,7 @@ const wallets: WalletTestDescriptor[] = [
         constructor: WalletV3ContractR2 as typeof WalletContract,
         name: 'v3R2',
         address: 'UQCU89Iml8w3kH99CfW6C0cN78h3AqGuOYs3CK-5fdfagR6C',
+        addressMC: '-1:46b1c9d585f8daffe65ad4c40eb6ff4b4edddf6e793ff881920259678d9b4129',
         transferQueryBoc64: {
             seqno0: 'te6ccsECBAEAAUUAAAAAdgDnARED4YgBKeekTS+YbyD++hPrdBaOG9+Q7gVDXHMWbhFfcvuvtQIRgAPLAYDSdGohsRZBI7DkyHYR9iHffT7Uf9Qg9IZ7E4iEFbvonQF/vizRbAWqdCpM02X5tPG5cEOBcypTz3JxoOU1NGL/////4AAAAABwAQIDAN7/ACDdIIIBTJe6IYIBM5y6sZ9xsO1E0NMf0x8x1wv/4wTgpPJggwjXGCDTH9Mf0x/4IxO78mPtRNDTH9Mf0//RUTK68qFRRLryogT5AVQQVfkQ8qP4AJMg10qW0wfUAvsA6NEBpMjLH8sfy//J7VQAUAAAAAApqaMXbkBe/GUa5GDCuc1VaDzCLxheNOgRQZpXvPCHAR7umAcAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAuUEbxA==',
             seqno1: 'te6ccsEBAgEApwAAcwHfiAEp56RNL5hvIP76E+t0Fo4b35DuBUNccxZuEV9y+6+1AgO40I7yAP5KBVYZSEPBElrAQLJMDwKmFqvotV86hRMVEpP2O7TB2ohSh6+PHfmTmJbguZmozI7OBZQLmjHUswhZTU0YuAAAAeAAAAAIHAEAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAIIlHhw==',
@@ -201,6 +213,7 @@ const wallets: WalletTestDescriptor[] = [
         constructor: WalletV4ContractR1 as typeof WalletContract,
         name: 'v4R1',
         address: 'UQBvyw32ljifmyOUweifrTOlL6-nxrvsevTDzK0gCj4vd4Ir',
+        addressMC: '-1:eb77e95198ab4d4ff5f02ff0dddb3294005cc823129cf94e0f11043418ab95d5',
         transferQueryBoc64: {
             seqno0: 'te6ccsECGAEAA8sAAAAAdwCEAIkAjgEKATQBXwGqAa8BtAG5AdoB3wHuAf0CCAI3ArkC8gMqA2UDbAOXA+OIAN+WG+0scT82RymD0T9aZ0pfX0+Nd9j16YeZWkAUfF7uEZ72DzocWaLbNDfF4HXijOGLe5ydJ3vYddZXFwCTCQecHNjauZoxBAunU0gCybotb7gRhNWVu/y/QHKx05xsGgFFNTRi/////+AAAAAAAHABFhcBFP8A9KQT9LzyyAsCAgEgAxECAUgECAPu0AHQ0wMBcbCRW+Ah10nBIJFb4AHTHyGCEHBsdWe9IoIQYmxuY72wIoIQZHN0cr2wkl8D4AL6QDAg+kQByMoHy//J0O1E0IEBQNch9AQwXIEBCPQKb6Exs5JfBeAE0z/IJYIQcGx1Z7qRMeMNJIIQYmxuY7rjAAQFBgcAUAH6APQEMIIQcGx1Z4MesXCAGFAFywUnzxZQA/oC9AASy2nLH1IQyz8AUvgnbyKCEGJsbmODHrFwgBhQBcsFJ88WJPoCFMtqE8sfUjDLPwH6AvQAAJKCEGRzdHK6jjUEgQEI9Fkw7UTQgQFA1yDIAc8W9ADJ7VSCEGRzdHKDHrFwgBhQBMsFWM8WIvoCEstqyx/LP5QQNF8E4smAQPsAAgEgCRACASAKDwIBWAsMAD2ynftRNCBAUDXIfQEMALIygfL/8nQAYEBCPQKb6ExgAgEgDQ4AGa3OdqJoQCBrkOuF/8AAGa8d9qJoQBBrkOuFj8AAEbjJftRNDXCx+ABZvSQrb2omhAgKBrkPoCGEcNQICEekk30pkQzmkD6f+YN4EoAbeBAUiYcVnzGEBPjygwjXGCDTH9Mf0x8C+CO78mPtRNDTH9Mf0//0BNFRQ7ryoVFRuvKiBfkBVBBk+RDyo/gAJKTIyx9SQMsfUjDL/1IQ9ADJ7VT4DwHTByHAAJ9sUZMg10qW0wfUAvsA6DDgIcAB4wAhwALjAAHAA5Ew4w0DpMjLHxLLH8v/EhMUFQBu0gf6ANTUIvkABcjKBxXL/8nQd3SAGMjLBcsCIs8WUAX6AhTLaxLMzMlx+wDIQBSBAQj0UfKnAgBsgQEI1xjIVCAlgQEI9FHyp4IQbm90ZXB0gBjIywXLAlAEzxaCEAX14QD6AhPLahLLH8lx+wACAHKBAQjXGDBSAoEBCPRZ8qf4JYIQZHN0cnB0gBjIywXLAlAFzxaCEAX14QD6AhTLahPLHxLLP8lz+wAACvQAye1UAFEAAAAAKamjF25AXvxlGuRgwrnNVWg8wi8YXjToEUGaV7zwhwEe7pgHQABkQgAwleeHBeYTbamtzJbiS40k1ZNpIDsm+CurrEJKn+JLPRAg0AAAAAAAAAAAAAAAAAC+hTbf',
             seqno1: 'te6ccsEBAgEAqAAAdAHhiADflhvtLHE/Nkcpg9E/WmdKX19PjXfY9emHmVpAFHxe7gXP0W/9tn/isLJHocZm+X+rkUKUaHcayZHnkXBxatUcOZVTw2Eh1n8al8OUhOTEg23d1SWkpws9C9ymkVPlZeghTU0YuAAAAeAAAAAIABwBAGRCADCV54cF5hNtqa3MluJLjSTVk2kgOyb4K6usQkqf4ks9ECDQAAAAAAAAAAAAAAAAAGJC4fI=',
@@ -221,6 +234,7 @@ const wallets: WalletTestDescriptor[] = [
         constructor: WalletV4ContractR2 as typeof WalletContract,
         name: 'v4R2',
         address: 'UQAXQH-lFETZ9KncaE4qs0XVTAYMMC2AGSKPNKhvt_Do45ym',
+        addressMC: '-1:3674ec71a2854a6bc36335c39eb9cc9c0a69d23cdc52c870181b4ae703bcca83',
         transferQueryBoc64: {
             seqno0: 'te6ccsECFwEAA6oAAAAAdwCEAIkAjgEFAUMBigGPAZQBmQG6Ab8BzgHdAegCFwKZAtIDDANEA0sDdgPjiAAugP9KKImz6VO40JxVZouqmAwYYFsAMkUeaVDfb+HRxhGe9g86HFmi2zQ3xeB14ozhi3ucnSd72HXWVxcAkwkHnBzY2rmaMQQLp1NIAsm6LW+4EYTVlbv8v0BysdOcbBoBRTU0Yv/////gAAAAAABwARUWART/APSkE/S88sgLAgIBIAMQAgFIBAcC5tAB0NMDIXGwkl8E4CLXScEgkl8E4ALTHyGCEHBsdWe9IoIQZHN0cr2wkl8F4AP6QDAg+kQByMoHy//J0O1E0IEBQNch9AQwXIEBCPQKb6Exs5JfB+AF0z/IJYIQcGx1Z7qSODDjDQOCEGRzdHK6kl8G4w0FBgB4AfoA9AQw+CdvIjBQCqEhvvLgUIIQcGx1Z4MesXCAGFAEywUmzxZY+gIZ9ADLaRfLH1Jgyz8gyYBA+wAGAIpQBIEBCPRZMO1E0IEBQNcgyAHPFvQAye1UAXKwjiOCEGRzdHKDHrFwgBhQBcsFUAPPFiP6AhPLassfyz/JgED7AJJfA+ICASAIDwIBIAkOAgFYCgsAPbKd+1E0IEBQNch9AQwAsjKB8v/ydABgQEI9ApvoTGACASAMDQAZrc52omhAIGuQ64X/wAAZrx32omhAEGuQ64WPwAARuMl+1E0NcLH4AFm9JCtvaiaECAoGuQ+gIYRw1AgIR6STfSmRDOaQPp/5g3gSgBt4EBSJhxWfMYQE+PKDCNcYINMf0x/THwL4I7vyZO1E0NMf0x/T//QE0VFDuvKhUVG68qIF+QFUEGT5EPKj+AAkpMjLH1JAyx9SMMv/UhD0AMntVPgPAdMHIcAAn2xRkyDXSpbTB9QC+wDoMOAhwAHjACHAAuMAAcADkTDjDQOkyMsfEssfy/8REhMUAG7SB/oA1NQi+QAFyMoHFcv/ydB3dIAYyMsFywIizxZQBfoCFMtrEszMyXP7AMhAFIEBCPRR8qcCAHCBAQjXGPoA0z/IVCBHgQEI9FHyp4IQbm90ZXB0gBjIywXLAlAGzxZQBPoCFMtqEssfyz/Jc/sAAgBsgQEI1xj6ANM/MFIkgQEI9Fnyp4IQZHN0cnB0gBjIywXLAlAFzxZQA/oCE8tqyx8Syz/Jc/sAAAr0AMntVABRAAAAACmpoxduQF78ZRrkYMK5zVVoPMIvGF406BFBmle88IcBHu6YB0AAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAz41++w==',
             seqno1: 'te6ccsEBAgEAqAAAdAHhiAAugP9KKImz6VO40JxVZouqmAwYYFsAMkUeaVDfb+HRxgXP0W/9tn/isLJHocZm+X+rkUKUaHcayZHnkXBxatUcOZVTw2Eh1n8al8OUhOTEg23d1SWkpws9C9ymkVPlZeghTU0YuAAAAeAAAAAIABwBAGRCADCV54cF5hNtqa3MluJLjSTVk2kgOyb4K6usQkqf4ks9ECDQAAAAAAAAAAAAAAAAAPjRRL8=',
@@ -241,6 +255,7 @@ const wallets: WalletTestDescriptor[] = [
         constructor: LockupWalletV1 as typeof WalletContract,
         name: 'lockup-0.1',
         address: 'UQDcBQLPldzl_TvBatQUDICmH3YfhURWLk1qKQ2PwBNOSfpT',
+        addressMC: '-1:07c52c2417cea727ae74977337fafddf164264affdd0d3df93b937687ec3e5a5',
         transferQueryBoc64: {
             seqno0: 'te6ccsECIQEAA1cAAAAAdgCDAIgAjQCSAJcAnAEdASUBMgE8AUgBYQFmAWsBiAGsAdEB1gHbAeAB+QH+AgwCGgIfAioCOAJFAsEC1wMjA+GIAbgKBZ8rucv6d4LVqCgZAUw+7D8KiKxcmtRSGx+AJpySEYADywGA0nRqIbEWQSOw5Mh2EfYh330+1H/UIPSGexOIhBW76J0Bf74s0WwFqnQqTNNl+bTxuXBDgXMqU89ycaDlNTRi/////+AAAAAAcAEfIAEU/wD0pBP0vPLICwICASADHQIBSAQSAgLNBQ0CASAGDAIBIAcLA/cAdDTAwFxsJJfA+D6QDAhxwCSXwPgAdMfIcECkl8E4PADUbTwAYIQgur5xFKwvbCSXwzggCiCEILq+cQbuhry9IAhK4IQO5rKAL7y9AeDCNcYgCAh+QFUEDb5EBLy9NMfgCmCEDc6qfQTuhLy9NMA0x8wAeMPEEgQN14ygCAkKAAwQOUgK8AUAFhA3QQrwBQgQV1BWABAQJEMA8ATtVAATCHXSfSob6VsMYAAtXtRNDTH9Mf0//T//QE+gD0BPoA9ATRgCASAOEQIBIA8QADUCMjKHxfKHxXL/xPL//QAAfoC9AAB+gL0AMmAAQxRIqBTE4Ag9A5voZb6ANEToAKRMOLIUAP6AkATgCD0QwGAARUjh4igCD0lm+lIJMwI7uRMeIgmDX6ANEToUATkmwh4rPmMIAgEgExwCASAUGQIBIBUWAC21GH4AbYiGioJgngDGIH4Axj8E7eILMAIBWBcYABetznaiaGmfmOuF/8AAF6x49qJoaY+Y64WPwAIBSBobABGzJftRNDXCx+AAF7HRvgjggEIw+1D2IAAVven3gBiCQvhHgAwB8vKDCNcYINMf0x/TH4AkA/gjuxPy8vADgCJRqboa8vSAI1G3uhvy9IAfC/kBVBDF+RAa8vT4AFBX+CPwBlCY+CPwBiBxKJMg10qOi9MHMdRRG9s8ErAB6DCSKaDfcvsCBpMg10qW0wfUAvsA6NEDpEdoFBVDMPAE7VQeACgB0NMDAXiwklt/4PpAMfpAMAHwAQCTAAAAACmpoxduQF78ZRrkYMK5zVVoPMIvGF406BFBmle88IcBHu6YB25AXvxlGuRgwrnNVWg8wi8YXjToEUGaV7zwhwEe7pgHABAAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAApIBX0A==',
             seqno1: 'te6ccsEBAgEApwAAcwHfiAG4CgWfK7nL+neC1agoGQFMPuw/CoisXJrUUhsfgCackgO40I7yAP5KBVYZSEPBElrAQLJMDwKmFqvotV86hRMVEpP2O7TB2ohSh6+PHfmTmJbguZmozI7OBZQLmjHUswhZTU0YuAAAAeAAAAAIHAEAZEIAMJXnhwXmE22prcyW4kuNJNWTaSA7Jvgrq6xCSp/iSz0QINAAAAAAAAAAAAAAAAAAwYmmlQ==',
@@ -280,7 +295,6 @@ for (const test of wallets) {
 
         });
 
-
         it(`getAddress()`, async () => {
 
             const address = await (
@@ -289,6 +303,23 @@ for (const test of wallets) {
 
             expect(address.toString(true, true))
                 .toEqual(test.address)
+            ;
+
+        });
+
+        it(`getAddress(), masterchain`, async () => {
+
+            const address = await (
+                createWallet({
+                    options: {
+                        publicKey: testKeyPair.publicKey,
+                        wc: -1,
+                    }
+                }).getAddress()
+            );
+
+            expect(address.toString(false))
+                .toEqual(test.addressMC)
             ;
 
         });
