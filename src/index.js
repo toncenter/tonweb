@@ -87,8 +87,4 @@ TonWeb.ledger = {
     AppTon,
 };
 
-if (typeof window !== 'undefined') {
-    window.TonWeb = TonWeb;
-}
-
 module.exports = TonWeb;

@@ -1,10 +1,7 @@
 const HttpProviderUtils = require('./HttpProviderUtils').default;
 
-let XMLHttpRequest;
-if (typeof window === 'undefined') {
-    XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-} else {
-    XMLHttpRequest = window.XMLHttpRequest;
+if (typeof fetch === 'undefined') {
+  fetch = require('node-fetch');
 }
 
 const SHARD_ID_ALL = '-9223372036854775808'; // 0x8000000000000000
@@ -24,30 +21,15 @@ class HttpProvider {
      * @return {Promise<any>}
      */
     sendImpl(apiUrl, request) {
-        return new Promise(function (resolve, reject) {
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", apiUrl, true);
-
-            xhr.onload = function () {
-                if (this.status == 200) {
-                    const r = JSON.parse(this.responseText);
-                    if ("error" in r) {
-                        reject(r["error"]);
-                    }
-                    resolve(r["result"]);
-                } else {
-                    const error = new Error(this.statusText);
-                    error.code = this.status;
-                    reject(error);
-                }
-            };
-
-            xhr.onerror = function () {
-                reject(new Error("Network Error"));
-            };
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify(request));
-        });
+        return fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(request)
+        })
+          .then((response) => response.json())
+          .then(({ result, error }) => result || Promise.reject(error))
     }
 
     /**

@@ -4,7 +4,7 @@ const ethunit = require("ethjs-unit");
 
 let myCrypto = null;
 
-if (typeof document !== 'undefined') { // web
+if (typeof self !== 'undefined') { // web
     // nothing to do
 } else { // nodejs or react-native
     myCrypto = require('isomorphic-webcrypto');
@@ -15,7 +15,7 @@ if (typeof document !== 'undefined') { // web
  * @return  {Promise<ArrayBuffer>}
  */
 function sha256(bytes) {
-    if (typeof document !== 'undefined') { // web
+    if (typeof self !== 'undefined') { // web
         return crypto.subtle.digest("SHA-256", bytes);
     } else {  // nodejs or react-native
         return myCrypto.subtle.digest({name:"SHA-256"}, bytes);
