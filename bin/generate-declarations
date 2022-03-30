@@ -23,6 +23,7 @@ echo "Generating the declarations…"
 TMP_FILE_PATH="$(mktemp /tmp/tonweb-types.XXXXXXXXXX)"
 npm run build
 cat "${TYPES_FILE_PATH}" > "${TMP_FILE_PATH}"
+git clean -fd
 
 echo "Switching branch to \"${TARGET_BRANCH}\"…"
 git checkout -f "${TARGET_BRANCH}"
