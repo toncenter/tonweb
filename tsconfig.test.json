@@ -1,11 +1,8 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.common.json",
   "compilerOptions": {
     "rootDir": "./",
-    "typeRoots": [
-      "node_modules/@types",
-      "types"
-    ],
     "noEmitOnError": true,
     "noEmit": true
   },

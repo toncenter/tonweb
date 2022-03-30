@@ -1,7 +1,7 @@
 /.idea/
 /coverage/
 /dist/*
-!/dist/types/
+!/dist/index.d.ts
 /node_modules/
 /test-reports/
 

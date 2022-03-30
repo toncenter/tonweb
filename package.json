@@ -2,11 +2,12 @@
   "name": "tonweb",
   "version": "0.0.35",
   "description": "TonWeb - JavaScript API for TON blockchain",
-  "main": "dist/__todo__.js",
-  "types": "dist/types/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "./bin/update-version && npm run build:types",
-    "build:types": "rimraf ./dist/types && tsc -p ./tsconfig.lib.json",
+    "build": "./bin/update-version && npm run build:tsc",
+    "build:tsc": "rimraf ./dist && tsc -p ./tsconfig.lib.json && api-extractor run --local && rimraf ./dist/types",
+    "prepack": "npm test && npm run build",
     "test": "jest",
     "test:coverage": "jest --coverage"
   },
@@ -38,10 +39,19 @@
   "engines": {
     "node": ">=15"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
   "dependencies": {
     "@ledgerhq/hw-transport-web-ble": "5.48.0",
     "@ledgerhq/hw-transport-webhid": "5.48.0",
     "@ledgerhq/hw-transport-webusb": "5.48.0",
+    "@types/bn.js": "^5.1.0",
     "bn.js": "5.1.1",
     "ethjs-unit": "0.1.6",
     "isomorphic-webcrypto": "2.3.8",
@@ -49,8 +59,8 @@
     "tweetnacl": "1.0.3"
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.19.5",
     "@sinonjs/fake-timers": "^9.1.1",
-    "@types/bn.js": "^5.1.0",
     "@types/jest": "^27.4.1",
     "@types/ledgerhq__hw-transport": "^4.21.4",
     "@types/ledgerhq__hw-transport-webusb": "^4.70.1",

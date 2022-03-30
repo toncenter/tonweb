@@ -1,16 +1,13 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.common.json",
   "compilerOptions": {
     "rootDir": "src/",
     "outDir": "dist/",
     "declarationDir": "dist/types/",
-    "typeRoots": [
-      "node_modules/@types",
-      "types"
-    ],
     "noEmitOnError": true,
     "declaration": true,
-    "emitDeclarationOnly": true
+    "declarationMap": true
   },
   "include": [
     "src/"
@@ -18,6 +15,6 @@
   "exclude": [
     "**/*.test.ts",
     "**/test/",
-    "node_modules/",
+    "node_modules/"
   ]
 }

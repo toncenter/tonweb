@@ -1,16 +1,9 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.common.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "target": "ES2017",
     "lib": [
-      "ESNext",
+      "ESNext"
     ],
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "typeRoots": [
-      "node_modules/@types",
-      "types"
-    ]
   }
 }
