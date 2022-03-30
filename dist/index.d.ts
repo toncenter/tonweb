@@ -561,23 +561,6 @@ export declare interface ExternalMessage {
     data?: Cell_2;
 }
 
-export declare type FetchHttpClient = FetchHttpClient_2;
-
-declare class FetchHttpClient_2 implements HttpClient {
-    private readonly options;
-    constructor(options?: FetchHttpClientOptions);
-    sendRequest<ResponsePayloadType>(request: HttpRequest): Promise<HttpResponse<ResponsePayloadType>>;
-    private createHeaders;
-}
-
-export declare interface FetchHttpClientOptions {
-    logger?: Logger;
-    /**
-     * Request timeout in milliseconds.
-     */
-    timeout?: number;
-}
-
 /**
  * Formats TON transfer URL from the specified individual parts.
  *
@@ -593,22 +576,17 @@ export declare interface GetPublicKeyResult {
     publicKey: Uint8Array;
 }
 
-export declare interface HttpClient {
-    sendRequest<ResponsePayloadType>(request: HttpRequest): (Promise<HttpResponse<ResponsePayloadType>>);
-}
-
 export declare type HttpProvider = HttpProvider_2;
 
 declare class HttpProvider_2 {
     host: string;
     options: HttpProviderOptions;
     static SHARD_ID_ALL: string;
-    private readonly httpClient;
     constructor(host?: string, options?: HttpProviderOptions);
     /**
      * @todo: change params type to Array<any>
      */
-    send(method: string, params: any): Promise<any>;
+    send(method: string, params: any): Promise<Response>;
     /**
      * Use this method to get information about address:
      * balance, code, data, last_transaction_id.
@@ -751,27 +729,14 @@ declare class HttpProvider_2 {
      * @deprecated
      */
     sendQuery(query: any): Promise<any>;
-    private sendHttpRequest;
+    /**
+     * @private
+     */
+    private sendImpl;
 }
 
 export declare interface HttpProviderOptions {
     apiKey?: string;
-    httpClient?: HttpClient;
-}
-
-export declare interface HttpRequest<BodyType = any> {
-    url: string;
-    method?: HttpRequestMethod;
-    query?: Record<string, any>;
-    body?: BodyType;
-    headers?: RequestHeaders;
-}
-
-export declare type HttpRequestMethod = ('GET' | 'POST');
-
-export declare interface HttpResponse<PayloadType = any> {
-    status: number;
-    payload: PayloadType;
 }
 
 export declare type InMemoryBlockStorage = InMemoryBlockStorage_2;
@@ -941,12 +906,6 @@ export declare interface LockupWalletV1Options extends WalletContractOptions {
 }
 
 export declare type LogFunction = (message: string) => void;
-
-declare interface Logger {
-    log: (message: string) => void;
-    warn: (message: string) => void;
-    error: (message: string) => void;
-}
 
 export declare interface Method {
     getQuery(): Promise<Cell_2>;
@@ -1145,8 +1104,6 @@ export declare interface Query {
     stateInit?: Cell_2;
 }
 
-export declare type RequestHeaders = (Record<string, string | string[]>);
-
 export declare interface RoyaltyParams {
     royalty: number;
     royaltyFactor: number;
@@ -1311,7 +1268,6 @@ declare class TonWeb {
     static SubscriptionContract: typeof SubscriptionContract_2;
     static BlockSubscription: typeof BlockSubscription_2;
     static InMemoryBlockStorage: typeof InMemoryBlockStorage_2;
-    static FetchHttpClient: typeof FetchHttpClient_2;
     static ledger: {
         TransportWebUSB: typeof TransportWebUSB;
         TransportWebHID: any;
