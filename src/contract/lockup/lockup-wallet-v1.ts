@@ -2,7 +2,7 @@
 import BN from 'bn.js';
 
 import { Cell } from '../../boc/cell';
-import { HttpProvider } from '../../providers/http-provider';
+import { HttpProvider } from '../../http-provider/http-provider';
 import { base64ToBytes } from '../../utils/base64';
 import { writeTimestampToSigningMessage } from '../wallet/common/signing';
 import { WalletContract, WalletContractMethods, WalletContractOptions } from '../wallet/wallet-contract';

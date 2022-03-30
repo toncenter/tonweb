@@ -35,6 +35,33 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 export type BN = $BN;
 
 
+//=============//
+// HTTP CLIENT //
+//=============//
+
+export {
+    RequestHeaders,
+    HttpRequest,
+    HttpResponse,
+    HttpRequestMethod,
+    HttpClient,
+
+} from './http-client/http-client';
+
+import {
+    FetchHttpClient as $FetchHttpClient
+
+} from './http-client/fetch-http-client';
+
+export type FetchHttpClient = $FetchHttpClient;
+
+export {
+    FetchHttpClientOptions,
+    // FetchHttpClient,
+
+} from './http-client/fetch-http-client';
+
+
 //===============//
 // HTTP PROVIDER //
 //===============//
@@ -43,7 +70,7 @@ import {
     HttpProvider as $HttpProvider,
     StackElement,
 
-} from './providers/http-provider';
+} from './http-provider/http-provider';
 
 export type HttpProvider = $HttpProvider;
 
@@ -56,7 +83,7 @@ export {
     SliceObject,
     StackElement,
 
-} from './providers/http-provider';
+} from './http-provider/http-provider';
 
 
 //====================//
@@ -66,7 +93,7 @@ export {
 import {
     BlockSubscription as $BlockSubscription,
 
-} from './providers/block-subscription/block-subscription';
+} from './block-subscription/block-subscription';
 
 export type BlockSubscription = $BlockSubscription;
 
@@ -75,12 +102,12 @@ export {
     BlockHandler,
     BlockSubscriptionOptions,
 
-} from './providers/block-subscription/block-subscription';
+} from './block-subscription/block-subscription';
 
 import {
     InMemoryBlockStorage as $InMemoryBlockStorage,
 
-} from './providers/block-subscription/in-memory-block-storage';
+} from './block-subscription/in-memory-block-storage';
 
 export type InMemoryBlockStorage = $InMemoryBlockStorage;
 
@@ -88,13 +115,13 @@ export {
     // InMemoryBlockStorage,
     LogFunction,
 
-} from './providers/block-subscription/in-memory-block-storage';
+} from './block-subscription/in-memory-block-storage';
 
 export {
     ShardBlock,
     BlockStorage,
 
-} from './providers/block-subscription/block-storage';
+} from './block-subscription/block-storage';
 
 
 //=======//
@@ -599,10 +626,7 @@ const NFT = {
 
 // -----
 
-// This version is updated by build script automatically,
-// do not edit it or change the expression format.
-const version = '0.0.35';
-
+import { version } from './version';
 
 export default class TonWeb {
 
@@ -617,6 +641,7 @@ export default class TonWeb {
     public static SubscriptionContract = $SubscriptionContract;
     public static BlockSubscription = $BlockSubscription;
     public static InMemoryBlockStorage = $InMemoryBlockStorage;
+    public static FetchHttpClient = $FetchHttpClient;
 
     public static ledger = {
         TransportWebUSB,
@@ -652,20 +677,20 @@ export default class TonWeb {
      * Returns array of transaction objects.
      */
     public async getTransactions(
-      address: AddressType,
-      limit = 20,
-      lt?: number,
-      txhash?: string,
-      to_lt?: number
+        address: AddressType,
+        limit = 20,
+        lt?: number,
+        txhash?: string,
+        to_lt?: number
 
     ): Promise<any> {
 
         return this.provider.getTransactions(
-          address.toString(),
-          limit,
-          lt,
-          txhash,
-          to_lt
+            address.toString(),
+            limit,
+            lt,
+            txhash,
+            to_lt
         );
 
     };
@@ -691,29 +716,29 @@ export default class TonWeb {
      * Invoke get-method of smart contract.
      */
     public async call(
-      /**
-       * Contract address.
-       */
-      address: AddressType,
+        /**
+         * Contract address.
+         */
+        address: AddressType,
 
-      /**
-       * Method name or method ID.
-       */
-      method: (string | number),
+        /**
+         * Method name or method ID.
+         */
+        method: (string | number),
 
-      /**
-       * Array of stack elements.
-       */
-      params: StackElement[] = []
+        /**
+         * Array of stack elements.
+         */
+        params: StackElement[] = []
 
     ): Promise<any> {
 
         // @todo: type return value
 
         return this.provider.call(
-          address.toString(),
-          method,
-          params
+            address.toString(),
+            method,
+            params
         );
 
     }

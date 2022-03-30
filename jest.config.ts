@@ -23,7 +23,7 @@ export default <Config.InitialOptions>{
     errorOnDeprecated: true,
     globals: {
         'ts-jest': {
-            tsconfig: 'tsconfig.test.json',
+            tsconfig: '<rootDir>/tsconfig.test.json',
         },
     },
     setupFiles: [

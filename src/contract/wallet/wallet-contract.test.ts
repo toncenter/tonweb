@@ -1,7 +1,7 @@
 
 import { Cell } from '../../boc/cell';
-import { HttpProvider } from '../../providers/http-provider';
-import { TestHttpProvider } from '../../providers/test/test-http-provider';
+import { HttpProvider } from '../../http-provider/http-provider';
+import { TestHttpProvider } from '../../http-provider/test-http-provider';
 import { bytesToBase64 } from '../../utils/base64';
 import { LockupWalletV1 } from '../lockup/lockup-wallet-v1';
 import { SimpleWalletContractR1 } from './simple/simple-wallet-contract-r1';
