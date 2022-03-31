@@ -1,7 +1,7 @@
 
 import nacl from 'tweetnacl';
 
-import { TestHttpProvider } from '../providers/test/test-http-provider';
+import { TestHttpProvider } from '../http-provider/test-http-provider';
 import { Address } from '../utils/address';
 
 

@@ -35,6 +35,33 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 export type BN = $BN;
 
 
+//=============//
+// HTTP CLIENT //
+//=============//
+
+export {
+    RequestHeaders,
+    HttpRequest,
+    HttpResponse,
+    HttpRequestMethod,
+    HttpClient,
+
+} from './http-client/http-client';
+
+import {
+    FetchHttpClient as $FetchHttpClient
+
+} from './http-client/fetch-http-client';
+
+export type FetchHttpClient = $FetchHttpClient;
+
+export {
+    FetchHttpClientOptions,
+    // FetchHttpClient,
+
+} from './http-client/fetch-http-client';
+
+
 //===============//
 // HTTP PROVIDER //
 //===============//
@@ -42,7 +69,7 @@ export type BN = $BN;
 import {
     HttpProvider as $HttpProvider,
 
-} from './http-provider/http-provider';
+} from './providers/http-provider';
 
 export type HttpProvider = $HttpProvider;
 
@@ -51,7 +78,7 @@ export {
     // defaultHost,
     HttpProviderOptions,
 
-} from './http-provider/http-provider';
+} from './providers/http-provider';
 
 
 //====================//
@@ -609,6 +636,7 @@ export default class TonWeb {
     public static SubscriptionContract = $SubscriptionContract;
     public static BlockSubscription = $BlockSubscription;
     public static InMemoryBlockStorage = $InMemoryBlockStorage;
+    public static FetchHttpClient = $FetchHttpClient;
 
     public static ledger = {
         TransportWebUSB,
@@ -644,20 +672,20 @@ export default class TonWeb {
      * Returns array of transaction objects.
      */
     public async getTransactions(
-      address: AddressType,
-      limit = 20,
-      lt?: number,
-      txhash?: string,
-      to_lt?: number
+        address: AddressType,
+        limit = 20,
+        lt?: number,
+        txhash?: string,
+        to_lt?: number
 
     ): Promise<any> {
 
         return this.provider.getTransactions(
-          address.toString(),
-          limit,
-          lt,
-          txhash,
-          to_lt
+            address.toString(),
+            limit,
+            lt,
+            txhash,
+            to_lt
         );
 
     };
@@ -683,15 +711,15 @@ export default class TonWeb {
      * Invoke get-method of smart contract.
      */
     public async call(
-      /**
-       * Contract address.
-       */
-      address: AddressType,
+        /**
+         * Contract address.
+         */
+        address: AddressType,
 
-      /**
-       * Method name or method ID.
-       */
-      method: (string | number),
+        /**
+         * Method name or method ID.
+         */
+        method: (string | number),
 
       /**
        * Array of stack elements.
@@ -703,9 +731,9 @@ export default class TonWeb {
         // @todo: type return value
 
         return this.provider.call(
-          address.toString(),
-          method,
-          params
+            address.toString(),
+            method,
+            params
         );
 
     }

@@ -32,7 +32,9 @@ import {
 
 export interface HttpProviderOptions {
     apiKey?: string;
+    httpClient?: HttpClient;
 }
+
 
 
 const SHARD_ID_ALL = '-9223372036854775808'; // 0x8000000000000000
@@ -45,10 +47,18 @@ export class HttpProvider {
     public static SHARD_ID_ALL = SHARD_ID_ALL;
 
 
+    private readonly httpClient: HttpClient;
+
+
     constructor(
       public host = defaultHost,
       public options: HttpProviderOptions = {}
     ) {
+        this.httpClient = (
+            options.httpClient ||
+            new FetchHttpClient()
+        );
+
     }
 
 
@@ -363,22 +373,36 @@ export class HttpProvider {
     };
 
 
-    private sendImpl(apiUrl: string, request: any): Promise<any> {
-        const headers = {
-            'Content-Type': 'application/json',
-        };
+    private sendHttpRequest(
+        apiUrl: string,
+        request: any
+
+    ): Promise<any> {
+
+        const headers: RequestHeaders = {};
+
         if (this.options.apiKey) {
             headers['X-API-Key'] = this.options.apiKey;
         }
-        // @todo: use async/await/throw
-        return fetch(apiUrl, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(request),
-        })
-            .then(response => response.json())
-            .then(({ result, error }) => (result || Promise.reject(error)))
+
+        const response = await this.httpClient
+            .sendRequest<ResponseType>({
+                url: apiUrl,
+                method: 'POST',
+                body: request,
+                headers,
+            })
         ;
+
+        const { result, error } = response.payload;
+
+        // @todo: parse the error and throw proper Error object
+        if (error) {
+            throw error;
+        }
+
+        return result;
+
     }
 
 }
