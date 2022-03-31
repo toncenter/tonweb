@@ -4,7 +4,7 @@ export type Int53 = number;
 export type Int64 = string;
 export type Bytes = string;
 export type Bool = boolean;
-export type Ok = {}; // TODO: Check if it is right.
+export type Ok = {};
 export type Hashtag = number;
 export type Vector<T> = T[];
 
