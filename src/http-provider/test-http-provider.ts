@@ -1,6 +1,6 @@
 
-import { HttpProvider } from '../../http-provider/http-provider';
 import { TestHttpClient } from '../http-client/test-http-client';
+import { HttpProvider } from './http-provider';
 
 
 export interface Call {
@@ -29,7 +29,11 @@ export class TestHttpProvider extends HttpProvider {
     }
 
 
-    public async send(method: string, params: any): Promise<any> {
+    public async send(
+        method: string,
+        params: any = {}
+
+    ): Promise<any> {
 
         this.calls.push({ method, params });
 

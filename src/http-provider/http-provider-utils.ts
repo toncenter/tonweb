@@ -3,6 +3,8 @@ import BN from 'bn.js';
 
 import { Cell } from '../boc/cell';
 import { base64ToBytes } from '../utils/base64';
+import { expectBoolean, expectNonNullObject, expectNumber, expectString } from '../utils/type-guards';
+import { ApiResponse } from './http-provider';
 import { RunGetMethodResult, RunGetMethodResultStackItem } from './types/responses/meta';
 import { Tvm } from './types/tl-spec/tvm';
 
@@ -139,4 +141,14 @@ export class HttpProviderUtils {
         return args.map(this.makeArg);
     }
 
+}
+
+export function expectApiResponse(response: any): ApiResponse {
+    expectNonNullObject(response);
+    expectBoolean(response.ok);
+    if (response.ok === false) {
+        expectNumber(response.code);
+        expectString(response.error);
+    }
+    return response;
 }

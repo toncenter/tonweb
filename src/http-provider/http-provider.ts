@@ -1,5 +1,9 @@
 
+import { FetchHttpClient } from '../http-client/fetch-http-client';
+import { HttpClient, ParsedJson, RequestHeaders } from '../http-client/http-client';
+
 import {
+    expectApiResponse,
     HttpProviderUtils,
     ParseResponseResult,
 
@@ -35,6 +39,21 @@ export interface HttpProviderOptions {
     httpClient?: HttpClient;
 }
 
+export type ApiResponse = (
+    | SuccessApiResponse
+    | FailedApiResponse
+);
+
+export interface SuccessApiResponse {
+    ok: true;
+    result?: ParsedJson;
+}
+
+export interface FailedApiResponse {
+    ok: false;
+    error: string;
+    code: number;
+}
 
 
 const SHARD_ID_ALL = '-9223372036854775808'; // 0x8000000000000000
@@ -79,7 +98,7 @@ export class HttpProvider {
 
     ): Promise<any> {
 
-        return this.sendImpl(
+        return this.sendHttpRequest(
             this.host,
             { id: 1, jsonrpc: '2.0', method, params }
         );
@@ -373,7 +392,7 @@ export class HttpProvider {
     };
 
 
-    private sendHttpRequest(
+    private async sendHttpRequest(
         apiUrl: string,
         request: any
 
@@ -386,7 +405,7 @@ export class HttpProvider {
         }
 
         const response = await this.httpClient
-            .sendRequest<ResponseType>({
+            .sendRequest({
                 url: apiUrl,
                 method: 'POST',
                 body: request,
@@ -394,14 +413,27 @@ export class HttpProvider {
             })
         ;
 
-        const { result, error } = response.payload;
+        return this.processApiResponseOrThrow(
+            response.payload
+        );
 
-        // @todo: parse the error and throw proper Error object
-        if (error) {
-            throw error;
+    }
+
+    private processApiResponseOrThrow(serverResponse: any) {
+
+        const response = expectApiResponse(serverResponse);
+
+        if (response.ok === true) {
+            return response.result;
+
+        } else {
+            const errorCode = (response.code || 0);
+            const errorMessage = response.error;
+            throw new Error(
+                `API error: [${errorCode}] ${errorMessage}`
+            );
+
         }
-
-        return result;
 
     }
 

@@ -21,9 +21,20 @@ export type HttpRequestMethod = (
     | 'POST'
 )
 
+export type ParsedJson = (
+    | null
+    | string
+    | number
+    | boolean
+    | ParsedJson[]
+    | { [key: string]: ParsedJson }
+);
+
 export interface HttpClient {
 
-    sendRequest<ResponsePayloadType>(request: HttpRequest): (
+    sendRequest<
+        ResponsePayloadType = ParsedJson
+    >(request: HttpRequest): (
         Promise<HttpResponse<ResponsePayloadType>>
     );
 

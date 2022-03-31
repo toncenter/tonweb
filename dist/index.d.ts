@@ -681,6 +681,22 @@ declare interface Fees extends WithType<'fees'> {
     fwd_fee: Int53;
 }
 
+export declare type FetchHttpClient = FetchHttpClient_2;
+
+declare class FetchHttpClient_2 implements HttpClient {
+    private readonly options;
+    constructor(options?: FetchHttpClientOptions);
+    sendRequest<ResponsePayloadType>(request: HttpRequest): Promise<HttpResponse<ResponsePayloadType>>;
+    private createHeaders;
+}
+
+export declare interface FetchHttpClientOptions {
+    /**
+     * Request timeout in milliseconds.
+     */
+    timeout?: number;
+}
+
 /**
  * Formats TON transfer URL from the specified individual parts.
  *
@@ -759,7 +775,7 @@ declare type GetTransactionsMeta = MethodMeta<{
     archival?: boolean;
 }, GetTransactionsResult>;
 
-declare type GetTransactionsResult = GetTransactionsResultTransaction[];
+declare type GetTransactionsResult = (GetTransactionsResultTransaction[]);
 
 declare type GetTransactionsResultTransaction = Omit<Raw.Transaction, 'in_msg'> & {
     in_msg: GetTransactionsResultTransactionMessage;
@@ -789,12 +805,17 @@ declare type GetWalletInformationResult = {
 
 declare type Hashtag = number;
 
+export declare interface HttpClient {
+    sendRequest<ResponsePayloadType = ParsedJson>(request: HttpRequest): (Promise<HttpResponse<ResponsePayloadType>>);
+}
+
 export declare type HttpProvider = HttpProvider_2;
 
 declare class HttpProvider_2 {
     host: string;
     options: HttpProviderOptions;
     static SHARD_ID_ALL: string;
+    private readonly httpClient;
     constructor(host?: string, options?: HttpProviderOptions);
     send<Method extends HttpProviderMethodWithArgsName>(method: Method, params: HttpProviderMethodParams<Method>): Promise<HttpProviderMethodResponse<Method>>;
     send<Method extends HttpProviderMethodNoArgsName>(method: Method): Promise<HttpProviderMethodResponse<Method>>;
@@ -855,27 +876,19 @@ declare class HttpProvider_2 {
      *
      * {@link https://toncenter.com/api/v2/#/send/estimate_fee_estimateFee_post}
      */
-    getEstimateFee(query: EstimateFeeParams): (Promise<EstimateFeeResult>);
+    getEstimateFee(query: EstimateFeeParams): Promise<EstimateFeeResult>;
     /**
      * Invokes get-method of smart contract.
      *
      * @todo: rename to `runGetMethodRaw()`
      *
      * {@link https://toncenter.com/api/v2/#/run%20method/run_get_method_runGetMethod_post}
+     *
+     * @param address - Contract address
+     * @param method - Method name or method ID
+     * @param stack - Array of stack elements
      */
-    call(
-    /**
-     * Contract address.
-     */
-    address: string, 
-    /**
-     * Method name or method ID.
-     */
-    method: (string | number), 
-    /**
-     * Array of stack elements.
-     */
-    stack?: RunGetMethodParamsStackItem[]): Promise<RunGetMethodResult>;
+    call(address: string, method: (string | number), stack?: RunGetMethodParamsStackItem[]): Promise<RunGetMethodResult>;
     /**
      * Invokes get-method of smart contract.
      *
@@ -930,10 +943,8 @@ declare class HttpProvider_2 {
      * @deprecated
      */
     sendQuery(query: SendQuerySimpleParams): Promise<SendQuerySimpleResult>;
-    /**
-     * @private
-     */
-    private sendImpl;
+    private sendHttpRequest;
+    private processApiResponseOrThrow;
 }
 
 /**
@@ -967,20 +978,20 @@ declare type HttpProviderMethodName = keyof HttpProviderMethodMetaMap;
  * API methods which don't require any arguments to call.
  */
 declare type HttpProviderMethodNoArgsName = {
-    [Method in keyof HttpProviderMethodMetaMap]: [
-    HttpProviderMethodMetaMap[Method]['params']
-    ] extends [never] ? Method : never;
+    [MethodType in keyof HttpProviderMethodMetaMap]: [
+    HttpProviderMethodMetaMap[MethodType]['params']
+    ] extends [never] ? MethodType : never;
 }[keyof HttpProviderMethodMetaMap];
 
 /**
  * Returns type of parameters for specified API method.
  */
-declare type HttpProviderMethodParams<M extends HttpProviderMethodName> = (HttpProviderMethodMetaMap[M]['params']);
+declare type HttpProviderMethodParams<MethodType extends HttpProviderMethodName> = (HttpProviderMethodMetaMap[MethodType]['params']);
 
 /**
  * Returns type of response for specified API method.
  */
-declare type HttpProviderMethodResponse<M extends HttpProviderMethodName> = (HttpProviderMethodMetaMap[M]['response']);
+declare type HttpProviderMethodResponse<MethodType extends HttpProviderMethodName> = (HttpProviderMethodMetaMap[MethodType]['response']);
 
 /**
  * API methods which required arguments to call.
@@ -989,6 +1000,22 @@ declare type HttpProviderMethodWithArgsName = (Exclude<HttpProviderMethodName, H
 
 export declare interface HttpProviderOptions {
     apiKey?: string;
+    httpClient?: HttpClient;
+}
+
+export declare interface HttpRequest<BodyType = any> {
+    url: string;
+    method?: HttpRequestMethod;
+    query?: Record<string, any>;
+    body?: BodyType;
+    headers?: RequestHeaders;
+}
+
+export declare type HttpRequestMethod = ('GET' | 'POST');
+
+export declare interface HttpResponse<PayloadType = any> {
+    status: number;
+    payload: PayloadType;
 }
 
 export declare type InMemoryBlockStorage = InMemoryBlockStorage_2;
@@ -1186,8 +1213,8 @@ export declare interface Method {
 /**
  * Creates metadata for API method.
  */
-declare interface MethodMeta<ParamType, ResponseType> {
-    params: ParamType;
+declare interface MethodMeta<ParamsType, ResponseType> {
+    params: ParamsType;
     response: ResponseType;
 }
 
@@ -1379,6 +1406,10 @@ export declare interface NftSaleOptions extends ContractOptions {
 
 declare type Ok = {};
 
+export declare type ParsedJson = (null | string | number | boolean | ParsedJson[] | {
+    [key: string]: ParsedJson;
+});
+
 export declare interface ParsedTransferUrl {
     address: string;
     amount?: string;
@@ -1547,6 +1578,8 @@ declare namespace Raw {
     }
         {};
 }
+
+export declare type RequestHeaders = (Record<string, string | string[]>);
 
 export declare interface RoyaltyParams {
     royalty: number;
@@ -1811,6 +1844,7 @@ declare class TonWeb {
     static SubscriptionContract: typeof SubscriptionContract_2;
     static BlockSubscription: typeof BlockSubscription_2;
     static InMemoryBlockStorage: typeof InMemoryBlockStorage_2;
+    static FetchHttpClient: typeof FetchHttpClient_2;
     static ledger: {
         TransportWebUSB: typeof TransportWebUSB;
         TransportWebHID: any;

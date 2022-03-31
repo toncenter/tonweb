@@ -45,6 +45,7 @@ export {
     HttpResponse,
     HttpRequestMethod,
     HttpClient,
+    ParsedJson,
 
 } from './http-client/http-client';
 
@@ -69,7 +70,7 @@ export {
 import {
     HttpProvider as $HttpProvider,
 
-} from './providers/http-provider';
+} from './http-provider/http-provider';
 
 export type HttpProvider = $HttpProvider;
 
@@ -78,7 +79,7 @@ export {
     // defaultHost,
     HttpProviderOptions,
 
-} from './providers/http-provider';
+} from './http-provider/http-provider';
 
 
 //====================//
@@ -88,7 +89,7 @@ export {
 import {
     BlockSubscription as $BlockSubscription,
 
-} from './providers/block-subscription/block-subscription';
+} from './block-subscription/block-subscription';
 
 export type BlockSubscription = $BlockSubscription;
 
@@ -97,12 +98,12 @@ export {
     BlockHandler,
     BlockSubscriptionOptions,
 
-} from './providers/block-subscription/block-subscription';
+} from './block-subscription/block-subscription';
 
 import {
     InMemoryBlockStorage as $InMemoryBlockStorage,
 
-} from './providers/block-subscription/in-memory-block-storage';
+} from './block-subscription/in-memory-block-storage';
 
 export type InMemoryBlockStorage = $InMemoryBlockStorage;
 
@@ -110,13 +111,13 @@ export {
     // InMemoryBlockStorage,
     LogFunction,
 
-} from './providers/block-subscription/in-memory-block-storage';
+} from './block-subscription/in-memory-block-storage';
 
 export {
     ShardBlock,
     BlockStorage,
 
-} from './providers/block-subscription/block-storage';
+} from './block-subscription/block-storage';
 
 
 //=======//
