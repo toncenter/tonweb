@@ -2,9 +2,10 @@
 import BN from 'bn.js';
 
 import { Cell } from '../../../boc/cell';
-import { HttpProvider } from '../../../providers/http-provider';
+import { HttpProvider } from '../../../http-provider/http-provider';
 import { Address, AddressType } from '../../../utils/address';
 import { bytesToHex, toNano } from '../../../utils/common';
+import { expectArray, expectBN } from '../../../utils/type-guards';
 import { Contract, Method } from '../../contract';
 import { ExternalMessage } from '../wallet-contract';
 import { WalletV4ContractBase, WalletV4ContractMethods, WalletV4ContractOptions } from './wallet-v4-contract-base';
@@ -132,12 +133,12 @@ export class WalletV4ContractR2 extends WalletV4ContractBase<
 
         const myAddress = await this.getAddress();
 
-        const id = await this.provider.call2(
+        const result = await this.provider.call2(
             myAddress.toString(),
             'get_subwallet_id'
         );
 
-        return id.toNumber();
+        return expectBN(result).toNumber();
 
     }
 
@@ -161,7 +162,7 @@ export class WalletV4ContractR2 extends WalletV4ContractBase<
             ]
         );
 
-        return !result.isZero();
+        return !expectBN(result).isZero();
 
     }
 
@@ -175,13 +176,14 @@ export class WalletV4ContractR2 extends WalletV4ContractBase<
                 tuple[1].toString(16)
             )
         );
-
         const myAddress = await this.getAddress();
         const result = await this.provider.call2(
             myAddress.toString(),
             'get_plugin_list'
         );
-        return result.map(parseAddress);
+        return (expectArray(result)
+            .map(parseAddress)
+        );
     }
 
 

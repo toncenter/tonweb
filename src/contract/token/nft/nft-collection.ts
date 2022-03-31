@@ -2,9 +2,10 @@
 import BN from 'bn.js';
 
 import { Cell } from '../../../boc/cell';
-import { HttpProvider } from '../../../providers/http-provider';
+import { HttpProvider } from '../../../http-provider/http-provider';
 import { Address } from '../../../utils/address';
 import { bytesToBase64 } from '../../../utils/base64';
+import { expectCell } from '../../../utils/type-guards';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
 import { NftItem } from './nft-item';
 import { createOffchainUriCell, parseAddress, parseOffchainUriCell, serializeUri } from './utils';
@@ -204,7 +205,9 @@ export class NftCollection extends Contract<
                     )],
                 ]
             );
-            itemContent.contentUri = parseOffchainUriCell(result);
+            itemContent.contentUri = parseOffchainUriCell(
+                expectCell(result)
+            );
         }
         return itemContent;
     }
@@ -221,7 +224,9 @@ export class NftCollection extends Contract<
             [['num', index]]
         );
 
-        return parseAddress(result);
+        return parseAddress(
+            expectCell(result)
+        );
     }
 
     public async getRoyaltyParams(): Promise<RoyaltyParams> {

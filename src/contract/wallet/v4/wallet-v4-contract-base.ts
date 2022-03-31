@@ -2,6 +2,7 @@
 import BN from 'bn.js';
 
 import { Cell } from '../../../boc/cell';
+import { expectBN } from '../../../utils/type-guards';
 import { writeTimestampToSigningMessage } from '../common/signing';
 import { WalletContract, WalletContractMethods, WalletContractOptions } from '../wallet-contract';
 
@@ -23,10 +24,11 @@ export class WalletV4ContractBase<
 
     public async getPublicKey(): Promise<BN> {
         const myAddress = await this.getAddress();
-        return this.provider.call2(
+        const result = await this.provider.call2(
             myAddress.toString(),
             'get_public_key'
         );
+        return expectBN(result);
     }
 
 

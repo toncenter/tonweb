@@ -2,8 +2,9 @@
 import BN from 'bn.js';
 
 import { Cell } from '../../boc/cell';
-import { HttpProvider } from '../../providers/http-provider';
+import { HttpProvider } from '../../http-provider/http-provider';
 import { base64ToBytes } from '../../utils/base64';
+import { expectArray, expectBN } from '../../utils/type-guards';
 import { writeTimestampToSigningMessage } from '../wallet/common/signing';
 import { WalletContract, WalletContractMethods, WalletContractOptions } from '../wallet/wallet-contract';
 
@@ -84,16 +85,21 @@ export class LockupWalletV1 extends WalletContract<
 
     public async getPublicKey(): Promise<BN> {
         const myAddress = await this.getAddress();
-        return this.provider.call2(myAddress.toString(), 'get_public_key');
+        const result = await this.provider.call2(
+            myAddress.toString(),
+            'get_public_key'
+        );
+        return expectBN(result);
     }
-
 
     public async getWalletId(): Promise<number> {
         const myAddress = await this.getAddress();
-        const id = await this.provider.call2(myAddress.toString(), 'get_subwallet_id');
-        return id.toNumber();
+        const id = await this.provider.call2(
+            myAddress.toString(),
+            'get_subwallet_id'
+        );
+        return expectBN(id).toNumber();
     }
-
 
     /**
      * Returns amount of nanograms that can be spent immediately.
@@ -111,7 +117,6 @@ export class LockupWalletV1 extends WalletContract<
         return (await this.getBalances())[1];
     }
 
-
     /**
      * Returns amount of nanograms that can be spent after
      * the timelock only (whitelisted addresses not used).
@@ -126,13 +131,24 @@ export class LockupWalletV1 extends WalletContract<
      */
     public async getBalances(): Promise<[BN, BN, BN]> {
         const myAddress = await this.getAddress();
-        return this.provider.call2(myAddress.toString(), 'get_balances');
+        const result = await this.provider.call2(
+            myAddress.toString(),
+            'get_balances'
+        );
+        const numbers = expectArray<BN>(result);
+        return [
+            expectBN(numbers[0]),
+            expectBN(numbers[1]),
+            expectBN(numbers[2]),
+        ];
     }
+
 
     /**
      * Returns cell that contains wallet data.
      */
     protected createDataCell() {
+
         // from restricted.fc:
         // .store_int(seqno, 32)
         // .store_int(subwallet_id, 32)
@@ -145,14 +161,17 @@ export class LockupWalletV1 extends WalletContract<
         // .store_dict(restricted).end_cell();
 
         const cell = new Cell();
+
         cell.bits.writeUint(0, 32); // seqno
         cell.bits.writeUint(this.options.walletId, 32);
         cell.bits.writeBytes(this.options.publicKey);
 
         // @todo: write config.config_public_key
         //        (need to sort out encoding - the params come in base64),
+
         // @todo: write the dict of allowed destinations
         //        (address is a key to an empty value).
+
         cell.bits.writeBytes(base64ToBytes(this.options.config.config_public_key));
         if (this.options.config.allowed_destinations) {
             cell.bits.writeUint(1, 1);
@@ -165,9 +184,10 @@ export class LockupWalletV1 extends WalletContract<
         cell.bits.writeUint(0, 1); // empty locked dict
         cell.bits.writeGrams(0);   // .store_grams(total_restricted_value)
         cell.bits.writeUint(0, 1); // empty locked dict
-        return cell;
-    }
 
+        return cell;
+
+    }
 
     protected createSigningMessage(
         seqno?: number,

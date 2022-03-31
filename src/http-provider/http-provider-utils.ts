@@ -3,6 +3,39 @@ import BN from 'bn.js';
 
 import { Cell } from '../boc/cell';
 import { base64ToBytes } from '../utils/base64';
+import { RunGetMethodResult, RunGetMethodResultStackItem } from './types/responses/meta';
+import { Tvm } from './types/tl-spec/tvm';
+
+
+/* parseObject */
+export type ParseObjectParam = (
+    | Tvm.List
+    | Tvm.Tuple
+    | Tvm.NumberDecimal
+    | Tvm.StackEntry
+);
+
+export type ParseObjectResult = (
+    | BN
+    | ParseObjectResult[]
+);
+
+/* parseResponseStack */
+export type ParseResponseStackParam = RunGetMethodResultStackItem;
+
+export type ParseResponseStackResult = (
+    | BN
+    | ParseObjectResult
+    | Cell
+);
+
+/* parseResponse */
+export type ParseResponseParam = RunGetMethodResult;
+
+export type ParseResponseResult = (
+    | ParseResponseStackResult
+    | ParseResponseStackResult[]
+);
 
 
 /**
@@ -11,11 +44,13 @@ import { base64ToBytes } from '../utils/base64';
  */
 export class HttpProviderUtils {
 
-    /**
-     * @todo: improve typing
-     */
-    public static parseObject(obj: any): (BN | any) {
+    public static parseObject(
+        obj: ParseObjectParam
+
+    ): ParseObjectResult {
+
         const typeName = obj['@type'];
+
         switch (typeName) {
             case 'tvm.list':
             case 'tvm.tuple':
@@ -27,57 +62,66 @@ export class HttpProviderUtils {
             case 'tvm.numberDecimal':
                 return new BN(obj.number, 10);
             default:
-                throw new Error('unknown type ' + typeName);
+                throw new Error(`Unknown type: ${typeName}`);
         }
+
     }
 
-    /**
-     * @todo: improve typing
-     */
     public static parseResponseStack(
-        pair: [string, any]
+        pair: ParseResponseStackParam
 
-    ): (BN | Cell | any) {
+    ): ParseResponseStackResult {
 
         const typeName = pair[0];
-        const value = pair[1];
 
         switch (typeName) {
-            case 'num':
-                return new BN(value.replace(/0x/, ''), 16);
+            case 'num': {
+                const str = pair[1];
+                return new BN(str.replace(/0x/, ''), 16);
+            }
             case 'list':
-            case 'tuple':
-                return HttpProviderUtils.parseObject(value);
-            case 'cell':
-                const contentBytes = base64ToBytes(value.bytes);
+            case 'tuple': {
+                const tupleObj = pair[1];
+                return HttpProviderUtils.parseObject(tupleObj);
+            }
+            case 'cell': {
+                const cell = pair[1];
+                const contentBytes = base64ToBytes(cell.bytes);
                 return Cell.oneFromBoc(contentBytes);
-            default:
+            }
+            default: {
                 throw new Error(
                     `Failed to parse response stack, ` +
                     `unknown type: ${typeName}`
                 );
+            }
         }
 
     }
 
-    /**
-     * @todo: improve typing
-     */
-    public static parseResponse(result) {
+    public static parseResponse(
+        result: ParseResponseParam
+
+    ): ParseResponseResult {
+
         if (result.exit_code !== 0) {
             // @todo: use custom error class
             const error = new Error('Failed to parse response');
             (error as any).result = result;
             throw error;
         }
+
         const arr = (result.stack
             .map(HttpProviderUtils.parseResponseStack)
         );
+
         return (arr.length === 1 ? arr[0] : arr);
+
     }
 
     /**
-     * @todo: function is unused: use or remove it
+     * @deprecated: This function is not used by the library
+     *              and will be removed in the future.
      */
     public static makeArg(arg: any): ['num', (BN | Number)] {
         if (BN.isBN(arg) || typeof arg === 'number') {
@@ -88,7 +132,8 @@ export class HttpProviderUtils {
     }
 
     /**
-     * @todo: function is unused: use or remove it
+     * @deprecated: This function is not used by the library
+     *              and will be removed in the future.
      */
     public static makeArgs(args: any[]): Array<['num', (BN | Number)]> {
         return args.map(this.makeArg);

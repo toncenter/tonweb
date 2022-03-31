@@ -41,22 +41,17 @@ export type BN = $BN;
 
 import {
     HttpProvider as $HttpProvider,
-    StackElement,
 
-} from './providers/http-provider';
+} from './http-provider/http-provider';
 
 export type HttpProvider = $HttpProvider;
 
 export {
     // HttpProvider,
     // defaultHost,
-    CellObject,
-    EstimateFeeBody,
     HttpProviderOptions,
-    SliceObject,
-    StackElement,
 
-} from './providers/http-provider';
+} from './http-provider/http-provider';
 
 
 //====================//
@@ -701,7 +696,7 @@ export default class TonWeb {
       /**
        * Array of stack elements.
        */
-      params: StackElement[] = []
+      params: any[] = []
 
     ): Promise<any> {
 

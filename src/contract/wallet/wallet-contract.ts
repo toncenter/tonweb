@@ -2,9 +2,10 @@
 import BN from 'bn.js';
 import nacl from 'tweetnacl';
 
+import { expectBN } from '../../utils/type-guards';
 import { Contract, ContractMethods, ContractOptions, Method, Query } from '../contract';
 import { Cell } from '../../boc/cell';
-import { HttpProvider } from '../../providers/http-provider';
+import { HttpProvider } from '../../http-provider/http-provider';
 import { Address, AddressType } from '../../utils/address';
 
 
@@ -88,21 +89,24 @@ export class WalletContract<
             ),
 
             seqno: () => ({
-                // @todo: we do we have sub-method here?
+                // @todo: why do we have sub-method here?
                 //        should we rename `seqno` to `getSeqno`
                 //        and return the result directly?
                 call: async () => {
                     const address = await this.getAddress();
-                    let seqno: number;
                     try {
-                        seqno = (await provider.call2(address.toString(), 'seqno')).toNumber();
+                        const result = await provider.call2(
+                            address.toString(),
+                            'seqno'
+                        );
+                        return expectBN(result).toNumber();
+
                     } catch (error) {
                         // Ignoring the error
                         // @todo: it doesn't look like a
                         //        good idea to silently ignore
                         //        the errors
                     }
-                    return seqno;
                 }
             })
         }

@@ -1,7 +1,7 @@
 
 // NOTE: "mc" means masterchain, while "shards" means "shardchains"
 
-import { HttpProvider } from '../http-provider';
+import { HttpProvider } from '../../http-provider/http-provider';
 import { BlockStorage, ShardBlock } from './block-storage';
 
 
