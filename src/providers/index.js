@@ -1,8 +1,12 @@
-const HttpProviderUtils = require('./HttpProviderUtils').default;
 
-if (typeof fetch === 'undefined') {
-    fetch = require('node-fetch');
-}
+const {
+    default: HttpProviderUtils,
+    expectApiResponse,
+
+} = require('./HttpProviderUtils');
+
+const { FetchHttpClient } = require('../http-client/fetch-http-client');
+
 
 const SHARD_ID_ALL = '-9223372036854775808'; // 0x8000000000000000
 
@@ -12,31 +16,12 @@ class HttpProvider {
      * @param options? {{apiKey: string}}
      */
     constructor(host, options) {
-        this.host = host || "https://toncenter.com/api/v2/jsonRPC";
+        this.host = host || 'https://toncenter.com/api/v2/jsonRPC';
         this.options = options || {};
-    }
-
-    /**
-     * @private
-     * @param apiUrl   {string}
-     * @param request   {any}
-     * @return {Promise<any>}
-     */
-    sendImpl(apiUrl, request) {
-        const headers = {
-            'Content-Type': 'application/json'
-        };
-        if (this.options.apiKey) {
-            headers['X-API-Key'] = this.options.apiKey;
-        }
-
-        return fetch(apiUrl, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(request)
-        })
-            .then((response) => response.json())
-            .then(({ result, error }) => result || Promise.reject(error))
+        this.httpClient = (
+            options.httpClient ||
+            new FetchHttpClient()
+        );
     }
 
     /**
@@ -45,9 +30,9 @@ class HttpProvider {
      * @return {Promise<any>}
      */
     send(method, params) {
-        return this.sendImpl(
+        return this.sendHttpRequest(
             this.host,
-            {id: 1, jsonrpc: "2.0", method: method, params: params}
+            { id: 1, jsonrpc: '2.0', method, params }
         );
     }
 
@@ -85,7 +70,7 @@ class HttpProvider {
      * @return array of transaction object
      */
     async getTransactions(address, limit = 20, lt = undefined, hash = undefined, to_lt = undefined, archival = undefined) {
-        return this.send("getTransactions", {address, limit, lt, hash, to_lt, archival});
+        return this.send('getTransactions', {address, limit, lt, hash, to_lt, archival});
     };
 
     /**
@@ -101,7 +86,7 @@ class HttpProvider {
      * @param base64 {string} base64 of boc bytes Cell.toBoc
      */
     async sendBoc(base64) {
-        return this.send("sendBoc", {'boc': base64});
+        return this.send('sendBoc', {'boc': base64});
     };
 
     /**
@@ -110,7 +95,7 @@ class HttpProvider {
      * @param query     object as described https://toncenter.com/api/test/v2/#sendQuerySimple
      */
     async sendQuery(query) {
-        return this.send("sendQuerySimple", query);
+        return this.send('sendQuerySimple', query);
     };
 
 
@@ -119,7 +104,7 @@ class HttpProvider {
      * @return fees object
      */
     async getEstimateFee(query) {
-        return this.send("estimateFee", query);
+        return this.send('estimateFee', query);
     };
 
     /**
@@ -212,6 +197,49 @@ class HttpProvider {
     async getMasterchainBlockHeader(masterchainBlockNumber) {
         return this.getBlockHeader(-1, SHARD_ID_ALL, masterchainBlockNumber);
     }
+
+    /**
+     * @private
+     *
+     * @param apiUrl {string}
+     * @param request {any}
+     *
+     * @returns {Promise<any>}
+     */
+    async sendHttpRequest(apiUrl, request) {
+        const headers = {};
+        if (this.options.apiKey) {
+            headers['X-API-Key'] = this.options.apiKey;
+        }
+        const response = await this.httpClient
+            .sendRequest({
+                url: apiUrl,
+                method: 'POST',
+                body: request,
+                headers,
+            })
+        ;
+        return this.processApiResponseOrThrow(
+            response.payload
+        );
+    }
+
+    /**
+     * @private
+     *
+     * @param serverResponse {any}
+     * @returns {any}
+     */
+    processApiResponseOrThrow(serverResponse) {
+        const response = expectApiResponse(serverResponse);
+        if (response.ok === true) {
+            return response.result;
+        } else {
+            const errorMessage = response.error;
+            throw new Error(`API error: [${response.code}] ${errorMessage}`);
+        }
+    }
+
 }
 
 HttpProvider.SHARD_ID_ALL = SHARD_ID_ALL;

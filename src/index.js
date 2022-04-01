@@ -1,19 +1,22 @@
-const utils = require("./utils");
+
+const utils = require('./utils');
 const Address = utils.Address;
-const boc = require("./boc");
-const AppTon = require("./ledger/AppTon");
-const HttpProvider = require("./providers").default;
-const {Contract} = require("./contract");
-const Wallets = require("./contract/wallet").default;
-const LockupWallets = require("./contract/lockup").default;
-const NFT = require("./contract/token/nft").default;
-const JETTON = require("./contract/token/ft").default;
-const {BlockSubscription, InMemoryBlockStorage} = require("./providers/blockSubscription");
-const {SubscriptionContract} = require("./contract/subscription/index");
-const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
-const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
-const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
-const version = '0.0.35';
+const boc = require('./boc');
+const AppTon = require('./ledger/AppTon');
+const HttpProvider = require('./providers').default;
+const { Contract } = require('./contract');
+const Wallets = require('./contract/wallet').default;
+const LockupWallets = require('./contract/lockup').default;
+const NFT = require('./contract/token/nft').default;
+const JETTON = require('./contract/token/ft').default;
+const { BlockSubscription, InMemoryBlockStorage } = require('./providers/blockSubscription');
+const { SubscriptionContract } = require('./contract/subscription/index');
+const TransportWebUSB = require('@ledgerhq/hw-transport-webusb').default;
+const TransportWebHID = require('@ledgerhq/hw-transport-webhid').default;
+const BluetoothTransport = require('@ledgerhq/hw-transport-web-ble').default;
+const { version } = require('./version');
+const { FetchHttpClient } = require('./http-client/fetch-http-client');
+
 
 class TonWeb {
     constructor(provider) {
@@ -81,12 +84,15 @@ TonWeb.LockupWallets = LockupWallets;
 TonWeb.SubscriptionContract = SubscriptionContract;
 TonWeb.BlockSubscription = BlockSubscription;
 TonWeb.InMemoryBlockStorage = InMemoryBlockStorage;
+TonWeb.FetchHttpClient = FetchHttpClient;
+
 TonWeb.ledger = {
     TransportWebUSB,
     TransportWebHID,
     BluetoothTransport,
     AppTon,
 };
+
 TonWeb.token = {
     nft: NFT,
     ft: JETTON,

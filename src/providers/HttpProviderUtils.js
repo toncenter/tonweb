@@ -1,5 +1,15 @@
-const {BN, base64ToBytes} = require("../utils");
-const {Cell} = require("../boc");
+
+const { BN, base64ToBytes } = require('../utils');
+const { Cell } = require('../boc');
+
+const {
+    expectBoolean,
+    expectNonNullObject,
+    expectString,
+    expectNumber,
+
+} = require('../utils/type-guards');
+
 
 class HttpProviderUtils {
 
@@ -67,4 +77,17 @@ class HttpProviderUtils {
 
 }
 
-module.exports.default = HttpProviderUtils;
+function expectApiResponse(response) {
+    expectNonNullObject(response);
+    expectBoolean(response.ok);
+    if (response.ok === false) {
+        expectNumber(response.code);
+        expectString(response.error);
+    }
+    return response;
+}
+
+module.exports = {
+    default: HttpProviderUtils,
+    expectApiResponse,
+};
