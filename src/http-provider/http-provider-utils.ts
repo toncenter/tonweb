@@ -54,6 +54,12 @@ export class HttpProviderUtils {
 
         const typeName = obj['@type'];
 
+        // @todo: handle additional types:
+        //        - tvm.stackEntrySlice
+        //        - tvm.stackEntryCell
+        //        - tvm.stackEntryList
+        //        - tvm.stackEntryUnsupported
+
         switch (typeName) {
             case 'tvm.list':
             case 'tvm.tuple':

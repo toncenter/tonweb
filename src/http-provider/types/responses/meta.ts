@@ -59,7 +59,7 @@ export interface EstimateFeeParams {
 
 }
 
-export type EstimateFeeResult = TonLib.Combinators.Query.Fees;
+export type EstimateFeeResult = TonLib.Types.Query.Fees;
 
 type EstimateFeeMeta = MethodMeta<
     EstimateFeeParams,
