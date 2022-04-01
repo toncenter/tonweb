@@ -4,17 +4,9 @@
 import $BN from 'bn.js';
 import { default as BN_2 } from 'bn.js';
 import { default as nacl_2 } from 'tweetnacl';
+import { TonLib } from '@ton.js/types';
 import Transport from '@ledgerhq/hw-transport';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-
-/**
- * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L43
- */
-declare interface AccountAddress extends WithType<'accountAddress'> {
-    account_address: string;
-}
-
-declare type AccountState = (Raw.AccountState | Wallet.V3.AccountState | Wallet.Highload.V1.AccountState | Wallet.Highload.V2.AccountState | Dns.AccountState | Rwallet.AccountState | Pchan.AccountState | Uninited.AccountState);
 
 export declare type Address = Address_2;
 
@@ -273,65 +265,6 @@ declare class BitString_2 {
 
 export declare type BlockHandler = ((blockHeader: any, blockShards?: any) => (Promise<void> | void));
 
-declare namespace Blocks {
-    type WithNSType<T extends string> = WithType<`blocks.${T}`>;
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L206
-     */
-    interface MasterchainInfo extends WithNSType<'masterchainInfo'> {
-        init: Ton.BlockIdExt;
-        last: Ton.BlockIdExt;
-        state_root_hash: string;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L211
-     */
-    interface Header extends WithNSType<'header'> {
-        id: Ton.BlockIdExt;
-        global_id: Int32;
-        version: Int32;
-        after_merge: Bool;
-        after_split: Bool;
-        before_split: Bool;
-        want_merge: Bool;
-        want_split: Bool;
-        validator_list_hash_short: Int32;
-        catchain_seqno: Int32;
-        min_ref_mc_seqno: Int32;
-        is_key_block: Bool;
-        prev_key_block_seqno: Int32;
-        start_lt: Int64;
-        end_lt: Int64;
-        vert_seqno: Hashtag;
-        prev_blocks: Vector<Ton.BlockIdExt>;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L207
-     */
-    interface Shards extends WithNSType<'shards'> {
-        shards: Vector<Ton.BlockIdExt>;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L209
-     */
-    interface ShortTxId extends WithNSType<'shortTxId'> {
-        mode: Hashtag;
-        account: Bytes;
-        lt: Int64;
-        hash: Bytes;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L210
-     */
-    interface Transactions extends WithNSType<'transactions'> {
-        id: Ton.BlockIdExt;
-        req_count: Int32;
-        incomplete: Bool;
-        transactions: Vector<Blocks.ShortTxId>;
-    }
-        {};
-}
-
 /**
  * A storage for processed block numbers with
  * useful query functions.
@@ -448,22 +381,18 @@ export declare interface BlockSubscriptionOptions {
 
 export declare type BN = $BN;
 
-declare type Bool = boolean;
-
 declare interface BurnBodyParams {
     queryId?: number;
     tokenAmount: BN_2;
     responseAddress: Address_2;
 }
 
-declare type Bytes = string;
-
 declare function bytesToBase64(bytes: Uint8Array): string;
 
 export declare type Cell = Cell_3;
 
 declare type Cell_2 = {
-    bytes: Tvm.StackEntryCell['cell']['bytes'];
+    bytes: TonLib.Combinators.Tvm.StackEntryCell['cell']['bytes'];
     object: CellSerialized;
 };
 
@@ -619,17 +548,6 @@ export declare interface DeployAndInstallPluginParams {
     body: Cell_3;
 }
 
-declare namespace Dns {
-    type WithNSType<T extends string> = WithType<`dns.${T}`>;
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L75
-     */
-    interface AccountState extends WithNSType<'accountState'> {
-        wallet_id: Int64;
-    }
-        {};
-}
-
 declare type EstimateFeeMeta = MethodMeta<EstimateFeeParams, EstimateFeeResult>;
 
 declare interface EstimateFeeParams {
@@ -658,7 +576,7 @@ declare interface EstimateFeeParams {
     ignore_chksig?: boolean;
 }
 
-declare type EstimateFeeResult = Query_2.Fees;
+declare type EstimateFeeResult = TonLib.Types.Query.Fees;
 
 export declare interface ExternalMessage {
     address: Address_2;
@@ -669,16 +587,6 @@ export declare interface ExternalMessage {
     stateInit?: Cell_3;
     code?: Cell_3;
     data?: Cell_3;
-}
-
-/**
- * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L155
- */
-declare interface Fees extends WithType<'fees'> {
-    in_fwd_fee: Int53;
-    storage_fee: Int53;
-    gas_fee: Int53;
-    fwd_fee: Int53;
 }
 
 export declare type FetchHttpClient = FetchHttpClient_2;
@@ -704,26 +612,13 @@ export declare interface FetchHttpClientOptions {
  */
 declare function formatTransferUrl(address: string, amount?: string, text?: string): string;
 
-/**
- * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L85
- */
-declare interface FullAccountState extends WithType<'fullAccountState'> {
-    address: AccountAddress;
-    balance: Int64;
-    last_transaction_id: Internal.TransactionId;
-    block_id: Ton.BlockIdExt;
-    sync_utime: Int53;
-    account_state: AccountState;
-    revision: Int32;
-}
-
 declare type GetAddressBalanceMeta = MethodMeta<AddressParam, GetAddressBalanceResult>;
 
-declare type GetAddressBalanceResult = Raw.FullAccountState['balance'];
+declare type GetAddressBalanceResult = TonLib.Types.Raw.FullAccountState['balance'];
 
 declare type GetAddressInformationMeta = MethodMeta<AddressParam, GetAddressInformationResult>;
 
-declare interface GetAddressInformationResult extends Raw.FullAccountState {
+declare interface GetAddressInformationResult extends TonLib.Types.Raw.FullAccountState {
     state: AddressState;
 }
 
@@ -737,7 +632,7 @@ declare type GetBlockHeaderMeta = MethodMeta<{
     seqno: number;
 }, GetBlockHeaderResult>;
 
-declare type GetBlockHeaderResult = Blocks.Header;
+declare type GetBlockHeaderResult = TonLib.Types.Blocks.Header;
 
 declare type GetBlockTransactionsMeta = MethodMeta<{
     workchain: number;
@@ -750,17 +645,17 @@ declare type GetBlockTransactionsMeta = MethodMeta<{
     count?: number;
 }, GetBlockTransactionsResult>;
 
-declare interface GetBlockTransactionsResult extends Blocks.Transactions {
+declare interface GetBlockTransactionsResult extends TonLib.Types.Blocks.Transactions {
     account?: string;
 }
 
 declare type GetExtendedAddressInformationMeta = MethodMeta<AddressParam, GetExtendedAddressInformationResult>;
 
-declare type GetExtendedAddressInformationResult = FullAccountState;
+declare type GetExtendedAddressInformationResult = TonLib.Types.FullAccountState;
 
 declare type GetMasterchainInfoMeta = MethodMeta<never, GetMasterchainInfoResult>;
 
-declare type GetMasterchainInfoResult = Blocks.MasterchainInfo;
+declare type GetMasterchainInfoResult = TonLib.Types.Blocks.MasterchainInfo;
 
 export declare interface GetPublicKeyResult {
     publicKey: Uint8Array;
@@ -777,14 +672,14 @@ declare type GetTransactionsMeta = MethodMeta<{
 
 declare type GetTransactionsResult = (GetTransactionsResultTransaction[]);
 
-declare type GetTransactionsResultTransaction = Omit<Raw.Transaction, 'in_msg'> & {
+declare type GetTransactionsResultTransaction = Omit<TonLib.Types.Raw.Transaction, 'in_msg'> & {
     in_msg: GetTransactionsResultTransactionMessage;
     out_msgs: GetTransactionsResultTransactionMessage[];
 };
 
-declare type GetTransactionsResultTransactionMessage = (Omit<Raw.Transaction['in_msg'], 'source' | 'destination'> & {
-    source: Raw.Transaction['in_msg']['source']['account_address'];
-    destination: Raw.Transaction['in_msg']['destination']['account_address'];
+declare type GetTransactionsResultTransactionMessage = (Omit<TonLib.Types.Raw.Transaction['in_msg'], 'source' | 'destination'> & {
+    source: TonLib.Types.Raw.Transaction['in_msg']['source']['account_address'];
+    destination: TonLib.Types.Raw.Transaction['in_msg']['destination']['account_address'];
     message?: string;
 });
 
@@ -793,17 +688,15 @@ declare type GetWalletInformationMeta = MethodMeta<AddressParam, GetWalletInform
 declare type GetWalletInformationResult = {
     account_state: AddressState;
     balance: string;
-    last_transaction_id?: Raw.FullAccountState['last_transaction_id'];
+    last_transaction_id?: TonLib.Types.Raw.FullAccountState['last_transaction_id'];
 } & ({
     wallet: false;
 } | {
     wallet: true;
     wallet_type: WalletType;
-    wallet_id: Int32;
-    seqno: Int32;
+    wallet_id: number;
+    seqno: number;
 });
-
-declare type Hashtag = number;
 
 export declare interface HttpClient {
     sendRequest<ResponsePayloadType = ParsedJson>(request: HttpRequest): (Promise<HttpResponse<ResponsePayloadType>>);
@@ -951,7 +844,7 @@ declare class HttpProvider_2 {
  * Map, where key is a name of method in TON API and value is a description
  * of returned response type.
  *
- * @link https://toncenter.com/api/v2/
+ * {@link https://toncenter.com/api/v2/}
  */
 declare interface HttpProviderMethodMetaMap {
     estimateFee: EstimateFeeMeta;
@@ -1061,24 +954,6 @@ declare class InMemoryBlockStorage_2 implements BlockStorage {
      * a shardchain block definition.
      */
     private parseShardBlockKey;
-}
-
-declare type Int32 = number;
-
-declare type Int53 = number;
-
-declare type Int64 = string;
-
-declare namespace Internal {
-    type WithNSType<T extends string> = WithType<`internal.${T}`>;
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L47
-     */
-    interface TransactionId extends WithNSType<'transactionId'> {
-        lt: Int64;
-        hash: Bytes;
-    }
-        {};
 }
 
 declare interface JettonData {
@@ -1233,37 +1108,6 @@ declare interface MintBodyParams_2 {
     queryId?: number;
 }
 
-declare namespace Msg {
-    type WithNSType<Type extends string> = WithType<`msg.${Type}`>;
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L97
-     */
-    interface DataRaw extends WithNSType<'dataRaw'> {
-        body: Bytes;
-        init_state: Bytes;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L98
-     */
-    interface DataText extends WithNSType<'dataText'> {
-        text: Bytes;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L99
-     */
-    interface DataDecryptedText extends WithNSType<'dataDecryptedText'> {
-        text: Bytes;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L100
-     */
-    interface DataEncryptedText extends WithNSType<'dataEncryptedText'> {
-        text: Bytes;
-    }
-    type Data = (DataRaw | DataText | DataDecryptedText | DataEncryptedText);
-        {};
-}
-
 export declare type NftCollection = NftCollection_2;
 
 /**
@@ -1404,8 +1248,6 @@ export declare interface NftSaleOptions extends ContractOptions {
     royaltyAmount?: BN_2;
 }
 
-declare type Ok = {};
-
 export declare type ParsedJson = (null | string | number | boolean | ParsedJson[] | {
     [key: string]: ParsedJson;
 });
@@ -1437,63 +1279,6 @@ export declare interface PayExternalMessage {
     resultMessage?: Cell_3;
 }
 
-declare namespace Pchan {
-    type WithNSType<Type extends string> = WithType<`pchan.${Type}`>;
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L78
-     */
-    interface StateInit extends WithNSType<'stateInit'> {
-        signed_A: Bool;
-        signed_B: Bool;
-        min_A: Int64;
-        min_b: Int64;
-        expire_at: Int53;
-        A: Int64;
-        B: Int64;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L79
-     */
-    interface StateClose extends WithNSType<'stateClose'> {
-        signed_A: Bool;
-        signed_B: Bool;
-        min_A: Int64;
-        min_b: Int64;
-        expire_at: Int53;
-        A: Int64;
-        B: Int64;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L80
-     */
-    interface StatePayout extends WithNSType<'statePayout'> {
-        A: Int64;
-        B: Int64;
-    }
-    type State = (Pchan.StateInit | Pchan.StateClose | Pchan.StatePayout);
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L57
-     */
-    interface Config extends WithNSType<'config'> {
-        alice_public_key: string;
-        alice_address: AccountAddress;
-        bob_public_key: string;
-        bob_address: AccountAddress;
-        init_timeout: Int32;
-        close_timeout: Int32;
-        channel_id: Int64;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L82
-     */
-    interface AccountState extends WithNSType<'accountState'> {
-        config: Pchan.Config;
-        state: Pchan.State;
-        description: string;
-    }
-        {};
-}
-
 /**
  * @todo: this type is created on indirect data
  *        and needs proper revision
@@ -1507,76 +1292,6 @@ export declare interface Query {
     signature?: Uint8Array;
     signingMessage?: Cell_3;
     stateInit?: Cell_3;
-}
-
-declare namespace Query_2 {
-    type WithNSType<T extends string> = WithType<`query.${T}`>;
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L156
-     */
-    interface Fees extends WithNSType<'fees'> {
-        source_fees: Fees;
-        destination_fees: Fees;
-    }
-        {};
-}
-
-declare namespace Raw {
-    type WithNSType<Type extends string> = WithType<`raw.${Type}`>;
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L71
-     */
-    interface AccountState extends WithNSType<'accountState'> {
-        code: Bytes;
-        data: Bytes;
-        frozen_hash: Bytes;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L52
-     */
-    interface FullAccountState extends WithNSType<'fullAccountState'> {
-        balance: Int64;
-        code: Bytes;
-        data: Bytes;
-        last_transaction_id: Internal.TransactionId;
-        block_id: Ton.BlockIdExt;
-        frozen_hash: Bytes;
-        sync_utime: Int53;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L53
-     */
-    interface Message extends WithNSType<'message'> {
-        source: AccountAddress;
-        destination: AccountAddress;
-        value: Int64;
-        fwd_fee: Int64;
-        ihr_fee: Int64;
-        created_lt: Int64;
-        body_hash: Bytes;
-        msg_data: Msg.Data;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L54
-     */
-    interface Transaction extends WithNSType<'transaction'> {
-        utime: Int53;
-        data: Bytes;
-        transaction_id: Internal.TransactionId;
-        fee: Int64;
-        storage_fee: Int64;
-        other_fee: Int64;
-        in_msg: Raw.Message;
-        out_msgs: Vector<Raw.Message>;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L55
-     */
-    interface Transactions extends WithNSType<'transactions'> {
-        transactions: Vector<Raw.Transaction>;
-        previous_transaction_id: Internal.TransactionId;
-    }
-        {};
 }
 
 export declare type RequestHeaders = (Record<string, string | string[]>);
@@ -1599,50 +1314,22 @@ declare interface RunGetMethodParams {
 /**
  * Currently, list of provided stack items is restricted by API.
  */
-declare type RunGetMethodParamsStackItem = (['num', (number | string)] | ['cell', Cell_2] | ['slice', Slice] | ['tvm.Cell', Bytes] | ['tvm.Slice', Bytes]);
+declare type RunGetMethodParamsStackItem = (['num', (number | string)] | ['cell', Cell_2] | ['slice', Slice] | ['tvm.Cell', string] | ['tvm.Slice', string]);
 
-declare interface RunGetMethodResult extends Omit<Smc.RunResult, '@type' | 'stack'> {
+declare interface RunGetMethodResult extends Omit<TonLib.Types.Smc.RunResult, '@type' | 'stack'> {
     stack: RunGetMethodResultStackItem[];
 }
 
 /**
  * Unlike RunGetMethodParamsStackItem, API returns strict types.
  */
-declare type RunGetMethodResultStackItem = (['num', string] | ['cell', Cell_2] | ['tuple', Tvm.StackEntryTuple['tuple']] | ['list', Tvm.StackEntryList['list']]);
-
-declare namespace Rwallet {
-    type WithNSType<T extends string> = WithType<`rwallet.${T}`>;
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L64
-     */
-    interface Limit extends WithNSType<'limit'> {
-        seconds: Int32;
-        value: Int64;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L65
-     */
-    interface Config extends WithNSType<'config'> {
-        start_at: Int53;
-        limits: Vector<Rwallet.Limit>;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L76
-     */
-    interface AccountState extends WithNSType<'accountState'> {
-        wallet_id: Int64;
-        seqno: Int32;
-        unlocked_balance: Int64;
-        config: Rwallet.Config;
-    }
-        {};
-}
+declare type RunGetMethodResultStackItem = (['num', string] | ['cell', Cell_2] | ['tuple', TonLib.Combinators.Tvm.StackEntryTuple['tuple']] | ['list', TonLib.Combinators.Tvm.StackEntryList['list']]);
 
 declare type SendBocMeta = MethodMeta<{
     boc: string;
 }, SendBocResult>;
 
-declare type SendBocResult = Ok;
+declare type SendBocResult = TonLib.Types.Ok;
 
 declare type SendQuerySimpleMeta = MethodMeta<SendQuerySimpleParams, SendQuerySimpleResult>;
 
@@ -1653,7 +1340,7 @@ declare interface SendQuerySimpleParams {
     init_data?: CellSerialized;
 }
 
-declare type SendQuerySimpleResult = Ok;
+declare type SendQuerySimpleResult = TonLib.Types.Ok;
 
 export declare type SeqnoMethod = (() => SeqnoMethodResult);
 
@@ -1682,7 +1369,7 @@ declare type ShardsMeta = MethodMeta<{
     seqno: number;
 }, ShardsResult>;
 
-declare type ShardsResult = Blocks.Shards;
+declare type ShardsResult = TonLib.Types.Blocks.Shards;
 
 export declare interface SignResult {
     signature: Buffer;
@@ -1713,19 +1400,6 @@ declare class SimpleWalletContractR3_2 extends WalletContract_2 {
 }
 
 declare type Slice = Cell_2;
-
-declare namespace Smc {
-    type WithNSType<T extends string> = WithType<`smc.${T}`>;
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L178
-     */
-    interface RunResult extends WithNSType<'runResult'> {
-        gas_used: Int53;
-        stack: Vector<Tvm.StackEntry>;
-        exit_code: Int32;
-    }
-        {};
-}
 
 export declare interface StateInit {
     stateInit: Cell_3;
@@ -1784,21 +1458,6 @@ export declare interface SubscriptionData {
     lastRequest: number;
     failedAttempts: number;
     subscriptionId: number;
-}
-
-declare namespace Ton {
-    type WithNSType<T extends string> = WithType<`ton.${T}`>;
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L50
-     */
-    interface BlockIdExt extends WithNSType<'blockIdExt'> {
-        file_hash: Bytes;
-        root_hash: Bytes;
-        seqno: Int32;
-        shard: Int64;
-        workchain: Int32;
-    }
-        {};
 }
 
 declare class TonWeb {
@@ -1920,7 +1579,7 @@ declare class TonWeb {
      * Use this method to send serialized boc file:
      * fully packed and serialized external message.
      */
-    sendBoc(bytes: Uint8Array): Promise<Ok>;
+    sendBoc(bytes: Uint8Array): Promise<TonLib>;
     /**
      * Invoke get-method of smart contract.
      */
@@ -1959,130 +1618,6 @@ export declare interface TransferMethodParams {
     payload?: (string | Uint8Array | Cell_3);
     sendMode?: number;
     stateInit?: Cell_3;
-}
-
-declare namespace Tvm {
-    type WithNSType<T extends string> = WithType<`tvm.${T}`>;
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L160
-     */
-    interface Slice extends WithNSType<'slice'> {
-        bytes: Bytes;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L161
-     */
-    interface Cell extends WithNSType<'cell'> {
-        bytes: Bytes;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L162
-     */
-    interface NumberDecimal extends WithNSType<'numberDecimal'> {
-        number: string;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L163
-     */
-    interface Tuple extends WithNSType<'tuple'> {
-        elements: Vector<Tvm.StackEntry>;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L164
-     */
-    interface List extends WithNSType<'list'> {
-        elements: Vector<Tvm.StackEntry>;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L166
-     */
-    interface StackEntrySlice extends WithNSType<'stackEntrySlice'> {
-        slice: Tvm.Slice;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L167
-     */
-    interface StackEntryCell extends WithNSType<'stackEntryCell'> {
-        cell: Tvm.Cell;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L168
-     */
-    interface StackEntryNumber extends WithNSType<'stackEntryNumber'> {
-        number: Tvm.Number;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L169
-     */
-    interface StackEntryTuple extends WithNSType<'stackEntryTuple'> {
-        tuple: TupleType;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L170
-     */
-    interface StackEntryList extends WithNSType<'stackEntryList'> {
-        list: ListType;
-    }
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L171
-     */
-    interface StackEntryUnsupported extends WithNSType<'stackEntryUnsupported'> {
-    }
-    type TupleType = Tvm.Tuple;
-    type ListType = Tvm.List;
-    type Number = Tvm.NumberDecimal;
-    type StackEntry = (Tvm.StackEntrySlice | Tvm.StackEntryCell | Tvm.StackEntryNumber | Tvm.StackEntryTuple | Tvm.StackEntryList | Tvm.StackEntryUnsupported);
-        {};
-}
-
-declare namespace Uninited {
-    type WithNSType<T extends string> = WithType<`uninited.${T}`>;
-    /**
-     * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L83
-     */
-    interface AccountState extends WithNSType<'accountState'> {
-        frozen_hash: Bytes;
-    }
-        {};
-}
-
-declare type Vector<T> = T[];
-
-declare namespace Wallet {
-    namespace V3 {
-        type WithNSType<T extends string> = WithType<`wallet.v3.${T}`>;
-        /**
-         * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L72
-         */
-        interface AccountState extends WithNSType<'accountState'> {
-            wallet_id: Int64;
-            seqno: Int32;
-        }
-            {};
-    }
-    namespace Highload {
-        namespace V1 {
-            type WithNSType<T extends string> = WithType<`wallet.highload.v1.${T}`>;
-            /**
-             * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L73
-             */
-            interface AccountState extends WithNSType<'accountState'> {
-                wallet_id: Int64;
-                seqno: Int32;
-            }
-                {};
-        }
-        namespace V2 {
-            type WithNSType<T extends string> = WithType<`wallet.highload.v2.${T}`>;
-            /**
-             * @link https://github.com/newton-blockchain/ton/blob/ae5c0720143e231c32c3d2034cfe4e533a16d969/tl/generate/scheme/tonlib_api.tl#L74
-             */
-            interface AccountState extends WithNSType<'accountState'> {
-                wallet_id: Int64;
-            }
-                {};
-        }
-    }
 }
 
 export declare type WalletContract = WalletContract_2;
@@ -2264,18 +1799,14 @@ export declare interface WalletV4ContractR2Methods extends WalletV4ContractMetho
     getPluginsList: () => Promise<string[]>;
 }
 
-/**
- * Appends TL specification function or constructor name property.
- */
-declare interface WithType<T extends string> {
-    '@type': T;
-}
-
 declare type Workchain = (WorkchainId | number);
 
 declare enum WorkchainId {
     Master = -1,
     Basic = 0
 }
+
+
+export * from "@ton.js/types";
 
 export { }

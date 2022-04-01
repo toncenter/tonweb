@@ -1,11 +1,5 @@
 
-import { Blocks } from '../tl-spec/blocks';
-import { FullAccountState } from '../tl-spec/no-namespace';
-import { Query } from '../tl-spec/query';
-import { Raw } from '../tl-spec/raw';
-import { Bytes, Int32, Ok } from '../tl-spec/shared';
-import { Smc } from '../tl-spec/smc';
-import { Tvm } from '../tl-spec/tvm';
+import { TonLib } from '@ton.js/types';
 
 import {
     AddressState,
@@ -65,7 +59,7 @@ export interface EstimateFeeParams {
 
 }
 
-export type EstimateFeeResult = Query.Fees;
+export type EstimateFeeResult = TonLib.Types.Query.Fees;
 
 type EstimateFeeMeta = MethodMeta<
     EstimateFeeParams,
@@ -73,7 +67,7 @@ type EstimateFeeMeta = MethodMeta<
 >;
 
 /* getAddressInformation */
-export interface GetAddressInformationResult extends Raw.FullAccountState {
+export interface GetAddressInformationResult extends TonLib.Types.Raw.FullAccountState {
     state: AddressState;
 }
 
@@ -83,7 +77,7 @@ type GetAddressInformationMeta = MethodMeta<
 >;
 
 /* getAddressBalance */
-export type GetAddressBalanceResult = Raw.FullAccountState['balance'];
+export type GetAddressBalanceResult = TonLib.Types.Raw.FullAccountState['balance'];
 
 type GetAddressBalanceMeta = MethodMeta<
     AddressParam,
@@ -91,7 +85,7 @@ type GetAddressBalanceMeta = MethodMeta<
 >;
 
 /* getBlockHeader */
-export type GetBlockHeaderResult = Blocks.Header;
+export type GetBlockHeaderResult = TonLib.Types.Blocks.Header;
 
 type GetBlockHeaderMeta = MethodMeta<{
     workchain: number;
@@ -101,7 +95,7 @@ type GetBlockHeaderMeta = MethodMeta<{
 }, GetBlockHeaderResult>;
 
 /* getBlockTransactions */
-export interface GetBlockTransactionsResult extends Blocks.Transactions {
+export interface GetBlockTransactionsResult extends TonLib.Types.Blocks.Transactions {
     account?: string;
 }
 
@@ -118,7 +112,7 @@ type GetBlockTransactionsMeta = MethodMeta<{
 }, GetBlockTransactionsResult>;
 
 /* getExtendedAddressInformation */
-export type GetExtendedAddressInformationResult = FullAccountState;
+export type GetExtendedAddressInformationResult = TonLib.Types.FullAccountState;
 
 type GetExtendedAddressInformationMeta = MethodMeta<
     AddressParam,
@@ -126,7 +120,7 @@ type GetExtendedAddressInformationMeta = MethodMeta<
 >;
 
 /* getMasterchainInfo */
-export type GetMasterchainInfoResult = Blocks.MasterchainInfo;
+export type GetMasterchainInfoResult = TonLib.Types.Blocks.MasterchainInfo;
 
 type GetMasterchainInfoMeta = MethodMeta<
     never,
@@ -135,14 +129,14 @@ type GetMasterchainInfoMeta = MethodMeta<
 
 /* getTransactions */
 type GetTransactionsResultTransactionMessage = (
-    Omit<Raw.Transaction['in_msg'], 'source' | 'destination'> & {
-        source: Raw.Transaction['in_msg']['source']['account_address'];
-        destination: Raw.Transaction['in_msg']['destination']['account_address'];
+    Omit<TonLib.Types.Raw.Transaction['in_msg'], 'source' | 'destination'> & {
+        source: TonLib.Types.Raw.Transaction['in_msg']['source']['account_address'];
+        destination: TonLib.Types.Raw.Transaction['in_msg']['destination']['account_address'];
         message?: string;
     }
 )
 
-type GetTransactionsResultTransaction = Omit<Raw.Transaction, 'in_msg'> & {
+type GetTransactionsResultTransaction = Omit<TonLib.Types.Raw.Transaction, 'in_msg'> & {
     in_msg: GetTransactionsResultTransactionMessage;
     out_msgs: GetTransactionsResultTransactionMessage[];
 }
@@ -165,14 +159,14 @@ type GetTransactionsMeta = MethodMeta<{
 export type GetWalletInformationResult = {
     account_state: AddressState;
     balance: string;
-    last_transaction_id?: Raw.FullAccountState['last_transaction_id'];
+    last_transaction_id?: TonLib.Types.Raw.FullAccountState['last_transaction_id'];
 } & ({
     wallet: false;
 } | {
     wallet: true;
     wallet_type: WalletType;
-    wallet_id: Int32;
-    seqno: Int32;
+    wallet_id: number;
+    seqno: number;
 });
 
 type GetWalletInformationMeta = MethodMeta<
@@ -188,8 +182,8 @@ export type RunGetMethodParamsStackItem = (
     | ['num', (number | string)]
     | ['cell', Cell]
     | ['slice', Slice]
-    | ['tvm.Cell', Bytes]
-    | ['tvm.Slice', Bytes]
+    | ['tvm.Cell', string]
+    | ['tvm.Slice', string]
 )
 
 /**
@@ -198,8 +192,8 @@ export type RunGetMethodParamsStackItem = (
 export type RunGetMethodResultStackItem = (
     | ['num', string]
     | ['cell', Cell]
-    | ['tuple', Tvm.StackEntryTuple['tuple']]
-    | ['list', Tvm.StackEntryList['list']]
+    | ['tuple', TonLib.Combinators.Tvm.StackEntryTuple['tuple']]
+    | ['list', TonLib.Combinators.Tvm.StackEntryList['list']]
 )
 
 export interface RunGetMethodParams {
@@ -209,7 +203,7 @@ export interface RunGetMethodParams {
 }
 
 export interface RunGetMethodResult
-    extends Omit<Smc.RunResult, '@type' | 'stack'>
+    extends Omit<TonLib.Types.Smc.RunResult, '@type' | 'stack'>
 {
     stack: RunGetMethodResultStackItem[];
 }
@@ -220,11 +214,11 @@ type RunGetMethodMeta = MethodMeta<
 >;
 
 /* shards */
-export type ShardsResult = Blocks.Shards;
+export type ShardsResult = TonLib.Types.Blocks.Shards;
 type ShardsMeta = MethodMeta<{ seqno: number }, ShardsResult>;
 
 /* sendBoc */
-export type SendBocResult = Ok;
+export type SendBocResult = TonLib.Types.Ok;
 type SendBocMeta = MethodMeta<{ boc: string }, SendBocResult>;
 
 /* sendQuerySimple */
@@ -235,7 +229,7 @@ export interface SendQuerySimpleParams {
     init_data?: CellSerialized;
 }
 
-export type SendQuerySimpleResult = Ok;
+export type SendQuerySimpleResult = TonLib.Types.Ok;
 
 type SendQuerySimpleMeta = MethodMeta<
     SendQuerySimpleParams,
@@ -246,7 +240,7 @@ type SendQuerySimpleMeta = MethodMeta<
  * Map, where key is a name of method in TON API and value is a description
  * of returned response type.
  *
- * @link https://toncenter.com/api/v2/
+ * {@link https://toncenter.com/api/v2/}
  */
 export interface HttpProviderMethodMetaMap {
     estimateFee: EstimateFeeMeta;

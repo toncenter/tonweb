@@ -1,20 +1,21 @@
 
 import BN from 'bn.js';
 
+import { TonLib } from '@ton.js/types';
+
 import { Cell } from '../boc/cell';
 import { base64ToBytes } from '../utils/base64';
 import { expectBoolean, expectNonNullObject, expectNumber, expectString } from '../utils/type-guards';
 import { ApiResponse } from './http-provider';
 import { RunGetMethodResult, RunGetMethodResultStackItem } from './types/responses/meta';
-import { Tvm } from './types/tl-spec/tvm';
 
 
 /* parseObject */
 export type ParseObjectParam = (
-    | Tvm.List
-    | Tvm.Tuple
-    | Tvm.NumberDecimal
-    | Tvm.StackEntry
+    | TonLib.Combinators.Tvm.List
+    | TonLib.Combinators.Tvm.Tuple
+    | TonLib.Combinators.Tvm.NumberDecimal
+    | TonLib.Types.Tvm.StackEntry
 );
 
 export type ParseObjectResult = (

@@ -23,6 +23,8 @@
  * the symbols and their types directly under the same name.
  */
 
+export * from '@ton.js/types';
+
 import $BN from 'bn.js';
 import nacl from 'tweetnacl';
 import BluetoothTransport from '@ledgerhq/hw-transport-web-ble';

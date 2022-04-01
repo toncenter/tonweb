@@ -1,5 +1,5 @@
 
-import { Tvm } from '../tl-spec/tvm';
+import { TonLib } from '@ton.js/types';
 
 
 /**
@@ -32,7 +32,7 @@ export interface CellSerialized {
 }
 
 export type Cell = {
-    bytes: Tvm.StackEntryCell['cell']['bytes'];
+    bytes: TonLib.Combinators.Tvm.StackEntryCell['cell']['bytes'];
     object: CellSerialized;
 };
 
