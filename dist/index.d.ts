@@ -576,7 +576,7 @@ declare interface EstimateFeeParams {
     ignore_chksig?: boolean;
 }
 
-declare type EstimateFeeResult = TonLib.Types.Query.Fees;
+declare type EstimateFeeResult = TonLib.Combinators.Query.Fees;
 
 export declare interface ExternalMessage {
     address: Address_2;
@@ -672,10 +672,10 @@ declare type GetTransactionsMeta = MethodMeta<{
 
 declare type GetTransactionsResult = (GetTransactionsResultTransaction[]);
 
-declare type GetTransactionsResultTransaction = Omit<TonLib.Types.Raw.Transaction, 'in_msg'> & {
+declare interface GetTransactionsResultTransaction extends Omit<TonLib.Types.Raw.Transaction, 'in_msg' | 'out_msgs'> {
     in_msg: GetTransactionsResultTransactionMessage;
     out_msgs: GetTransactionsResultTransactionMessage[];
-};
+}
 
 declare type GetTransactionsResultTransactionMessage = (Omit<TonLib.Types.Raw.Transaction['in_msg'], 'source' | 'destination'> & {
     source: TonLib.Types.Raw.Transaction['in_msg']['source']['account_address'];

@@ -59,7 +59,7 @@ export interface EstimateFeeParams {
 
 }
 
-export type EstimateFeeResult = TonLib.Types.Query.Fees;
+export type EstimateFeeResult = TonLib.Combinators.Query.Fees;
 
 type EstimateFeeMeta = MethodMeta<
     EstimateFeeParams,
@@ -136,7 +136,7 @@ type GetTransactionsResultTransactionMessage = (
     }
 )
 
-type GetTransactionsResultTransaction = Omit<TonLib.Types.Raw.Transaction, 'in_msg'> & {
+interface GetTransactionsResultTransaction extends Omit<TonLib.Types.Raw.Transaction, 'in_msg' | 'out_msgs'> {
     in_msg: GetTransactionsResultTransactionMessage;
     out_msgs: GetTransactionsResultTransactionMessage[];
 }
