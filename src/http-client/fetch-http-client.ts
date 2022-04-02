@@ -122,7 +122,7 @@ export class FetchHttpClient implements HttpClient {
         }
 
         const contentType = response.headers.get('content-type');
-        if (contentType !== 'application/json') {
+        if (!contentType.startsWith('application/json')) {
             throw new Error(
                 `Unexpected response content type, it must be JSON`
             );
