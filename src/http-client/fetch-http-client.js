@@ -1,10 +1,12 @@
 
 const { version } = require('../version');
+const { fetch, Headers } = require('./fetch-api');
 
 
 class FetchHttpClient {
+
     constructor(options) {
-        require('./setup-fetch');
+
         this.options = {
             timeout: ((options === null || options === void 0 ? void 0 : options.timeout) || false),
         };
@@ -20,6 +22,7 @@ class FetchHttpClient {
                 `disable the timeout option`);
         }
     }
+
     async sendRequest(request) {
         const headers = this.createHeaders(request.headers);
         headers.set('Content-Type', 'application/json');
@@ -68,6 +71,7 @@ class FetchHttpClient {
             payload: await response.json(),
         };
     }
+
     createHeaders(headers) {
         const $headers = new Headers();
         for (const entry of Object.entries(headers)) {
@@ -84,6 +88,7 @@ class FetchHttpClient {
         }
         return $headers;
     }
+
 }
 
 module.exports = { FetchHttpClient };
