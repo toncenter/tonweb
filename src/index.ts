@@ -83,6 +83,42 @@ export {
 
 } from './http-provider/http-provider';
 
+export {
+    GetAddressInformationResult,
+    GetExtendedAddressInformationResult,
+    GetWalletInformationResult,
+    GetTransactionsResult,
+    GetTransactionsResultTransaction,
+    GetTransactionsResultTransactionMessage,
+    GetAddressBalanceResult,
+    SendBocResult,
+    EstimateFeeParams,
+    EstimateFeeResult,
+    RunGetMethodParamsStackItem,
+    RunGetMethodResult,
+    RunGetMethodResultStackItem,
+    GetMasterchainInfoResult,
+    ShardsResult,
+    GetBlockTransactionsResult,
+    GetBlockHeaderResult,
+    SendQuerySimpleParams,
+    SendQuerySimpleResult,
+
+} from './http-provider/types/responses/meta';
+
+export {
+    AddressState,
+    WalletType,
+
+} from './http-provider/types/responses/misc';
+
+export {
+    ParseResponseResult,
+    ParseResponseStackResult,
+    ParseObjectResult,
+
+} from './http-provider/http-provider-utils';
+
 
 //====================//
 // BLOCK SUBSCRIPTION //

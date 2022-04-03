@@ -128,7 +128,7 @@ type GetMasterchainInfoMeta = MethodMeta<
 >;
 
 /* getTransactions */
-type GetTransactionsResultTransactionMessage = (
+export type GetTransactionsResultTransactionMessage = (
     Omit<TonLib.Types.Raw.Transaction['in_msg'], 'source' | 'destination'> & {
         source: TonLib.Types.Raw.Transaction['in_msg']['source']['account_address'];
         destination: TonLib.Types.Raw.Transaction['in_msg']['destination']['account_address'];
@@ -136,7 +136,7 @@ type GetTransactionsResultTransactionMessage = (
     }
 )
 
-interface GetTransactionsResultTransaction extends Omit<TonLib.Types.Raw.Transaction, 'in_msg' | 'out_msgs'> {
+export interface GetTransactionsResultTransaction extends Omit<TonLib.Types.Raw.Transaction, 'in_msg' | 'out_msgs'> {
     in_msg: GetTransactionsResultTransactionMessage;
     out_msgs: GetTransactionsResultTransactionMessage[];
 }
