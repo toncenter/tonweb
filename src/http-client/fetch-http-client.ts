@@ -69,7 +69,7 @@ export class FetchHttpClient implements HttpClient {
         headers.set('User-Agent', `tonweb ${version}`);
 
         const requestOptions: RequestInit = {
-            method: request.method.toUpperCase(),
+            method: (request.method?.toUpperCase() || 'GET'),
             headers: headers,
             body: JSON.stringify(request.body),
             redirect: 'error',
