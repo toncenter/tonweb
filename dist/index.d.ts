@@ -40,7 +40,7 @@ declare interface AddressParam {
 /**
  * Known address states.
  */
-declare type AddressState = ('uninitialized' | 'frozen' | 'active');
+export declare type AddressState = ('uninitialized' | 'frozen' | 'active');
 
 export declare type AddressType = (Address_2 | string);
 
@@ -550,7 +550,7 @@ export declare interface DeployAndInstallPluginParams {
 
 declare type EstimateFeeMeta = MethodMeta<EstimateFeeParams, EstimateFeeResult>;
 
-declare interface EstimateFeeParams {
+export declare interface EstimateFeeParams {
     /**
      * Address in any format.
      */
@@ -576,7 +576,7 @@ declare interface EstimateFeeParams {
     ignore_chksig?: boolean;
 }
 
-declare type EstimateFeeResult = TonLib.Types.Query.Fees;
+export declare type EstimateFeeResult = TonLib.Types.Query.Fees;
 
 export declare interface ExternalMessage {
     address: Address_2;
@@ -614,11 +614,11 @@ declare function formatTransferUrl(address: string, amount?: string, text?: stri
 
 declare type GetAddressBalanceMeta = MethodMeta<AddressParam, GetAddressBalanceResult>;
 
-declare type GetAddressBalanceResult = TonLib.Types.Raw.FullAccountState['balance'];
+export declare type GetAddressBalanceResult = TonLib.Types.Raw.FullAccountState['balance'];
 
 declare type GetAddressInformationMeta = MethodMeta<AddressParam, GetAddressInformationResult>;
 
-declare interface GetAddressInformationResult extends TonLib.Types.Raw.FullAccountState {
+export declare interface GetAddressInformationResult extends TonLib.Types.Raw.FullAccountState {
     state: AddressState;
 }
 
@@ -632,7 +632,7 @@ declare type GetBlockHeaderMeta = MethodMeta<{
     seqno: number;
 }, GetBlockHeaderResult>;
 
-declare type GetBlockHeaderResult = TonLib.Types.Blocks.Header;
+export declare type GetBlockHeaderResult = TonLib.Types.Blocks.Header;
 
 declare type GetBlockTransactionsMeta = MethodMeta<{
     workchain: number;
@@ -645,17 +645,17 @@ declare type GetBlockTransactionsMeta = MethodMeta<{
     count?: number;
 }, GetBlockTransactionsResult>;
 
-declare interface GetBlockTransactionsResult extends TonLib.Types.Blocks.Transactions {
+export declare interface GetBlockTransactionsResult extends TonLib.Types.Blocks.Transactions {
     account?: string;
 }
 
 declare type GetExtendedAddressInformationMeta = MethodMeta<AddressParam, GetExtendedAddressInformationResult>;
 
-declare type GetExtendedAddressInformationResult = TonLib.Types.FullAccountState;
+export declare type GetExtendedAddressInformationResult = TonLib.Types.FullAccountState;
 
 declare type GetMasterchainInfoMeta = MethodMeta<never, GetMasterchainInfoResult>;
 
-declare type GetMasterchainInfoResult = TonLib.Types.Blocks.MasterchainInfo;
+export declare type GetMasterchainInfoResult = TonLib.Types.Blocks.MasterchainInfo;
 
 export declare interface GetPublicKeyResult {
     publicKey: Uint8Array;
@@ -670,14 +670,14 @@ declare type GetTransactionsMeta = MethodMeta<{
     archival?: boolean;
 }, GetTransactionsResult>;
 
-declare type GetTransactionsResult = (GetTransactionsResultTransaction[]);
+export declare type GetTransactionsResult = (GetTransactionsResultTransaction[]);
 
-declare interface GetTransactionsResultTransaction extends Omit<TonLib.Types.Raw.Transaction, 'in_msg' | 'out_msgs'> {
+export declare interface GetTransactionsResultTransaction extends Omit<TonLib.Types.Raw.Transaction, 'in_msg' | 'out_msgs'> {
     in_msg: GetTransactionsResultTransactionMessage;
     out_msgs: GetTransactionsResultTransactionMessage[];
 }
 
-declare type GetTransactionsResultTransactionMessage = (Omit<TonLib.Types.Raw.Transaction['in_msg'], 'source' | 'destination'> & {
+export declare type GetTransactionsResultTransactionMessage = (Omit<TonLib.Types.Raw.Transaction['in_msg'], 'source' | 'destination'> & {
     source: TonLib.Types.Raw.Transaction['in_msg']['source']['account_address'];
     destination: TonLib.Types.Raw.Transaction['in_msg']['destination']['account_address'];
     message?: string;
@@ -685,7 +685,7 @@ declare type GetTransactionsResultTransactionMessage = (Omit<TonLib.Types.Raw.Tr
 
 declare type GetWalletInformationMeta = MethodMeta<AddressParam, GetWalletInformationResult>;
 
-declare type GetWalletInformationResult = {
+export declare type GetWalletInformationResult = {
     account_state: AddressState;
     balance: string;
     last_transaction_id?: TonLib.Types.Raw.FullAccountState['last_transaction_id'];
@@ -1258,11 +1258,11 @@ export declare interface ParsedTransferUrl {
     text?: string;
 }
 
-declare type ParseObjectResult = (BN_2 | ParseObjectResult[]);
+export declare type ParseObjectResult = (BN_2 | ParseObjectResult[]);
 
-declare type ParseResponseResult = (ParseResponseStackResult | ParseResponseStackResult[]);
+export declare type ParseResponseResult = (ParseResponseStackResult | ParseResponseStackResult[]);
 
-declare type ParseResponseStackResult = (BN_2 | ParseObjectResult | Cell_3);
+export declare type ParseResponseStackResult = (BN_2 | ParseObjectResult | Cell_3);
 
 /**
  * Parses the specified TON-transfer URL into its individual
@@ -1314,33 +1314,33 @@ declare interface RunGetMethodParams {
 /**
  * Currently, list of provided stack items is restricted by API.
  */
-declare type RunGetMethodParamsStackItem = (['num', (number | string)] | ['cell', Cell_2] | ['slice', Slice] | ['tvm.Cell', string] | ['tvm.Slice', string]);
+export declare type RunGetMethodParamsStackItem = (['num', (number | string)] | ['cell', Cell_2] | ['slice', Slice] | ['tvm.Cell', string] | ['tvm.Slice', string]);
 
-declare interface RunGetMethodResult extends Omit<TonLib.Types.Smc.RunResult, '@type' | 'stack'> {
+export declare interface RunGetMethodResult extends Omit<TonLib.Types.Smc.RunResult, '@type' | 'stack'> {
     stack: RunGetMethodResultStackItem[];
 }
 
 /**
  * Unlike RunGetMethodParamsStackItem, API returns strict types.
  */
-declare type RunGetMethodResultStackItem = (['num', string] | ['cell', Cell_2] | ['tuple', TonLib.Combinators.Tvm.StackEntryTuple['tuple']] | ['list', TonLib.Combinators.Tvm.StackEntryList['list']]);
+export declare type RunGetMethodResultStackItem = (['num', string] | ['cell', Cell_2] | ['tuple', TonLib.Combinators.Tvm.StackEntryTuple['tuple']] | ['list', TonLib.Combinators.Tvm.StackEntryList['list']]);
 
 declare type SendBocMeta = MethodMeta<{
     boc: string;
 }, SendBocResult>;
 
-declare type SendBocResult = TonLib.Types.Ok;
+export declare type SendBocResult = TonLib.Types.Ok;
 
 declare type SendQuerySimpleMeta = MethodMeta<SendQuerySimpleParams, SendQuerySimpleResult>;
 
-declare interface SendQuerySimpleParams {
+export declare interface SendQuerySimpleParams {
     address: string;
     body: string;
     init_code?: CellSerialized;
     init_data?: CellSerialized;
 }
 
-declare type SendQuerySimpleResult = TonLib.Types.Ok;
+export declare type SendQuerySimpleResult = TonLib.Types.Ok;
 
 export declare type SeqnoMethod = (() => SeqnoMethodResult);
 
@@ -1369,7 +1369,7 @@ declare type ShardsMeta = MethodMeta<{
     seqno: number;
 }, ShardsResult>;
 
-declare type ShardsResult = TonLib.Types.Blocks.Shards;
+export declare type ShardsResult = TonLib.Types.Blocks.Shards;
 
 export declare interface SignResult {
     signature: Buffer;
@@ -1709,7 +1709,7 @@ declare class Wallets_2 {
 /**
  * Known wallet types.
  */
-declare type WalletType = ('wallet v1 r1' | 'wallet v1 r2' | 'wallet v1 r3' | 'wallet v2 r1' | 'wallet v2 r2' | 'wallet v3 r1' | 'wallet v3 r2' | 'wallet v4 r1' | 'wallet v4 r2');
+export declare type WalletType = ('wallet v1 r1' | 'wallet v1 r2' | 'wallet v1 r3' | 'wallet v2 r1' | 'wallet v2 r2' | 'wallet v3 r1' | 'wallet v3 r2' | 'wallet v4 r1' | 'wallet v4 r2');
 
 declare class WalletV2ContractBase extends WalletContract_2 {
     protected createSigningMessage(seqno?: number): Cell_3;
