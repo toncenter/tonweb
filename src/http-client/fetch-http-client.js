@@ -28,7 +28,10 @@ class FetchHttpClient {
         headers.set('Content-Type', 'application/json');
         headers.set('User-Agent', `tonweb ${version}`);
         const requestOptions = {
-            method: request.method.toUpperCase(),
+            method: (request.method
+                ? request.method.toUpperCase()
+                : 'GET'
+            ),
             headers: headers,
             body: JSON.stringify(request.body),
             redirect: 'error',
