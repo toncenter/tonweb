@@ -1,5 +1,5 @@
 
-import { Cell } from '../../boc/cell';
+import { Cell } from '../../boc/cell/cell';
 import { HttpProvider } from '../../http-provider/http-provider';
 import { TestHttpProvider } from '../../http-provider/test-http-provider';
 import { bytesToBase64 } from '../../utils/base64';

@@ -114,6 +114,15 @@ export function stringToBytes(str: string, size = 1): Uint8Array {
 }
 
 
+export function crc32c(bytes: Uint8Array): Uint8Array {
+    //Version suitable for crc32-c of BOC
+    const int_crc = _crc32c(0, bytes);
+    const arr = new ArrayBuffer(4);
+    const view = new DataView(arr);
+    view.setUint32(0, int_crc, false);
+    return new Uint8Array(arr).reverse();
+}
+
 /**
  * @private
  * @param crc {number}
@@ -138,15 +147,6 @@ function _crc32c(crc, bytes) {
     return crc ^ 0xffffffff;
 }
 
-export function crc32c(bytes: Uint8Array): Uint8Array {
-    //Version suitable for crc32-c of BOC
-    const int_crc = _crc32c(0, bytes);
-    const arr = new ArrayBuffer(4);
-    const view = new DataView(arr);
-    view.setUint32(0, int_crc, false);
-    return new Uint8Array(arr).reverse();
-}
-
 export function crc16(data: ArrayLike<number>): Uint8Array {
     const poly = 0x1021;
     let reg = 0;
@@ -169,11 +169,25 @@ export function crc16(data: ArrayLike<number>): Uint8Array {
     return new Uint8Array([Math.floor(reg / 256), reg % 256]);
 }
 
-export function concatBytes(a: Uint8Array, b: Uint8Array): Uint8Array {
-    const c = new Uint8Array(a.length + b.length);
-    c.set(a);
-    c.set(b, a.length);
-    return c;
+/**
+ * Concatenates two byte arrays together.
+ */
+export function concatBytes(
+    bytes1: Uint8Array,
+    bytes2: Uint8Array
+
+): Uint8Array {
+
+    const bytes = new Uint8Array(
+        bytes1.length +
+        bytes2.length
+    );
+
+    bytes.set(bytes1);
+    bytes.set(bytes2, bytes1.length);
+
+    return bytes;
+
 }
 
 export function compareBytes(a: Uint8Array, b: Uint8Array): boolean {

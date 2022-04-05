@@ -1,7 +1,7 @@
 
 import BN from 'bn.js';
 
-import { Cell } from '../../boc/cell';
+import { Cell } from '../../boc/cell/cell';
 import { HttpProvider } from '../../http-provider/http-provider';
 import { base64ToBytes } from '../../utils/base64';
 import { expectArray, expectBN } from '../../utils/type-guards';

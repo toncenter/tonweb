@@ -1,5 +1,5 @@
 
-import { Cell } from '../../../boc/cell';
+import { Cell } from '../../../boc/cell/cell';
 
 
 /**

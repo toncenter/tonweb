@@ -1,5 +1,5 @@
 
-import { Cell } from '../../../boc/cell';
+import { Cell } from '../../../boc/cell/cell';
 import { writeTimestampToSigningMessage } from '../common/signing';
 import { WalletContract, WalletContractOptions } from '../wallet-contract';
 

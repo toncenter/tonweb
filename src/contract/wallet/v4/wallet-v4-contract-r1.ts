@@ -1,5 +1,5 @@
 
-import { Cell } from '../../../boc/cell';
+import { Cell } from '../../../boc/cell/cell';
 import { HttpProvider } from '../../../http-provider/http-provider';
 import { WalletV4ContractBase, WalletV4ContractOptions } from './wallet-v4-contract-base';
 

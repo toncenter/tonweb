@@ -1,6 +1,7 @@
 
 import BN from 'bn.js';
-import { Cell } from '../boc/cell';
+
+import { Cell } from '../boc/cell/cell';
 
 
 export function expectArray<Type = any>(value: any): Array<Type> {

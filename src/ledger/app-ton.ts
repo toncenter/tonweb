@@ -2,7 +2,7 @@
 import Transport from '@ledgerhq/hw-transport';
 import BN from 'bn.js';
 
-import { Cell } from '../boc/cell';
+import { Cell } from '../boc/cell/cell';
 import { Contract, Method, Query } from '../contract/contract';
 import { WalletContract } from '../contract/wallet/wallet-contract';
 import TonWeb from '../index';

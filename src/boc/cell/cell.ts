@@ -1,5 +1,6 @@
 
-import { BitString } from './bit-string';
+import { bytesToBase64 } from '../../utils/base64';
+import { BitString } from '../bit-string';
 
 import {
     compareBytes,
@@ -9,20 +10,30 @@ import {
     readNBytesUIntFromArray,
     sha256,
 
-} from '../utils/common';
+} from '../../utils/common';
+
+import {
+    IndexHashmap,
+    indexCell,
+    IndexCellResult,
+
+} from './cell-index';
 
 
-type IndexHashmap = Record<string, number>;
-type TopologicalOrderArray = Array<[Uint8Array, Cell]>;
-type TreeWalkResult = [TopologicalOrderArray, IndexHashmap];
+type SerializedBoc = (string | Uint8Array);
+
+export type CellHash = Uint8Array;
+export type CellHashBase64 = string;
 
 
-const reachBocMagicPrefix = hexToBytes('B5EE9C72');
+const bocConstructorTag = hexToBytes('B5EE9C72');
 const leanBocMagicPrefix = hexToBytes('68ff65f3');
 const leanBocMagicPrefixCRC = hexToBytes('acc3a728');
 
 
 export class Cell {
+
+    public name: string;
 
     public readonly bits = new BitString(1023);
     public isExotic: (number | false) = false;
@@ -32,20 +43,33 @@ export class Cell {
     /**
      * Deserializes the BOC specified as HEX-string or
      * a byte-array and returns root cells.
+     *
+     * @param serializedBoc - HEX string or array of bytes
+     *
+     * @returns List of root cells
      */
-    public static fromBoc(serializedBoc: (string | Uint8Array)): Cell[] {
+    public static fromBoc(serializedBoc: SerializedBoc): Cell[] {
         return deserializeBoc(serializedBoc);
     }
 
     /**
      * Deserializes the BOC specified as HEX-string or
-     * a byte-array and returns one root cells. Throws an
-     * error if BOC contains multiple root cells.
+     * a byte-array and returns one root cell.
+     *
+     * @param serializedBoc - HEX string or array of bytes
+     *
+     * @returns One root cell
+     *
+     * @throws Error
+     * Throws if BOC contains multiple root cells.
      */
-    public static oneFromBoc(serializedBoc: (string | Uint8Array)): Cell {
+    public static oneFromBoc(serializedBoc: SerializedBoc): Cell {
         const cells = deserializeBoc(serializedBoc);
         if (cells.length !== 1) {
-            throw new Error(`Expected 1 root cell, but have ${cells.length} cells`);
+            throw new Error(
+                `Expected 1 root cell, but have ` +
+                `${cells.length} cells`
+            );
         }
         return cells[0];
     }
@@ -54,8 +78,8 @@ export class Cell {
      * Writes the specified cell to this cell.
      */
     public writeCell(cell: Cell) {
-        // XXX we do not check that there are enough place in cell
-        // @todo: is this actionable?
+        // @todo: check for bits overflow and
+        //        the number of cell references
         this.bits.writeBitString(cell.bits);
         this.refs = this.refs.concat(cell.refs);
     }
@@ -107,68 +131,99 @@ export class Cell {
     }
 
     /**
-     * @todo: add description
+     * Returns cell's references descriptor.
      */
     public getRefsDescriptor(): Uint8Array {
-        const d1 = Uint8Array.from({ length: 1 }, () => 0);
-        d1[0] = this.refs.length + Number(this.isExotic) * 8 + this.getMaxLevel() * 32;
-        return d1;
+        const value = (
+            this.refs.length +
+            (Number(this.isExotic) * 8) +
+            (this.getMaxLevel() * 32)
+        );
+        return Uint8Array.from([value]);
     }
 
     /**
-     * @todo: add description
+     * Returns cell's bits descriptor.
      */
     public getBitsDescriptor(): Uint8Array {
-        const d2 = Uint8Array.from({ length: 1 }, () => 0);
         const usedBits = this.bits.getUsedBits();
-        d2[0] = Math.ceil(usedBits / 8) + Math.floor(usedBits / 8);
-        return d2;
+        const value = (
+            Math.ceil(usedBits / 8) +
+            Math.floor(usedBits / 8)
+        );
+        return Uint8Array.from([value]);
     }
 
     /**
-     * @todo: add description
+     * Returns cell's descriptors data.
      */
     public getDataWithDescriptors(): Uint8Array {
-        const d1 = this.getRefsDescriptor();
-        const d2 = this.getBitsDescriptor();
-        const tuBits = this.bits.getTopUppedArray();
-        return concatBytes(concatBytes(d1, d2), tuBits);
+
+        const refsDescriptor = this.getRefsDescriptor();
+        const bitsDescriptor = this.getBitsDescriptor();
+
+        const uppedBits = this.bits.getTopUppedArray();
+
+        return concatBytes(
+            concatBytes(refsDescriptor, bitsDescriptor),
+            uppedBits
+        );
+
     }
 
     /**
-     * @todo: add description
+     * Returns cell's representation.
+     * Used for unique hash calculation.
      */
     public async getRepr(): Promise<Uint8Array> {
+
         const reprArray = [];
 
         reprArray.push(this.getDataWithDescriptors());
-        for (let k in this.refs) {
-            const i = this.refs[k];
-            reprArray.push(i.getMaxDepthAsArray());
+
+        // Max depths
+        for (const subCell of this.refs) {
+            reprArray.push(subCell.getMaxDepthAsArray());
         }
-        for (let k in this.refs) {
-            const i = this.refs[k];
-            reprArray.push(await i.hash());
+
+        // Hashes
+        for (const subCell of this.refs) {
+            reprArray.push(await subCell.hash());
         }
-        let x = new Uint8Array();
-        for (let k in reprArray) {
-            const i = reprArray[k];
-            x = concatBytes(x, i);
+
+        // Converting to bytes
+        let bytes = new Uint8Array();
+        for (const value of reprArray) {
+            bytes = concatBytes(bytes, value);
         }
-        return x;
+
+        return bytes;
+
     }
 
     /**
-     * @todo: add description
+     * Returns unique hash of the cell representation.
      */
-    public async hash(): Promise<Uint8Array> {
+    public async hash(): Promise<CellHash> {
         return new Uint8Array(
             await sha256(await this.getRepr())
         );
     }
 
     /**
-     * Recursively prints cell's content like in Fift.
+     * Returns unique string hash of the cell representation.
+     */
+    public async hashBase64(): Promise<CellHashBase64> {
+
+        return bytesToBase64(await this.hash());
+
+    }
+
+    /**
+     * Recursively prints cell's content (like Fift).
+     *
+     * @property indent - A string containing spaces used
+     *                    for indentation
      */
     public print(indent?: string): string {
         indent = (indent || '');
@@ -180,7 +235,7 @@ export class Cell {
     }
 
     /**
-     * Creates BOC byte-array.
+     * Converts cell with all it's content to Bag of Cells (BOC).
      */
     public async toBoc(
         hasIdx = true,
@@ -190,66 +245,114 @@ export class Cell {
 
     ): Promise<Uint8Array> {
 
-        //serialized_boc#b5ee9c72 has_idx:(## 1) has_crc32c:(## 1)
-        //  has_cache_bits:(## 1) flags:(## 2) { flags = 0 }
-        //  size:(## 3) { size <= 4 }
-        //  off_bytes:(## 8) { off_bytes <= 8 }
-        //  cells:(##(size * 8))
-        //  roots:(##(size * 8)) { roots >= 1 }
-        //  absent:(##(size * 8)) { roots + absent <= cells }
-        //  tot_cells_size:(##(off_bytes * 8))
-        //  root_list:(roots * ##(size * 8))
-        //  index:has_idx?(cells * ##(off_bytes * 8))
-        //  cell_data:(tot_cells_size * [ uint8 ])
-        //  crc32c:has_crc32c?uint32
-        // = BagOfCells;
+        // TL-B Scheme:
+        // {@link https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/tl/boc.tlb#L25}
+
+        // C++ implementation:
+        // {@link https://github.com/newton-blockchain/ton/blob/master/crypto/vm/boc.cpp#L500}
 
         const rootCell = this;
 
-        const allCells = await rootCell.treeWalk();
-        const topologicalOrder = allCells[0];
-        const cellsIndex = allCells[1];
+        const { orderedCells, indexHashmap } = (
+            await rootCell.index()
+        );
 
-        const cellsNum = topologicalOrder.length;
-        const s = cellsNum.toString(2).length; // Minimal number of bits to represent reference (unused?)
-        const sBytes = Math.min(Math.ceil(s / 8), 1);
-        let fullSize = 0;
-        let sizeIndex = [];
-        for (let cellInfo of topologicalOrder) {
+        const cellsCount = orderedCells.length;
+        const refByteSize = 1;
+
+        let offset = 0;
+        let cellOffsetsIndex: number[] = [];
+        for (const cell of orderedCells) {
             // @todo: it should be async map or async for
-            sizeIndex.push(fullSize);
-            fullSize = fullSize + await cellInfo[1].bocSerializationSize(cellsIndex, sBytes);
+            cellOffsetsIndex.push(offset);
+            // @todo: use index cache to minimize number
+            //        of calls to serializeForBoc/bocSerializationSize
+            const cellSize = await cell
+                .bocSerializationSize(indexHashmap, refByteSize)
+            ;
+            offset += cellSize;
         }
-        const offsetBits = fullSize.toString(2).length; // Minimal number of bits to offset/len (unused?)
+        const fullSize = offset;
+
+        // Minimal number of bits to offset/len
+        const offsetBits = fullSize.toString(2).length;
         const offsetBytes = Math.max(Math.ceil(offsetBits / 8), 1);
 
-        const serialization = new BitString((1023 + 32 * 4 + 32 * 3) * topologicalOrder.length);
-        serialization.writeBytes(reachBocMagicPrefix);
-        serialization.writeBitArray([hasIdx, hashCrc32, hasCacheBits]);
-        serialization.writeUint(flags, 2);
-        serialization.writeUint(sBytes, 3);
-        serialization.writeUint8(offsetBytes);
-        serialization.writeUint(cellsNum, sBytes * 8);
-        serialization.writeUint(1, sBytes * 8); // One root for now
-        serialization.writeUint(0, sBytes * 8); // Complete BOCs only
-        serialization.writeUint(fullSize, offsetBytes * 8);
-        serialization.writeUint(0, sBytes * 8); // Root shoulh have index 0
+        const cellDataLength = 1023;
+        const cellRefsLength = (32 * 4);
+
+        const boc = new BitString(
+            (cellDataLength + cellRefsLength + (32 * 3)) *
+            cellsCount
+        );
+
+        // [serialized_boc#b5ee9c72]
+        boc.writeBytes(bocConstructorTag);
+
+        boc.writeBitArray([
+            // [has_idx]
+            hasIdx,
+
+            // [has_crc32c]
+            hashCrc32,
+
+            // [has_cache_bits]
+            hasCacheBits,
+        ]);
+
+        // [flags]
+        boc.writeUint(flags, 2);
+
+        // [size]
+        boc.writeUint(refByteSize, 3);
+
+        // [off_bytes]
+        boc.writeUint8(offsetBytes);
+
+        // Cells [cells]
+        boc.writeUint(cellsCount, refByteSize * 8);
+
+        // Roots [roots] (one root for now)
+        boc.writeUint(1, refByteSize * 8);
+
+        // Absent [absent] (complete BOCs only)
+        boc.writeUint(0, refByteSize * 8);
+
+        // Total cells size [tot_cells_size]
+        boc.writeUint(fullSize, offsetBytes * 8);
+
+        // Root list [root_list] (root should have index 0)
+        boc.writeUint(0, refByteSize * 8);
+
+        // Cell offsets [index]
         if (hasIdx) {
-            topologicalOrder.forEach(
-                (cell_data, index) =>
-                    serialization.writeUint(sizeIndex[index], offsetBytes * 8));
-        }
-        for (let cellInfo of topologicalOrder) {
-            //TODO it should be async map or async for
-            const refCellSer = await cellInfo[1].serializeForBoc(cellsIndex, sBytes);
-            serialization.writeBytes(refCellSer);
-        }
-        let serSrr = serialization.getTopUppedArray();
-        if (hashCrc32) {
-            serSrr = concatBytes(serSrr, crc32c(serSrr));
+            for (let index = 0; index < cellsCount; index++) {
+                boc.writeUint(
+                    cellOffsetsIndex[index],
+                    (offsetBytes * 8)
+                );
+            }
         }
 
-        return serSrr;
+        // Serialized cells [cell_data]
+        for (let cell of orderedCells) {
+            // @todo: it should be async map or async for
+            const serializedCell = await cell
+                .serializeForBoc(indexHashmap, refByteSize)
+            ;
+            boc.writeBytes(serializedCell);
+        }
+
+        // Converting to bytes
+        let bocBytes = boc.getTopUppedArray();
+
+        // Checksum [crc32c]
+        if (hashCrc32) {
+            bocBytes = concatBytes(bocBytes, crc32c(bocBytes));
+        }
+
+        return bocBytes;
+
     }
 
 
@@ -261,12 +364,12 @@ export class Cell {
         return d;
     }
 
-    private async treeWalk(): Promise<TreeWalkResult> {
-        return treeWalk(this, [], {});
+    private async index(): Promise<IndexCellResult> {
+        return indexCell(this);
     }
 
     private async serializeForBoc(
-        cellsIndex: IndexHashmap,
+        indexHashmap: IndexHashmap,
         // @todo: remove/use unused parameter
         refSize: any
 
@@ -275,25 +378,31 @@ export class Cell {
         const reprArray: Uint8Array[] = [];
 
         reprArray.push(this.getDataWithDescriptors());
+
         if (this.isExplicitlyStoredHashes()) {
             throw new Error('Cell hashes explicit storing is not implemented');
         }
+
+        // Setting reference to each sub-cell
         for (const subCell of this.refs) {
-            const refHash = await subCell.hash();
-            const refHashStr = refHash.toString();
-            const refIndexInt = cellsIndex[refHashStr];
-            let refIndexHex = refIndexInt.toString(16);
-            if (refIndexHex.length % 2) {
-                refIndexHex = '0' + refIndexHex;
+            const cellHash = await subCell.hashBase64();
+            const cellIndex = indexHashmap[cellHash];
+            let cellIndexHex = cellIndex.toString(16);
+            if (cellIndexHex.length % 2) {
+                cellIndexHex = '0' + cellIndexHex;
             }
-            const reference = hexToBytes(refIndexHex);
+            const reference = hexToBytes(cellIndexHex);
             reprArray.push(reference);
         }
-        let result = new Uint8Array();
+
+        // Converting result to bytes
+        let bytes = new Uint8Array();
         for (const reference of reprArray) {
-            result = concatBytes(result, reference);
+            bytes = concatBytes(bytes, reference);
         }
-        return result;
+
+        return bytes;
+
     }
 
     private async bocSerializationSize(cellsIndex: any, refSize: any): Promise<number> {
@@ -302,67 +411,6 @@ export class Cell {
 
 }
 
-
-async function moveToTheEnd(
-    indexHashmap: IndexHashmap,
-    topologicalOrderArray: TopologicalOrderArray,
-    target
-) {
-    const targetIndex = indexHashmap[target];
-    for (let h in indexHashmap) {
-        if (indexHashmap[h] > targetIndex) {
-            indexHashmap[h] = indexHashmap[h] - 1;
-        }
-    }
-    indexHashmap[target] = topologicalOrderArray.length - 1;
-    const data = topologicalOrderArray.splice(targetIndex, 1)[0];
-    topologicalOrderArray.push(data);
-    for (const subCell of data[1].refs) {
-        await moveToTheEnd(
-            indexHashmap,
-            topologicalOrderArray,
-            await subCell.hash()
-        );
-    }
-}
-
-/**
- * @todo: add description
- */
-async function treeWalk(
-    cell: Cell,
-    topologicalOrderArray: TopologicalOrderArray,
-    indexHashmap: IndexHashmap,
-    parentHash?: Uint8Array
-
-): Promise<TreeWalkResult> {
-
-    const cellHash = await cell.hash();
-    // @todo: should we use some other way to cast
-    //        `cellHash` and `parentHash` to a primitive values?
-    //        Uint8Array.toString() doesn't produce very compact results
-    const cellHashStr = cellHash.toString();
-    if (cellHashStr in indexHashmap) {
-        // Duplicate cell
-        // it is possible that already seen cell is a children of more deep cell
-        if (parentHash) {
-            const parentHashStr = parentHash.toString();
-            if (indexHashmap[parentHashStr] > indexHashmap[cellHashStr]) {
-                await moveToTheEnd(indexHashmap, topologicalOrderArray, cellHash);
-            }
-        }
-        return [topologicalOrderArray, indexHashmap];
-    }
-    indexHashmap[cellHashStr] = topologicalOrderArray.length;
-    topologicalOrderArray.push([cellHash, cell]);
-    for (let subCell of cell.refs) {
-        const res = await treeWalk(subCell, topologicalOrderArray, indexHashmap, cellHash);
-        topologicalOrderArray = res[0];
-        indexHashmap = res[1];
-    }
-
-    return [topologicalOrderArray, indexHashmap];
-}
 
 
 function parseBocHeader(serializedBoc) {
@@ -374,7 +422,7 @@ function parseBocHeader(serializedBoc) {
     const prefix = serializedBoc.slice(0, 4);
     serializedBoc = serializedBoc.slice(4);
     let has_idx, hash_crc32, has_cache_bits, flags, size_bytes;
-    if (compareBytes(prefix, reachBocMagicPrefix)) {
+    if (compareBytes(prefix, bocConstructorTag)) {
         const flags_byte = serializedBoc[0];
         has_idx = flags_byte & 128;
         hash_crc32 = flags_byte & 64;
@@ -490,10 +538,14 @@ function deserializeCellData(cellData, referenceIndexSize) {
 
 
 /**
- * @param serializedBoc  {string | Uint8Array} hex or bytearray
- * @return {Cell[]} root cells
+ * Deserializes the BOC specified as HEX-string or
+ * a byte-array and returns root cells.
+ *
+ * @param serializedBoc - HEX string or array of bytes
+ *
+ * @returns List of root cells
  */
-function deserializeBoc(serializedBoc) {
+function deserializeBoc(serializedBoc: SerializedBoc): Cell[] {
     if (typeof (serializedBoc) == 'string') {
         serializedBoc = hexToBytes(serializedBoc);
     }

@@ -1,7 +1,7 @@
 
 import BN from 'bn.js';
 
-import { Cell } from '../../../boc/cell';
+import { Cell } from '../../../boc/cell/cell';
 import { expectBN } from '../../../utils/type-guards';
 import { writeTimestampToSigningMessage } from '../common/signing';
 import { WalletContract, WalletContractMethods, WalletContractOptions } from '../wallet-contract';

@@ -1,7 +1,7 @@
 
 import BN from 'bn.js';
 
-import { Cell } from '../../../boc/cell';
+import { Cell } from '../../../boc/cell/cell';
 import { HttpProvider } from '../../../http-provider/http-provider';
 import { Address, AddressType } from '../../../utils/address';
 import { bytesToHex, toNano } from '../../../utils/common';

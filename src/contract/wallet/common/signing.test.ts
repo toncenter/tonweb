@@ -1,7 +1,7 @@
 
 import { jest } from '@jest/globals';
 
-import { Cell } from '../../../boc/cell';
+import { Cell } from '../../../boc/cell/cell';
 import { writeTimestampToSigningMessage } from './signing';
 
 

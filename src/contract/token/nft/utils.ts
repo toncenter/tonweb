@@ -1,6 +1,6 @@
 
 import { BitString } from '../../../boc/bit-string';
-import { Cell } from '../../../boc/cell';
+import { Cell } from '../../../boc/cell/cell';
 import { textEncoder } from '../../../utils/text-encoding';
 import { Address } from '../../../utils/address';
 

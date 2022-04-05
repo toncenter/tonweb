@@ -3,7 +3,7 @@ import BN from 'bn.js';
 
 import { TonLib } from '@ton.js/types';
 
-import { Cell } from '../boc/cell';
+import { Cell } from '../boc/cell/cell';
 import { base64ToBytes } from '../utils/base64';
 import { expectBoolean, expectNonNullObject, expectNumber, expectString } from '../utils/type-guards';
 import { ApiResponse } from './http-provider';

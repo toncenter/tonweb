@@ -215,7 +215,11 @@ const utils = {
 import { BitString as $BitString } from './boc/bit-string';
 export type BitString = $BitString;
 
-import { Cell as $Cell } from './boc/cell';
+import { Cell as $Cell } from './boc/cell/cell';
+
+// @todo: export cell-related types
+export {  } from './boc/cell/cell';
+
 export type Cell = $Cell;
 
 const boc = {

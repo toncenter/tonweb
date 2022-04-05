@@ -4,7 +4,7 @@ import nacl from 'tweetnacl';
 
 import { expectBN } from '../../utils/type-guards';
 import { Contract, ContractMethods, ContractOptions, Method, Query } from '../contract';
-import { Cell } from '../../boc/cell';
+import { Cell } from '../../boc/cell/cell';
 import { HttpProvider } from '../../http-provider/http-provider';
 import { Address, AddressType } from '../../utils/address';
 
