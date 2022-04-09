@@ -10,122 +10,29 @@ describe('indexCell()', () => {
 
     it('no duplicates', async () => {
 
-        const cellA = new Cell();
-        cellA.name = 'A';
-        cellA.bits.writeString('A');
-
-        const cellB = new Cell();
-        cellB.name = 'B';
-        cellB.bits.writeString('B');
-
-        const cellC = new Cell();
-        cellC.name = 'C';
-        cellC.bits.writeString('C');
-
-        const cellD = new Cell();
-        cellD.name = 'D';
-        cellD.bits.writeString('D');
-
-        const cellE = new Cell();
-        cellE.name = 'E';
-        cellE.bits.writeString('E');
-
-        const cellF = new Cell();
-        cellF.name = 'F';
-        cellF.bits.writeString('F');
-
-        const cells = [
-            cellA,
-            cellB,
-            cellC,
-            cellD,
-            cellE,
-            cellF,
-        ];
-
         /**
-         * Cells topology:
-         *
          * [A]──[B]──[D]
          *  │    │
          *  │    └───[E]──[F]
          *  └───[C]
          */
 
-        cellA.refs = [cellB, cellC];
-        cellB.refs = [cellD, cellE];
-        cellE.refs = [cellF];
-
-        // Depth-first topological order
-        const topologicalOrder: Cell[] = [
-            cellA,
-            cellB,
-            cellD,
-            cellE,
-            cellF,
-            cellC,
-        ];
-
-        const {
-            orderedCells: order,
-            indexHashmap: hashmap,
-
-        } = await indexCell(cellA);
-
-        // Checking if index length is equal
-        // to the number of cells.
-        expect(order).toHaveLength(cells.length);
-        expect(Object.keys(hashmap)).toHaveLength(cells.length);
-
-        // Checking if cells are in topological order
-        expect(order).toEqual(topologicalOrder);
-
-        // Checking if hash index is correct
-        for (const cell of cells) {
-            const cellHash = await cell.hashBase64();
-            const topologicalIndex = order.indexOf(cell);
-            expect(hashmap[cellHash]).toEqual(topologicalIndex);
-        }
+        await testTopology({
+            schema: [
+                ['A', ['B', 'C']],
+                ['B', ['D', 'E']],
+                ['E', ['F']],
+            ],
+            expectedOrder: [
+                'A', 'B', 'D', 'E', 'F', 'C',
+            ],
+        });
 
     });
 
     it('duplicate cells', async () => {
 
-        const cellA = new Cell();
-        cellA.name = 'A';
-        cellA.bits.writeString('A');
-
-        const cellB = new Cell();
-        cellB.name = 'B';
-        cellB.bits.writeString('B');
-
-        const cellC = new Cell();
-        cellC.name = 'C';
-        cellC.bits.writeString('C');
-
-        const cellD = new Cell();
-        cellD.name = 'D';
-        cellD.bits.writeString('D');
-
-        const cellDDupe = new Cell();
-        cellDDupe.name = 'DDupe';
-        cellDDupe.bits.writeString('D');
-
-        const cellE = new Cell();
-        cellE.name = 'E';
-        cellE.bits.writeString('E');
-
-        const uniqueCells = [
-            cellA,
-            cellB,
-            cellC,
-            cellD,
-            cellE,
-        ];
-
         /**
-         * Cells topology:
-         *
          * [A]──[B]──[D]
          *  │
          *  └───[C]──[D']
@@ -133,91 +40,22 @@ describe('indexCell()', () => {
          *       └───[E]
          */
 
-        cellA.refs = [cellB, cellC];
-        cellB.refs = [cellD];
-        cellC.refs = [cellDDupe, cellE];
-
-        // Depth-first topological order
-        const topologicalOrder: Cell[] = [
-            cellA,
-            cellB,
-            cellC,
-            cellD,
-            cellE,
-        ];
-
-        const {
-            orderedCells: order,
-            indexHashmap: hashmap,
-
-        } = await indexCell(cellA);
-
-        // Checking if cells are in topological order
-        expect(order).toEqual(topologicalOrder);
-
-        // Checking if hash index is correct
-        // -----
-
-        expect(Object.keys(hashmap)).toHaveLength(
-            uniqueCells.length
-        );
-
-        for (const cell of uniqueCells) {
-            const cellHash = await cell.hashBase64();
-            const topologicalIndex = order.indexOf(cell);
-            expect(hashmap[cellHash]).toEqual(topologicalIndex);
-        }
+        await testTopology({
+            schema: [
+                ['A', ['B', 'C']],
+                ['B', ['D']],
+                ['C', ['D', 'E']],
+            ],
+            expectedOrder: [
+                'A', 'B', 'C', 'D', 'E',
+            ],
+        });
 
     });
 
     it('duplicate cells with children', async () => {
 
-        const cellA = new Cell();
-        cellA.name = 'A';
-        cellA.bits.writeString('A');
-
-        const cellB = new Cell();
-        cellB.name = 'B';
-        cellB.bits.writeString('B');
-
-        const cellC = new Cell();
-        cellC.name = 'C';
-        cellC.bits.writeString('C');
-
-        const cellD = new Cell();
-        cellD.name = 'D';
-        cellD.bits.writeString('D');
-
-        const cellE = new Cell();
-        cellE.name = 'E';
-        cellE.bits.writeString('E');
-
-        const cellF = new Cell();
-        cellF.name = 'F';
-        cellF.bits.writeString('F');
-
-        const cellG = new Cell();
-        cellG.name = 'G';
-        cellG.bits.writeString('G');
-
-        const cellH = new Cell();
-        cellG.name = 'H';
-        cellG.bits.writeString('H');
-
-        const uniqueCells = [
-            cellA,
-            cellB,
-            cellC,
-            cellD,
-            cellE,
-            cellF,
-            cellG,
-            cellH,
-        ];
-
         /**
-         * Cells topology:
-         *
          * [A]──[B]──[D]──[G]
          *  │    │
          *  │    └───[E]
@@ -227,81 +65,24 @@ describe('indexCell()', () => {
          *            └───[H]
          */
 
-        cellA.refs = [cellB, cellC];
-        cellB.refs = [cellD, cellE];
-        cellD.refs = [cellG];
-        cellC.refs = [cellF];
-        cellF.refs = [cellB, cellH];
-
-        // Depth-first topological order
-        const topologicalOrder: Cell[] = [
-            cellA,
-            cellC,
-            cellF,
-            cellB,
-            cellD,
-            cellG,
-            cellE,
-            cellH,
-        ];
-
-        const {
-            orderedCells: order,
-            indexHashmap: hashmap,
-
-        } = await indexCell(cellA);
-
-        // Checking if cells are in topological order
-        expect(order).toEqual(topologicalOrder);
-
-        // Checking if hash index is correct
-        // -----
-
-        expect(Object.keys(hashmap)).toHaveLength(
-            uniqueCells.length
-        );
-
-        for (const cell of uniqueCells) {
-            const cellHash = await cell.hashBase64();
-            const topologicalIndex = order.indexOf(cell);
-            expect(hashmap[cellHash]).toEqual(topologicalIndex);
-        }
+        await testTopology({
+            schema: [
+                ['A', ['B', 'C']],
+                ['B', ['D', 'E']],
+                ['C', ['F']],
+                ['D', ['G']],
+                ['F', ['B', 'H']],
+            ],
+            expectedOrder: [
+                'A', 'C', 'F', 'B', 'D', 'G', 'E', 'H',
+            ],
+        });
 
     });
 
     it('duplicate cells with children and same parent', async () => {
 
-        const cellA = new Cell();
-        cellA.name = 'A';
-        cellA.bits.writeString('A');
-
-        const cellB = new Cell();
-        cellB.name = 'B';
-        cellB.bits.writeString('B');
-
-        const cellC = new Cell();
-        cellC.name = 'C';
-        cellC.bits.writeString('C');
-
-        const cellD = new Cell();
-        cellD.name = 'D';
-        cellD.bits.writeString('D');
-
-        const cellE = new Cell();
-        cellE.name = 'E';
-        cellE.bits.writeString('E');
-
-        const uniqueCells = [
-            cellA,
-            cellB,
-            cellC,
-            cellD,
-            cellE,
-        ];
-
         /**
-         * Cells topology:
-         *
          * [A]──[B]──[D]
          *  │    │
          *  │    └───[E]
@@ -311,40 +92,147 @@ describe('indexCell()', () => {
          *  └───[B']
          */
 
-        cellA.refs = [cellB, cellC, cellB];
-        cellB.refs = [cellD, cellE];
+        await testTopology({
+            schema: [
+                ['A', ['B', 'C', 'B']],
+                ['B', ['D', 'E']],
+            ],
+            expectedOrder: [
+                'A', 'B', 'D', 'E', 'C',
+            ],
+        });
 
-        // Depth-first topological order
-        const topologicalOrder: Cell[] = [
-            cellA,
-            cellB,
-            cellD,
-            cellE,
-            cellC,
-        ];
+    });
 
-        const {
-            orderedCells: order,
-            indexHashmap: hashmap,
+    it('cells with cycles', async () => {
 
-        } = await indexCell(cellA);
+        /**
+         * [A]──[B]──[A]
+         */
 
-        // Checking if cells are in topological order
-        expect(order).toEqual(topologicalOrder);
+        const cells = createCells([
+            ['A', ['B', 'A']],
+        ]);
 
-        // Checking if hash index is correct
-        // -----
-
-        expect(Object.keys(hashmap)).toHaveLength(
-            uniqueCells.length
-        );
-
-        for (const cell of uniqueCells) {
-            const cellHash = await cell.hashBase64();
-            const topologicalIndex = order.indexOf(cell);
-            expect(hashmap[cellHash]).toEqual(topologicalIndex);
-        }
+        await expect(indexCell(cells.A))
+            .rejects.toThrow('Cycles are not allowed')
+        ;
 
     });
 
 });
+
+
+//==============//
+// TEST HELPERS //
+//==============//
+
+type CellsSchema = Array<
+    [string, string[]]
+>;
+
+interface CellsIndex {
+    [key: string]: Cell;
+}
+
+/**
+ * Creates a nested structure of cells
+ * according to the specified schema.
+ */
+function createCells(schema: CellsSchema): CellsIndex {
+
+    const cells: CellsIndex = {};
+
+    for (const [name, children] of schema) {
+        getOrCreateCell(name, children);
+    }
+
+    function getOrCreateCell(
+        name: string,
+        children: string[] = []
+
+    ): Cell {
+
+        let cell: Cell;
+
+        if (cells[name]) {
+            cell = cells[name];
+        } else {
+            cell = new Cell();
+            cell.bits.writeString(name);
+            cells[name] = cell;
+        }
+
+        for (const childName of children) {
+            cell.refs.push(
+                getOrCreateCell(childName)
+            );
+        }
+
+        return cell;
+
+    }
+
+    return cells;
+
+}
+
+function cellsToNames(
+    cells: Cell[],
+    cellsIndex: CellsIndex
+
+): string[] {
+    const list: string[] = [];
+    for (const cell of cells) {
+        const entry = Object.entries(cellsIndex)
+            .find(([_, $cell]) => $cell === cell)
+        ;
+        if (entry) {
+            const [name] = entry;
+            list.push(name);
+        } else {
+            throw new Error(`Cell is not found in index`);
+        }
+
+    }
+    return list;
+}
+
+async function testTopology(options: {
+    schema: CellsSchema;
+    expectedOrder: string[]
+}) {
+
+    const {
+        schema,
+        expectedOrder,
+
+    } = options;
+
+    const cells = createCells(schema);
+    const cellsCount = Object.keys(cells).length;
+
+    const {
+        orderedCells: order,
+        indexHashmap: hashmap,
+
+    } = await indexCell(cells.A);
+
+    // Checking if index length is equal
+    // to the number of cells.
+    expect(order).toHaveLength(cellsCount);
+    expect(Object.keys(hashmap)).toHaveLength(cellsCount);
+
+    // Checking if cells are in topological order
+    expect(cellsToNames(order, cells))
+        .toEqual(expectedOrder)
+    ;
+
+    // Checking if hash index is correct
+    for (const cell of Object.values(cells)) {
+        const cellHash = await cell.hashBase64();
+        const topologicalIndex = order.indexOf(cell);
+        expect(hashmap[cellHash]).toEqual(topologicalIndex);
+    }
+
+}

@@ -117,17 +117,24 @@ export class Cell {
      * its children.
      */
     public getMaxDepth(): number {
+
         if (this.refs.length === 0) {
             return 0;
         }
+
+        this.checkForCyclesOrThrow();
+
         let childrenMaxDepth = 0;
+
         for (const subCell of this.refs) {
             const subCellMaxDepth = subCell.getMaxDepth();
             if (subCellMaxDepth > childrenMaxDepth) {
                 childrenMaxDepth = subCellMaxDepth;
             }
         }
+
         return (childrenMaxDepth + 1);
+
     }
 
     /**
@@ -407,6 +414,20 @@ export class Cell {
 
     private async bocSerializationSize(cellsIndex: any, refSize: any): Promise<number> {
         return (await this.serializeForBoc(cellsIndex, refSize)).length;
+    }
+
+    private checkForCyclesOrThrow() {
+        iterate(this);
+        function iterate(cell: Cell, parents: Cell[] = []) {
+            for (const subCell of cell.refs) {
+                if (parents.includes(subCell)) {
+                    throw new Error(
+                        `Cycles are not allowed in cell topology`
+                    );
+                }
+                iterate(subCell, [...parents, subCell]);
+            }
+        }
     }
 
 }
