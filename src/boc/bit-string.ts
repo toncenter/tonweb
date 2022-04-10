@@ -9,9 +9,7 @@ import { Address } from '../utils/address';
 export class BitString {
 
     // @todo: rename and make this private
-    public array = Uint8Array.from({
-        length: Math.ceil(this.length / 8)
-    }, () => 0);
+    public array: Uint8Array;
 
     // @todo: make this private
     public cursor = 0;
@@ -26,6 +24,10 @@ export class BitString {
          */
         public length: number
     ) {
+        this.array = new Uint8Array(
+            Math.ceil(length / 8)
+        );
+
     }
 
 
@@ -33,7 +35,7 @@ export class BitString {
      * Returns number of unfilled bits in the bit-string.
      */
     public getFreeBits(): number {
-        return this.length - this.cursor;
+        return (this.length - this.cursor);
     }
 
     /**
@@ -48,7 +50,7 @@ export class BitString {
      * Rounds up to a whole byte.
      */
     public getUsedBytes(): number {
-        return Math.ceil(this.cursor / 8);
+        return Math.ceil(this.getUsedBits() / 8);
     }
 
     /**
@@ -62,17 +64,17 @@ export class BitString {
     /**
      * Sets the bit value to one at the specified index.
      *
-     * @todo: should rename this method to `set()`
+     * @todo: should rename this method to `setBit()`
      */
     public on(index: number): void {
         this.checkIndexOrThrow(index);
-        this.array[(index / 8) | 0] |= 1 << (7 - (index % 8));
+        setBit(this.array, index);
     }
 
     /**
      * Sets the bit value to zero at the specified index.
      *
-     * @todo: should rename this method to `clear()`
+     * @todo: should rename this method to `clearBit()`
      */
     public off(index: number): void {
         this.checkIndexOrThrow(index);
@@ -82,6 +84,8 @@ export class BitString {
     /**
      * Toggles the bit value at the specified index,
      * turns one into zero and zero into one.
+     *
+     * @todo: should rename this method to `toggleBit()`
      */
     public toggle(index: number): void {
         this.checkIndexOrThrow(index);
@@ -92,8 +96,7 @@ export class BitString {
      * Iterates the bit-string and calls the specified
      * user function for each bit, passing in the bit value.
      *
-     * @todo: implement the iterator protocol
-     *        by using the generator function
+     * @todo: implement iteration protocol
      */
     public forEach(callback: (bitValue: boolean) => void) {
         const max = this.cursor;
@@ -103,9 +106,9 @@ export class BitString {
     }
 
     /**
-     * Writes the specified bit value to the bit-string
-     * at the current index and advances the current index
-     * cursor.
+     * Writes the specified bit value to the end of the bit-string.
+     *
+     * @param value - Bit value (a boolean or a number: `0` or `1`)
      */
     public writeBit(value: (boolean | number)) {
         if (value && value > 0) {
@@ -117,9 +120,10 @@ export class BitString {
     }
 
     /**
-     * Writes the specified array of bit values to the
-     * bit-string, starting at the current index and advances
-     * the current index cursor by the number of bits written.
+     * Writes the specified array of bit values
+     * to the end of the bit-string.
+     *
+     * @param values - An array of individual bits
      */
     public writeBitArray(values: Array<boolean | number>) {
         for (let i = 0; i < values.length; i++) {
@@ -142,8 +146,9 @@ export class BitString {
             bitLength === 0 ||
             (value.toString(2).length > bitLength)
         ) {
-            if (value.isZero())
+            if (value.isZero()) {
                 return;
+            }
             throw Error(
                 `Specified bit-length: ${bitLength} is ` +
                 `too small for the specified number: ${value}`
@@ -295,22 +300,33 @@ export class BitString {
     }
 
     /**
-     * @todo: provide meaningful method description
+     * Serializes BitString into as a sequence of bytes (octets).
+     *
+     * @todo: rename this method to `getBytes()` for clarity
      */
     public getTopUppedArray(): Uint8Array {
-        const ret = this.clone();
 
-        let tu = Math.ceil(ret.cursor / 8) * 8 - ret.cursor;
-        if (tu > 0) {
-            tu = tu - 1;
-            ret.writeBit(true);
-            while (tu > 0) {
-                tu = tu - 1;
-                ret.writeBit(false);
-            }
+        // Chapter 1.0.4 of the "Telegram Open Network Virtual Machine".
+        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
+        //
+        // Split the BitString into groups of eight bits.
+        // If the length of the BitString is not a multiple
+        // of eight, the BitString is augmented by a binary
+        // `1` and up to seven binary `0`s before being
+        // split into groups.
+
+        const usedBits = this.getUsedBits();
+        const bytes = this.array.slice(0, this.getUsedBytes());
+
+        // Checking if completion is needed
+        if (usedBits % 8 !== 0) {
+            // Setting the first completion bit,
+            // trailing zeroes are already present
+            setBit(bytes, usedBits);
         }
-        ret.array = ret.array.slice(0, Math.ceil(ret.cursor / 8));
-        return ret.array;
+
+        return bytes;
+
     }
 
     /**
@@ -338,9 +354,10 @@ export class BitString {
     }
 
     /**
-     * Sets this cell data to match provided topUppedArray.
+     * Sets this data to match provided topUppedArray.
      *
      * @todo: provide a more meaningful method description
+     * @todo: replace with static method `createFromBytes()`
      */
     public setTopUppedArray(bytes: Uint8Array, fulfilledBytes = true) {
         this.length = bytes.length * 8;
@@ -370,10 +387,24 @@ export class BitString {
      * the bit string, throws error in case of overflow.
      */
     private checkIndexOrThrow(index: number) {
-        // @todo: probably off-by-one error
-        if (index > this.length) {
+        if (index >= this.length) {
             throw Error('BitString overflow');
         }
     }
 
+}
+
+
+/**
+ * @todo: extract all bit-related functionality
+ */
+
+/**
+ * Sets bit by the specific index in the specified array of bytes.
+ *
+ * @param bytes - An array of bytes representing a bit-string
+ * @param index - Absolute index of the bit to set
+ */
+function setBit(bytes: Uint8Array, index: number) {
+    bytes[(index / 8) | 0] |= 1 << (7 - (index % 8));
 }

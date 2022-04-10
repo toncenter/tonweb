@@ -30,13 +30,14 @@ const bocConstructorTag = hexToBytes('B5EE9C72');
 const leanBocMagicPrefix = hexToBytes('68ff65f3');
 const leanBocMagicPrefixCRC = hexToBytes('acc3a728');
 
+const maxCellBits = 1023;
+const maxCellRefs = 4;
+
 
 export class Cell {
 
-    public name: string;
-
-    public readonly bits = new BitString(1023);
-    public isExotic: (number | false) = false;
+    public readonly bits = new BitString(maxCellBits);
+    public isExotic = false;
     public refs: Cell[] = [];
 
 
@@ -85,21 +86,24 @@ export class Cell {
     }
 
     /**
-     * Returns cell max level.
+     * Returns cell's (De Bruijn) level, which affects
+     * the number of higher hashes it has.
+     *
+     * @todo: rename to `getLevel()`
      */
     public getMaxLevel(): number {
 
+        // Chapter 3.1.3 of the "Telegram Open Network Virtual Machine".
+        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
+
+        // The level of an ordinary cell is always equal
+        // to the maximum of the levels of all its children.
+
         // @todo: implement level calculation for exotic cells
 
-        // let maxLevel = 0;
-        // for (const subCell of this.refs) {
-        //     const subCellMaxLevel = subCell.getMaxLevel();
-        //     if (subCellMaxLevel > maxLevel) {
-        //         maxLevel = subCellMaxLevel;
-        //     }
-        // }
-        // return maxLevel;
-
+        // Our cell implementation supports only
+        // ordinary cells now, so we can hard-code this
+        // value for the time being.
         return 0;
 
     }
@@ -138,51 +142,15 @@ export class Cell {
     }
 
     /**
-     * Returns cell's references descriptor.
-     */
-    public getRefsDescriptor(): Uint8Array {
-        const value = (
-            this.refs.length +
-            (Number(this.isExotic) * 8) +
-            (this.getMaxLevel() * 32)
-        );
-        return Uint8Array.from([value]);
-    }
-
-    /**
-     * Returns cell's bits descriptor.
-     */
-    public getBitsDescriptor(): Uint8Array {
-        const usedBits = this.bits.getUsedBits();
-        const value = (
-            Math.ceil(usedBits / 8) +
-            Math.floor(usedBits / 8)
-        );
-        return Uint8Array.from([value]);
-    }
-
-    /**
-     * Returns cell's descriptors data.
-     */
-    public getDataWithDescriptors(): Uint8Array {
-
-        const refsDescriptor = this.getRefsDescriptor();
-        const bitsDescriptor = this.getBitsDescriptor();
-
-        const uppedBits = this.bits.getTopUppedArray();
-
-        return concatBytes(
-            concatBytes(refsDescriptor, bitsDescriptor),
-            uppedBits
-        );
-
-    }
-
-    /**
-     * Returns cell's representation.
+     * Returns standard cell representation.
      * Used for unique hash calculation.
+     *
+     * @todo: should it be public?
      */
     public async getRepr(): Promise<Uint8Array> {
+
+        // Chapter 3.1.4 of the "Telegram Open Network Virtual Machine".
+        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
 
         const reprArray = [];
 
@@ -206,6 +174,89 @@ export class Cell {
 
         return bytes;
 
+    }
+
+    /**
+     * Returns cell's descriptors data.
+     *
+     * @todo: should it be public?
+     */
+    public getDataWithDescriptors(): Uint8Array {
+
+        // Chapter 3.1.4 of the "Telegram Open Network Virtual Machine".
+        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
+        //
+        // Two descriptor bytes `d1` and `d2`
+        // are serialized first.
+
+        // `d1`
+        const refsDescriptor = this.getRefsDescriptor();
+
+        // `d2`
+        const bitsDescriptor = this.getBitsDescriptor();
+
+        // Then the data bits are serialized as `⌈b/8⌉`
+        // 8-bit octets (bytes). If `b` is not a multiple
+        // of eight, a binary `1` and up to six binary `0`s
+        // are appended to the data bits. After that, the
+        // data is split into `⌈b/8⌉` eight-bit groups,
+        // and each group is interpreted as an unsigned
+        // big-endian integer `0…255` and stored into an octet.
+
+        const uppedBits = this.bits.getTopUppedArray();
+
+        return concatBytes(
+            concatBytes(refsDescriptor, bitsDescriptor),
+            uppedBits
+        );
+
+    }
+
+    /**
+     * Returns cell's references descriptor.
+     *
+     * @todo: should it be public?
+     */
+    public getRefsDescriptor(): Uint8Array {
+
+        // Chapter 3.1.4 of the "Telegram Open Network Virtual Machine".
+        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
+        //
+        // Byte `d1` equals `r + 8s + 32l`, where
+        // - `0 ≤ r ≤ 4` is the quantity of cell references
+        //   contained in the cell,
+        // - `0 ≤ l ≤ 3` is the level of the cell, and
+        // - `0 ≤ s ≤ 1` is `1` for exotic cells and `0`
+        //   for ordinary cells.
+
+        const value = (
+            this.refs.length +
+            (Number(this.isExotic) * 8) +
+            (this.getMaxLevel() * 32)
+        );
+
+        return Uint8Array.from([value]);
+
+    }
+
+    /**
+     * Returns cell's bits descriptor.
+     */
+    public getBitsDescriptor(): Uint8Array {
+
+        // Chapter 3.1.4 of the "Telegram Open Network Virtual Machine".
+        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
+        //
+        // Byte `d2` equals `⌊b/8⌋ + ⌈b/8⌉`, where
+        // `0 ≤ b ≤ 1023` is the quantity of data bits in `c`.
+        //
+
+        const usedBits = this.bits.getUsedBits();
+        const value = (
+            Math.floor(usedBits / 8) +
+            Math.ceil(usedBits / 8)
+        );
+        return Uint8Array.from([value]);
     }
 
     /**
@@ -285,11 +336,10 @@ export class Cell {
         const offsetBits = fullSize.toString(2).length;
         const offsetBytes = Math.max(Math.ceil(offsetBits / 8), 1);
 
-        const cellDataLength = 1023;
-        const cellRefsLength = (32 * 4);
+        const cellRefsLength = (32 * maxCellRefs);
 
         const boc = new BitString(
-            (cellDataLength + cellRefsLength + (32 * 3)) *
+            (maxCellBits + cellRefsLength + (32 * 3)) *
             cellsCount
         );
 
@@ -538,7 +588,7 @@ function deserializeCellData(cellData, referenceIndexSize) {
     const dataBytesize = Math.ceil(d2 / 2);
     const fulfilledBytes = !(d2 % 2);
     let cell = new Cell();
-    cell.isExotic = isExotic;
+    cell.isExotic = Boolean(isExotic);
     if (cellData.length < dataBytesize + referenceIndexSize * refNum) {
         throw new Error('Not enough bytes to encode cell data');
     }

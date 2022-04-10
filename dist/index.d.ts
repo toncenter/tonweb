@@ -144,26 +144,27 @@ declare class BitString_2 {
     /**
      * Sets the bit value to one at the specified index.
      *
-     * @todo: should rename this method to `set()`
+     * @todo: should rename this method to `setBit()`
      */
     on(index: number): void;
     /**
      * Sets the bit value to zero at the specified index.
      *
-     * @todo: should rename this method to `clear()`
+     * @todo: should rename this method to `clearBit()`
      */
     off(index: number): void;
     /**
      * Toggles the bit value at the specified index,
      * turns one into zero and zero into one.
+     *
+     * @todo: should rename this method to `toggleBit()`
      */
     toggle(index: number): void;
     /**
      * Iterates the bit-string and calls the specified
      * user function for each bit, passing in the bit value.
      *
-     * @todo: implement the iterator protocol
-     *        by using the generator function
+     * @todo: implement iteration protocol
      */
     forEach(callback: (bitValue: boolean) => void): void;
     /**
@@ -243,7 +244,7 @@ declare class BitString_2 {
      */
     toString(): string;
     /**
-     * @todo: provide meaningful method description
+     * Serializes BitString into as a sequence of bytes (octets).
      */
     getTopUppedArray(): Uint8Array;
     /**
@@ -251,9 +252,10 @@ declare class BitString_2 {
      */
     toHex(): string;
     /**
-     * Sets this cell data to match provided topUppedArray.
+     * Sets this data to match provided topUppedArray.
      *
      * @todo: provide a more meaningful method description
+     * @todo: replace with static method `createFromBytes()`
      */
     setTopUppedArray(bytes: Uint8Array, fulfilledBytes?: boolean): void;
     /**
@@ -398,25 +400,38 @@ declare type Cell_2 = {
 
 declare class Cell_3 {
     readonly bits: BitString_2;
-    isExotic: (number | false);
+    isExotic: boolean;
     refs: Cell_3[];
     /**
      * Deserializes the BOC specified as HEX-string or
      * a byte-array and returns root cells.
+     *
+     * @param serializedBoc - HEX string or array of bytes
+     *
+     * @returns List of root cells
      */
-    static fromBoc(serializedBoc: (string | Uint8Array)): Cell_3[];
+    static fromBoc(serializedBoc: SerializedBoc): Cell_3[];
     /**
      * Deserializes the BOC specified as HEX-string or
-     * a byte-array and returns one root cells. Throws an
-     * error if BOC contains multiple root cells.
+     * a byte-array and returns one root cell.
+     *
+     * @param serializedBoc - HEX string or array of bytes
+     *
+     * @returns One root cell
+     *
+     * @throws Error
+     * Throws if BOC contains multiple root cells.
      */
-    static oneFromBoc(serializedBoc: (string | Uint8Array)): Cell_3;
+    static oneFromBoc(serializedBoc: SerializedBoc): Cell_3;
     /**
      * Writes the specified cell to this cell.
      */
     writeCell(cell: Cell_3): void;
     /**
-     * Returns cell max level.
+     * Returns cell's (De Bruijn) level, which affects
+     * the number of higher hashes it has.
+     *
+     * @todo: rename to `getLevel()`
      */
     getMaxLevel(): number;
     /**
@@ -429,38 +444,57 @@ declare class Cell_3 {
      */
     getMaxDepth(): number;
     /**
-     * @todo: add description
-     */
-    getRefsDescriptor(): Uint8Array;
-    /**
-     * @todo: add description
-     */
-    getBitsDescriptor(): Uint8Array;
-    /**
-     * @todo: add description
-     */
-    getDataWithDescriptors(): Uint8Array;
-    /**
-     * @todo: add description
+     * Returns standard cell representation.
+     * Used for unique hash calculation.
+     *
+     * @todo: should it be public?
      */
     getRepr(): Promise<Uint8Array>;
     /**
-     * @todo: add description
+     * Returns cell's descriptors data.
+     *
+     * @todo: should it be public?
      */
-    hash(): Promise<Uint8Array>;
+    getDataWithDescriptors(): Uint8Array;
     /**
-     * Recursively prints cell's content like in Fift.
+     * Returns cell's references descriptor.
+     *
+     * @todo: should it be public?
+     */
+    getRefsDescriptor(): Uint8Array;
+    /**
+     * Returns cell's bits descriptor.
+     */
+    getBitsDescriptor(): Uint8Array;
+    /**
+     * Returns unique hash of the cell representation.
+     */
+    hash(): Promise<CellHash>;
+    /**
+     * Returns unique string hash of the cell representation.
+     */
+    hashBase64(): Promise<CellHashBase64>;
+    /**
+     * Recursively prints cell's content (like Fift).
+     *
+     * @property indent - A string containing spaces used
+     *                    for indentation
      */
     print(indent?: string): string;
     /**
-     * Creates BOC byte-array.
+     * Converts cell with all it's content to Bag of Cells (BOC).
      */
     toBoc(hasIdx?: boolean, hashCrc32?: boolean, hasCacheBits?: boolean, flags?: number): Promise<Uint8Array>;
     private getMaxDepthAsArray;
-    private treeWalk;
+    private index;
     private serializeForBoc;
     private bocSerializationSize;
+    private checkForCyclesOrThrow;
 }
+
+declare type CellHash = Uint8Array;
+
+declare type CellHashBase64 = string;
 
 declare interface CellSerialized {
     data: {
@@ -1348,6 +1382,8 @@ export declare interface SeqnoMethodResult {
     call: () => Promise<number | undefined>;
 }
 
+declare type SerializedBoc = (string | Uint8Array);
+
 export declare interface SetPluginParams {
     secretKey: Uint8Array;
     seqno: number;
@@ -1481,7 +1517,7 @@ declare class TonWeb {
         stringToBytes(str: string, size?: number): Uint8Array;
         crc32c(bytes: Uint8Array): Uint8Array;
         crc16(data: ArrayLike<number>): Uint8Array;
-        concatBytes(a: Uint8Array, b: Uint8Array): Uint8Array;
+        concatBytes(bytes1: Uint8Array, bytes2: Uint8Array): Uint8Array;
         compareBytes(a: Uint8Array, b: Uint8Array): boolean;
         readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
     };
@@ -1545,7 +1581,7 @@ declare class TonWeb {
         stringToBytes(str: string, size?: number): Uint8Array;
         crc32c(bytes: Uint8Array): Uint8Array;
         crc16(data: ArrayLike<number>): Uint8Array;
-        concatBytes(a: Uint8Array, b: Uint8Array): Uint8Array;
+        concatBytes(bytes1: Uint8Array, bytes2: Uint8Array): Uint8Array;
         compareBytes(a: Uint8Array, b: Uint8Array): boolean;
         readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
     };
