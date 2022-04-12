@@ -346,16 +346,14 @@ export class Cell {
         // [serialized_boc#b5ee9c72]
         boc.writeBytes(bocConstructorTag);
 
-        boc.writeBitArray([
-            // [has_idx]
-            hasIdx,
+        // [has_idx]
+        boc.writeBit(hasIdx);
 
-            // [has_crc32c]
-            hashCrc32,
+        // [has_crc32c]
+        boc.writeBit(hashCrc32);
 
-            // [has_cache_bits]
-            hasCacheBits,
-        ]);
+        // [has_cache_bits]
+        boc.writeBit(hasCacheBits);
 
         // [flags]
         boc.writeUint(flags, 2);

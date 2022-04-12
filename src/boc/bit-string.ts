@@ -6,6 +6,15 @@ import { bytesToHex } from '../utils/common';
 import { Address } from '../utils/address';
 
 
+export type BitInput = (
+    | boolean
+    | 0 | 1
+    | number
+);
+
+export type Bit = boolean;
+
+
 export class BitString {
 
     // @todo: rename and make this private
@@ -57,8 +66,11 @@ export class BitString {
      * Returns the bit value at the specified index
      * in the bit-string.
      */
-    public get(index: number): boolean {
-        return (this.array[(index / 8) | 0] & (1 << (7 - (index % 8)))) > 0;
+    public get(index: number): Bit {
+        this.checkIndexOrThrow(index);
+        const byteValue = this.array[(index / 8) | 0];
+        const offset = (7 - (index % 8));
+        return (byteValue & (1 << offset)) > 0;
     }
 
     /**
@@ -98,7 +110,7 @@ export class BitString {
      *
      * @todo: implement iteration protocol
      */
-    public forEach(callback: (bitValue: boolean) => void) {
+    public forEach(callback: (bit: Bit) => void): void {
         const max = this.cursor;
         for (let i = 0; i < max; i++) {
             callback(this.get(i));
@@ -108,10 +120,11 @@ export class BitString {
     /**
      * Writes the specified bit value to the end of the bit-string.
      *
-     * @param value - Bit value (a boolean or a number: `0` or `1`)
+     * @param bit - Bit value (a boolean or a number: `0` or `1`)
      */
-    public writeBit(value: (boolean | number)) {
-        if (value && value > 0) {
+    public writeBit(bit: BitInput): void {
+        this.checkBitOrThrow(bit);
+        if (bit) {
             this.on(this.cursor);
         } else {
             this.off(this.cursor);
@@ -125,7 +138,12 @@ export class BitString {
      *
      * @param values - An array of individual bits
      */
-    public writeBitArray(values: Array<boolean | number>) {
+    public writeBitArray(values: BitInput[]): void {
+        if (!Array.isArray(values)) {
+            throw new Error(
+                `Specified value must be an array of bits`
+            );
+        }
         for (let i = 0; i < values.length; i++) {
             this.writeBit(values[i]);
         }
@@ -133,15 +151,16 @@ export class BitString {
 
     /**
      * Writes the specified unsigned integer of the specified
-     * length in bits to the bit-string, starting at the
-     * current index and advances the current index cursor
-     * by the number of bits written.
+     * length in bits to the bit-string.
      */
     public writeUint(
         value: (number | BN),
         bitLength: number
-    ) {
+
+    ): void {
+
         value = new BN(value);
+
         if (
             bitLength === 0 ||
             (value.toString(2).length > bitLength)
@@ -166,7 +185,12 @@ export class BitString {
      * current index and advances the current index cursor
      * by the number of bits written.
      */
-    public writeInt(value: (number | BN), bitLength: number) {
+    public writeInt(
+        value: (number | BN),
+        bitLength: number
+
+    ): void {
+
         value = new BN(value);
         if (bitLength === 1) {
             if (value.eqn(-1)) {
@@ -199,7 +223,7 @@ export class BitString {
      * bit-string, starting at the current index and advances
      * the current index cursor by the number of bits written.
      */
-    public writeUint8(value: number) {
+    public writeUint8(value: number): void {
         this.writeUint(value, 8);
     }
 
@@ -208,7 +232,7 @@ export class BitString {
      * to the bit-string, starting at the current index and advances
      * the current index cursor by the number of bits written.
      */
-    public writeBytes(values: Uint8Array) {
+    public writeBytes(values: Uint8Array): void {
         for (const value of values) {
             this.writeUint8(value);
         }
@@ -219,7 +243,7 @@ export class BitString {
      * them to the bit-string, starting at the current index and
      * advances the current index cursor by the number of bits written.
      */
-    public writeString(text: string) {
+    public writeString(text: string): void {
         this.writeBytes(
             stringToBytes(text)
         );
@@ -246,7 +270,7 @@ export class BitString {
      * bit-string, starting at the current index and advances
      * the current index cursor by the number of bits written.
      */
-    public writeCoins(nanotons: (number | BN)) {
+    public writeCoins(nanotons: (number | BN)): void {
         return this.writeGrams(nanotons);
     }
 
@@ -255,7 +279,7 @@ export class BitString {
      * starting at the current index and advances the
      * current index cursor by the number of bits written.
      */
-    public writeAddress(address?: Address) {
+    public writeAddress(address?: Address): void {
 
         // addr_none$00 = MsgAddressExt;
         // addr_std$10 anycast:(Maybe Anycast)
@@ -277,14 +301,14 @@ export class BitString {
      * starting at the current index and advances the
      * current index cursor by the number of bits written.
      */
-    public writeBitString(bitString: BitString) {
+    public writeBitString(bitString: BitString): void {
         bitString.forEach(bit => this.writeBit(bit));
     }
 
     /**
      * Creates a cloned instance of the bit-string.
      */
-    public clone() {
+    public clone(): BitString {
         const bitString = new BitString(0);
         bitString.array = this.array.slice(0);
         bitString.length = this.length
@@ -323,6 +347,10 @@ export class BitString {
             // Setting the first completion bit,
             // trailing zeroes are already present
             setBit(bytes, usedBits);
+
+            // @todo: check the case when array of bytes
+            //        is set externally
+
         }
 
         return bytes;
@@ -357,28 +385,51 @@ export class BitString {
      * Sets this data to match provided topUppedArray.
      *
      * @todo: provide a more meaningful method description
-     * @todo: replace with static method `createFromBytes()`
+     * @todo: replace with `static createFromBytes()`
      */
-    public setTopUppedArray(bytes: Uint8Array, fulfilledBytes = true) {
-        this.length = bytes.length * 8;
+    public setTopUppedArray(
+        bytes: Uint8Array,
+        noCompletion = true
+
+    ): void {
+
+        // Chapter 1.0.4 of the "Telegram Open Network Virtual Machine".
+        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
+
+        this.length = (bytes.length * 8);
         this.array = bytes;
         this.cursor = this.length;
-        if (fulfilledBytes || !this.length) {
+
+        if (noCompletion || !this.length) {
             return;
+
         } else {
+            // Parsing bytes with completion
             let foundEndBit = false;
             for (let c = 0; c < 7; c++) {
                 this.cursor -= 1;
-                if (this.get(this.cursor)) {
+                if (this.get(this.cursor) === true) {
                     foundEndBit = true;
-                    this.off(this.cursor);
                     break;
                 }
             }
             if (!foundEndBit) {
-                throw new Error('Incorrect TopUppedArray');
+                throw new Error(
+                    `Failed to find first bit of the ` +
+                    `completion in the specified bit-string bytes`
+                );
             }
         }
+
+        // @todo: implement support for `0x80` octet?
+        //
+        // In some cases, it is more convenient to assume
+        // the completion is enabled by default rather than
+        // store an additional completion tag bit separately.
+        // Under such conventions, 8n-bit strings are
+        // represented by n + 1 octets, with the last octet
+        // always equal to 0x80 = 128.
+
     }
 
 
@@ -386,9 +437,30 @@ export class BitString {
      * Checks if the specified index is allowed for
      * the bit string, throws error in case of overflow.
      */
-    private checkIndexOrThrow(index: number) {
+    private checkIndexOrThrow(index: number): void {
+        if (index < 0) {
+            throw Error(
+                'Incorrect BitString index, ' +
+                'must be greater than zero'
+            );
+        }
         if (index >= this.length) {
             throw Error('BitString overflow');
+        }
+    }
+
+    /**
+     * Checks if the specified value is a correct bit value,
+     * throws error in case it's not.
+     */
+    private checkBitOrThrow(value: BitInput): void {
+        const validValues = [false, 0, true, 1];
+        if (!validValues.includes(value)) {
+            throw new Error(
+                'Incorrect bit value specified, ' +
+                'it must be either boolean or a number ' +
+                '0 or 1'
+            );
         }
     }
 
