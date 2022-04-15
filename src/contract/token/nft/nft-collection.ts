@@ -94,14 +94,6 @@ export class NftCollection extends Contract<
     NftCollectionMethods
 > {
 
-    private readonly royaltyBase = 1000;
-
-    private readonly royaltyFactor = Math.floor(
-        this.options.royalty *
-        this.royaltyBase
-    );
-
-
     constructor(provider: HttpProvider, options: NftCollectionOptions) {
         options.wc = 0;
 
