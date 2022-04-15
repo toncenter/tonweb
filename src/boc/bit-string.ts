@@ -1,6 +1,7 @@
 
 import BN from 'bn.js';
 
+import { AnyBN } from '../common/numbers';
 import { stringToBytes } from '../utils/text-encoding';
 import { bytesToHex } from '../utils/common';
 import { Address } from '../utils/address';
@@ -154,10 +155,12 @@ export class BitString {
      * length in bits to the bit-string.
      */
     public writeUint(
-        value: (number | BN),
+        value: AnyBN,
         bitLength: number
 
     ): void {
+
+        this.checkBitLengthOrThrow(bitLength);
 
         value = new BN(value);
 
@@ -165,12 +168,9 @@ export class BitString {
             bitLength === 0 ||
             (value.toString(2).length > bitLength)
         ) {
-            if (value.isZero()) {
-                return;
-            }
             throw Error(
-                `Specified bit-length: ${bitLength} is ` +
-                `too small for the specified number: ${value}`
+                `Specified bit-length (${bitLength}) is ` +
+                `too small for the specified number (${value})`
             );
         }
         const numberString = value.toString(2, bitLength);
@@ -180,51 +180,79 @@ export class BitString {
     }
 
     /**
+     * Writes the specified unsigned 8-bit integer to the
+     * bit-string.
+     */
+    public writeUint8(value: AnyBN): void {
+        this.writeUint(value, 8);
+    }
+
+    /**
      * Writes the specified signed integer of the specified
-     * length in bits to the bit-string, starting at the
-     * current index and advances the current index cursor
-     * by the number of bits written.
+     * length in bits to the bit-string.
      */
     public writeInt(
-        value: (number | BN),
+        value: AnyBN,
         bitLength: number
 
     ): void {
 
+        this.checkBitLengthOrThrow(bitLength);
+
+        // Using two's complement method to represent signed integers
+        // {$link https://en.wikipedia.org/wiki/Two%27s_complement}
+
         value = new BN(value);
+
         if (bitLength === 1) {
             if (value.eqn(-1)) {
                 this.writeBit(true);
                 return;
-            }
-            if (value.isZero()) {
+
+            } else if (value.isZero()) {
                 this.writeBit(false);
                 return;
-            }
-            throw Error(
-                'Specified bit-length is too small ' +
-                'for the specified number'
-            );
-        } else {
-            if (value.isNeg()) {
-                this.writeBit(true);
-                const b = new BN(2);
-                const nb = b.pow(new BN(bitLength - 1));
-                this.writeUint(nb.add(value), bitLength - 1);
+
             } else {
-                this.writeBit(false);
-                this.writeUint(value, bitLength - 1);
+                throw new Error(
+                    'Specified bit-length is too small ' +
+                    'for the specified negative number'
+                );
             }
         }
-    }
 
-    /**
-     * Writes the specified unsigned 8-bit integer to the
-     * bit-string, starting at the current index and advances
-     * the current index cursor by the number of bits written.
-     */
-    public writeUint8(value: number): void {
-        this.writeUint(value, 8);
+        if (value.isNeg()) {
+
+            // Negative sign bit
+            this.writeBit(true);
+
+            // Most significant bit value
+            const msb = new BN(2).pow(
+                new BN(bitLength - 1)
+            );
+
+            // the value is already negative,
+            // so we can just add it to find complement
+            const complement = msb.add(value);
+
+            if (complement.ltn(0)) {
+                throw new Error(
+                    'Specified bit-length is too small ' +
+                    'for the specified negative number'
+                );
+            }
+
+            this.writeUint(complement, bitLength - 1);
+
+        } else {
+
+            // Positive sign bit
+            this.writeBit(false);
+
+            this.writeUint(value, bitLength - 1);
+
+        }
+
     }
 
     /**
@@ -462,6 +490,24 @@ export class BitString {
                 '0 or 1'
             );
         }
+    }
+
+    /**
+     * Checks if the specified bit length is valid in TVM,
+     * throws error in case it's not.
+     */
+    private checkBitLengthOrThrow(bitLength: number): void {
+
+        // Chapter 1.5 of the "Telegram Open Network Virtual Machine".
+        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
+
+        if (bitLength <= 0 || bitLength > 256) {
+            throw new Error(
+                `Bit length must be greater than zero ` +
+                `and less or equal to 256`
+            );
+        }
+
     }
 
 }

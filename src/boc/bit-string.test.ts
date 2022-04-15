@@ -1,8 +1,11 @@
 
+import BN from 'bn.js';
+
+import { AnyBN } from '../common/numbers';
 import { BitString } from './bit-string';
 
 
-type BitStringMethods<U extends keyof BitString> = U;
+type BitStringMethods<Method extends keyof BitString> = Method;
 
 type IndexMethods = BitStringMethods<
     | 'get'
@@ -10,6 +13,13 @@ type IndexMethods = BitStringMethods<
     | 'off'
     | 'toggle'
 >;
+
+type InputType = (
+    | 'number'
+    | 'string'
+    | 'BN'
+);
+
 
 
 const B = (...bytes: number[]) => new Uint8Array(bytes);
@@ -477,6 +487,354 @@ describe('BitString', () => {
                 expect(() => bitString.writeBitArray(value as any))
                     .toThrow('must be an array of bits')
                 ;
+            }
+
+        });
+
+    });
+
+    describe('writeUint()', () => {
+
+        const inputTypes: InputType[] = [
+            'number',
+            'string',
+            'BN',
+        ];
+
+        for (const inputType of inputTypes) {
+
+            const inputValue = (value: number): AnyBN => {
+                switch (inputType) {
+                    case 'number':
+                        return value;
+                    case 'string':
+                        return value.toString();
+                    case 'BN':
+                        return new BN(value);
+                }
+            }
+
+            describe(`${inputType} input`, () => {
+
+                //=============================//
+                // writes the unsigned integer //
+                //=============================//
+
+                {
+                    type Case = [number, number, string];
+
+                    const cases: Case[] = [
+                        [0, 1, '0'],
+                        [1, 1, '1'],
+                        [10, 4, '1010'],
+                        [255, 8, '1111 1111'],
+                        [2290649224, 32, '1000 1000 1000 1000 1000 1000 1000 1000'],
+                    ];
+
+                    for (const values of cases) {
+
+                        const [value, bitLength, expectedBits] = values;
+
+                        it(`writes the unsigned integer: ${value}`, async () => {
+
+                            const bitString = new BitString(bitLength);
+                            bitString.writeUint(inputValue(value), bitLength);
+
+                            expectBits(
+                                bitString,
+                                expectedBits.replace(/\s+/g, '')
+                            );
+
+                        });
+
+                    }
+
+                }
+
+                it('throws error on BitString overflow', async () => {
+
+                    const bitString = new BitString(4);
+
+                    expect(() => bitString.writeUint(inputValue(16), 5))
+                        .toThrow('BitString overflow')
+                    ;
+
+                });
+
+
+                //===========================================//
+                // throws error when bit-length is too small //
+                //===========================================//
+
+                {
+                    type Case = [number, number];
+
+                    const cases: Case[] = [
+                        [2, 1],
+                        [16, 4],
+                        [4294967296, 32],
+                    ];
+
+                    for (const values of cases) {
+
+                        const [value, bitLength] = values;
+
+                        it(`throws error when bit-length is too small for value: ${value}`, async () => {
+
+                            const bitString = new BitString(64);
+
+                            expect(() => bitString.writeUint(inputValue(value), bitLength))
+                                .toThrow(/Specified bit-length.*is too small/)
+                            ;
+
+                        });
+
+                    }
+
+                }
+
+            });
+
+        }
+
+        it('throws error on incorrect bit-length', () => {
+
+            const cases = [-10, -2, -1, 0, 257, 258, 300];
+
+            for (const bitLength of cases) {
+
+                const bitString = new BitString(1023);
+
+                expect(() => bitString.writeUint(100500, bitLength))
+                    .toThrow(/Bit length must be/)
+                ;
+
+            }
+
+        });
+
+    });
+
+    describe('writeUint8()', () => {
+
+        const inputTypes: InputType[] = [
+            'number',
+            'string',
+            'BN',
+        ];
+
+        for (const inputType of inputTypes) {
+
+            const inputValue = (value: number): AnyBN => {
+                switch (inputType) {
+                    case 'number':
+                        return value;
+                    case 'string':
+                        return value.toString();
+                    case 'BN':
+                        return new BN(value);
+                }
+            }
+
+            describe(`${inputType} input`, () => {
+
+                //===================================//
+                // writes the 8-bit unsigned integer //
+                //===================================//
+
+                {
+                    type Case = [number, string];
+
+                    const cases: Case[] = [
+                        [  0, '0000 0000'],
+                        [  1, '0000 0001'],
+                        [ 10, '0000 1010'],
+                        [165, '1010 0101'],
+                        [255, '1111 1111'],
+                    ];
+
+                    for (const values of cases) {
+
+                        const [value, expectedBits] = values;
+
+                        it(`writes the 8-bit unsigned integer: ${value}`, async () => {
+
+                            const bitString = new BitString(8);
+                            bitString.writeUint8(inputValue(value));
+
+                            expectBits(
+                                bitString,
+                                expectedBits.replace(/\s+/g, '')
+                            );
+
+                        });
+
+                    }
+
+                }
+
+                it('throws error on BitString overflow', async () => {
+
+                    const bitString = new BitString(4);
+
+                    expect(() => bitString.writeUint8(inputValue(16)))
+                        .toThrow('BitString overflow')
+                    ;
+
+                });
+
+            });
+
+        }
+
+        it('throws error on incorrect bit-length', () => {
+
+            const cases = [-10, -2, -1, 0, 257, 258, 300];
+
+            for (const bitLength of cases) {
+
+                const bitString = new BitString(1023);
+
+                expect(() => bitString.writeUint(100500, bitLength))
+                    .toThrow(/Bit length must be/)
+                ;
+
+            }
+
+        });
+
+    });
+
+    describe('writeInt()', () => {
+
+        const inputTypes: InputType[] = [
+            'number',
+            'string',
+            'BN',
+        ];
+
+        for (const inputType of inputTypes) {
+
+            const inputValue = (value: number): AnyBN => {
+                switch (inputType) {
+                    case 'number':
+                        return value;
+                    case 'string':
+                        return value.toString();
+                    case 'BN':
+                        return new BN(value);
+                }
+            }
+
+            describe(`${inputType} input`, () => {
+
+                //====================//
+                // writes the integer //
+                //====================//
+
+                {
+                    type Case = [number, number, string];
+
+                    const cases: Case[] = [
+                        [ 127, 8, '0111 1111'],
+                        [  16, 8, '0001 0000'],
+                        [  10, 8, '0000 1010'],
+                        [   2, 8, '0000 0010'],
+                        [   1, 8, '0000 0001'],
+                        [   0, 8, '0000 0000'],
+                        [   1, 2, '01'],
+                        [   0, 1, '0'],
+                        [  -1, 1, '1'],
+                        [  -1, 8, '1111 1111'],
+                        [  -2, 8, '1111 1110'],
+                        [ -10, 8, '1111 0110'],
+                        [ -16, 8, '1111 0000'],
+                        [-127, 8, '1000 0001'],
+                        [-128, 8, '1000 0000'],
+                    ];
+
+                    for (const values of cases) {
+
+                        const [value, bitLength, expectedBits] = values;
+
+                        it(`writes the integer: ${value}/${bitLength}`, async () => {
+
+                            const bitString = new BitString(bitLength);
+                            bitString.writeInt(inputValue(value), bitLength);
+
+                            expectBits(
+                                bitString,
+                                expectedBits.replace(/\s+/g, '')
+                            );
+
+                        });
+
+                    }
+
+                }
+
+                it('throws error on BitString overflow', async () => {
+
+                    const bitString = new BitString(1);
+
+                    expect(() => bitString.writeUint(inputValue(16), 8))
+                        .toThrow('BitString overflow')
+                    ;
+
+                });
+
+
+                //===========================================//
+                // throws error when bit-length is too small //
+                //===========================================//
+
+                {
+                    type Case = [number, number];
+
+                    const cases: Case[] = [
+                        [ 129, 8],
+                        [ 128, 8],
+                        [  -2, 1],
+                        [   1, 1],
+                        [   2, 2],
+                        [-129, 8],
+                        [-130, 8],
+                    ];
+
+                    for (const values of cases) {
+
+                        const [value, bitLength] = values;
+
+                        it(`throws error when bit-length is too small for value: ${value}`, async () => {
+
+                            const bitString = new BitString(64);
+
+                            expect(() => bitString.writeInt(inputValue(value), bitLength))
+                                .toThrow(/Specified bit-length.*is too small/)
+                            ;
+
+                        });
+
+                    }
+
+                }
+
+            });
+
+        }
+
+        it('throws error on incorrect bit-length', () => {
+
+            const cases = [-10, -2, -1, 0, 257, 258, 300];
+
+            for (const bitLength of cases) {
+
+                const bitString = new BitString(1023);
+
+                expect(() => bitString.writeInt(100500, bitLength))
+                    .toThrow(/Bit length must be/)
+                ;
+
             }
 
         });
