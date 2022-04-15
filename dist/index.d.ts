@@ -1111,8 +1111,6 @@ declare interface MintBodyParams_2 {
 export declare type NftCollection = NftCollection_2;
 
 declare class NftCollection_2 extends Contract_2<NftCollectionOptions, NftCollectionMethods> {
-    private readonly royaltyBase;
-    private readonly royaltyFactor;
     constructor(provider: HttpProvider_2, options: NftCollectionOptions);
     createMintBody(params: MintBodyParams): Cell_3;
     createGetRoyaltyParamsBody(params: CreateGetRoyaltyParamsBodyParams): Cell_3;
@@ -1129,7 +1127,7 @@ declare class NftCollection_2 extends Contract_2<NftCollectionOptions, NftCollec
     getNftItemAddressByIndex(index: number): Promise<Address_2>;
     getRoyaltyParams(): Promise<RoyaltyParams>;
     /**
-     * @returns Cell that contains NFT collection data.
+     * Returns cell that contains NFT collection data.
      */
     protected createDataCell(): Cell_3;
     private createContentCell;
