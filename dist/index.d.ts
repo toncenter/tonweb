@@ -1110,9 +1110,6 @@ declare interface MintBodyParams_2 {
 
 export declare type NftCollection = NftCollection_2;
 
-/**
- * NFT Release Candidate - may still change slightly.
- */
 declare class NftCollection_2 extends Contract_2<NftCollectionOptions, NftCollectionMethods> {
     private readonly royaltyBase;
     private readonly royaltyFactor;
@@ -1120,14 +1117,23 @@ declare class NftCollection_2 extends Contract_2<NftCollectionOptions, NftCollec
     createMintBody(params: MintBodyParams): Cell_3;
     createGetRoyaltyParamsBody(params: CreateGetRoyaltyParamsBodyParams): Cell_3;
     createChangeOwnerBody(params: CreateChangeOwnerBodyParams): Cell_3;
+    createEditContentBody(params: {
+        collectionContentUri: string;
+        nftItemContentBaseUri: string;
+        royalty: number;
+        royaltyAddress: Address_2;
+        queryId?: number;
+    }): Cell_3;
     getCollectionData(): Promise<CollectionData>;
     getNftItemContent(nftItem: NftItem_2): Promise<NftItemContent>;
     getNftItemAddressByIndex(index: number): Promise<Address_2>;
     getRoyaltyParams(): Promise<RoyaltyParams>;
     /**
-     * Returns cell that contains NFT collection data.
+     * @returns Cell that contains NFT collection data.
      */
     protected createDataCell(): Cell_3;
+    private createContentCell;
+    private createRoyaltyCell;
 }
 
 export declare interface NftCollectionMethods extends ContractMethods {
@@ -1143,14 +1149,13 @@ export declare interface NftCollectionOptions extends ContractOptions {
     nftItemContentBaseUri?: string;
     nftItemCodeHex?: string;
     royalty?: number;
+    royaltyFactor: number;
+    royaltyBase: number;
     royaltyAddress?: Address_2;
 }
 
 export declare type NftItem = NftItem_2;
 
-/**
- * NFT Release Candidate - may still change slightly.
- */
 declare class NftItem_2 extends Contract_2<NftItemOptions, NftItemMethods> {
     static codeHex: string;
     constructor(provider: HttpProvider_2, options: NftItemOptions);
