@@ -385,7 +385,7 @@ export declare type BN = $BN;
 
 declare interface BurnBodyParams {
     queryId?: number;
-    tokenAmount: BN_2;
+    jettonAmount: BN_2;
     responseAddress: Address_2;
 }
 
@@ -1136,7 +1136,7 @@ export declare interface MintBodyParams {
 }
 
 declare interface MintBodyParams_2 {
-    tokenAmount: BN_2;
+    jettonAmount: BN_2;
     destination: Address_2;
     amount: BN_2;
     queryId?: number;
@@ -1144,16 +1144,18 @@ declare interface MintBodyParams_2 {
 
 export declare type NftCollection = NftCollection_2;
 
-/**
- * NFT Release Candidate - may still change slightly.
- */
 declare class NftCollection_2 extends Contract_2<NftCollectionOptions, NftCollectionMethods> {
-    private readonly royaltyBase;
-    private readonly royaltyFactor;
     constructor(provider: HttpProvider_2, options: NftCollectionOptions);
     createMintBody(params: MintBodyParams): Cell_3;
     createGetRoyaltyParamsBody(params: CreateGetRoyaltyParamsBodyParams): Cell_3;
     createChangeOwnerBody(params: CreateChangeOwnerBodyParams): Cell_3;
+    createEditContentBody(params: {
+        collectionContentUri: string;
+        nftItemContentBaseUri: string;
+        royalty: number;
+        royaltyAddress: Address_2;
+        queryId?: number;
+    }): Cell_3;
     getCollectionData(): Promise<CollectionData>;
     getNftItemContent(nftItem: NftItem_2): Promise<NftItemContent>;
     getNftItemAddressByIndex(index: number): Promise<Address_2>;
@@ -1162,6 +1164,8 @@ declare class NftCollection_2 extends Contract_2<NftCollectionOptions, NftCollec
      * Returns cell that contains NFT collection data.
      */
     protected createDataCell(): Cell_3;
+    private createContentCell;
+    private createRoyaltyCell;
 }
 
 export declare interface NftCollectionMethods extends ContractMethods {
@@ -1177,14 +1181,13 @@ export declare interface NftCollectionOptions extends ContractOptions {
     nftItemContentBaseUri?: string;
     nftItemCodeHex?: string;
     royalty?: number;
+    royaltyFactor: number;
+    royaltyBase: number;
     royaltyAddress?: Address_2;
 }
 
 export declare type NftItem = NftItem_2;
 
-/**
- * NFT Release Candidate - may still change slightly.
- */
 declare class NftItem_2 extends Contract_2<NftItemOptions, NftItemMethods> {
     static codeHex: string;
     constructor(provider: HttpProvider_2, options: NftItemOptions);
@@ -1637,7 +1640,7 @@ export default TonWeb;
 
 declare interface TransferBodyParams {
     queryId?: number;
-    tokenAmount: BN_2;
+    jettonAmount: BN_2;
     toAddress: Address_2;
     responseAddress: Address_2;
     forwardAmount: BN_2;
@@ -1705,7 +1708,7 @@ declare interface WalletData {
     balance: BN_2;
     ownerAddress: Address_2;
     jettonMinterAddress: Address_2;
-    tokenWalletCode: Cell_3;
+    jettonWalletCode: Cell_3;
 }
 
 export declare type Wallets = Wallets_2;

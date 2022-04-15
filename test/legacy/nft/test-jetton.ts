@@ -67,7 +67,7 @@ const { JettonMinter, JettonWallet } = TonWeb.token.jetton;
                 amount: TonWeb.utils.toNano('0.05'),
                 seqno: seqno,
                 payload: await minter.createMintBody({
-                    tokenAmount: TonWeb.utils.toNano(100500),
+                    jettonAmount: TonWeb.utils.toNano(100500),
                     destination: walletAddress,
                     amount: TonWeb.utils.toNano('0.04'),
                 }),
@@ -76,7 +76,7 @@ const { JettonMinter, JettonWallet } = TonWeb.token.jetton;
         );
     }
 
-    const JETTON_WALLET_ADDRESS = 'EQBIIxndZHvxYR9vYxxf6T_V207wstz_a0MsD3Edf1ssstn0';
+    const JETTON_WALLET_ADDRESS = 'EQC-UMngsf1v23looec9xy0ntBDyS_EVZ96PQuaiuCUi32rN';
     // const JETTON_WALLET_ADDRESS = 'EQAFeJKruIRXk25m_jfCGSYu2v7wJHvJx12N0r3D9dnp_1Gq';
     console.log('jettonWalletAddress=', JETTON_WALLET_ADDRESS);
 
@@ -105,7 +105,7 @@ const { JettonMinter, JettonWallet } = TonWeb.token.jetton;
                 amount: TonWeb.utils.toNano(0.4),
                 seqno: seqno,
                 payload: await jettonWallet.createTransferBody({
-                    tokenAmount: TonWeb.utils.toNano('500'),
+                    jettonAmount: TonWeb.utils.toNano('500'),
                     toAddress: new TonWeb.utils.Address(WALLET2_ADDRESS),
                     forwardAmount: TonWeb.utils.toNano(0.1),
                     forwardPayload: new TextEncoder().encode('gift'),
@@ -127,7 +127,7 @@ const { JettonMinter, JettonWallet } = TonWeb.token.jetton;
                 amount: TonWeb.utils.toNano(0.4),
                 seqno: seqno,
                 payload: await jettonWallet.createBurnBody({
-                    tokenAmount: TonWeb.utils.toNano('400'),
+                    jettonAmount: TonWeb.utils.toNano('400'),
                     responseAddress: walletAddress
                 }),
                 sendMode: 3,
