@@ -383,7 +383,7 @@ export declare type BN = $BN;
 
 declare interface BurnBodyParams {
     queryId?: number;
-    tokenAmount: BN_2;
+    jettonAmount: BN_2;
     responseAddress: Address_2;
 }
 
@@ -1102,7 +1102,7 @@ export declare interface MintBodyParams {
 }
 
 declare interface MintBodyParams_2 {
-    tokenAmount: BN_2;
+    jettonAmount: BN_2;
     destination: Address_2;
     amount: BN_2;
     queryId?: number;
@@ -1601,7 +1601,7 @@ export default TonWeb;
 
 declare interface TransferBodyParams {
     queryId?: number;
-    tokenAmount: BN_2;
+    jettonAmount: BN_2;
     toAddress: Address_2;
     responseAddress: Address_2;
     forwardAmount: BN_2;
@@ -1669,7 +1669,7 @@ declare interface WalletData {
     balance: BN_2;
     ownerAddress: Address_2;
     jettonMinterAddress: Address_2;
-    tokenWalletCode: Cell_3;
+    jettonWalletCode: Cell_3;
 }
 
 export declare type Wallets = Wallets_2;
