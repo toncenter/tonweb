@@ -841,6 +841,352 @@ describe('BitString', () => {
 
     });
 
+    describe('writeBytes()', () => {
+
+        //==============//
+        // writes bytes //
+        //==============//
+
+        {
+            type Case = [Uint8Array, string];
+
+            const cases: Case[] = [
+                [ B(0),           '0000 0000'],
+                [ B(1),           '0000 0001'],
+                [ B(1, 136),      '0000 0001 1000 1000'],
+                [ B(1, 136, 240), '0000 0001 1000 1000 1111 0000'],
+            ];
+
+            for (const [index, values] of Object.entries(cases)) {
+
+                const [bytes, expectedBits] = values;
+
+                it(`writes bytes (${index + 1})`, async () => {
+
+                    const bitString = new BitString(24);
+                    bitString.writeBytes(bytes);
+
+                    expectBits(
+                        bitString,
+                        expectedBits.replace(/\s+/g, '')
+                    );
+
+                });
+
+            }
+
+        }
+
+        it('appends to the existing bits', () => {
+
+            const bitString = new BitString(28);
+            bitString.writeBitArray([0, 0, 0, 0, 1, 1, 1, 1]);
+            bitString.writeBytes(B(165));
+            bitString.writeBytes(B(240));
+            bitString.writeBitArray([1, 0, 0, 1]);
+
+            expectBits(
+                bitString,
+                ('0000 1111 1010 0101 1111 0000 1001')
+                    .replace(/\s+/g, '')
+            );
+
+        });
+
+        it('handles empty arrays', () => {
+
+            const bitString = new BitString(8);
+            bitString.writeBytes(B());
+
+            expect(bitString.getUsedBits()).toEqual(0);
+            expectBits(bitString, '');
+
+        });
+
+        it('throws on incorrect value', async () => {
+
+            const values = [
+                {}, new Date(), Symbol(), 'array',
+                () => {}, 100, Promise.resolve(),
+                [], new Map(), new Set()
+            ];
+
+            const bitString = new BitString(1);
+
+            for (const value of values) {
+                expect(() => bitString.writeBytes(value as any))
+                    .toThrow('Specified value must be a Uint8Array')
+                ;
+            }
+
+        });
+
+        it('throws error on BitString overflow', async () => {
+
+            const bitString = new BitString(15);
+
+            expect(() => bitString.writeBytes(B(1, 2)))
+                .toThrow('BitString overflow')
+            ;
+
+        });
+
+    });
+
+    describe('writeString()', () => {
+
+        //===============//
+        // writes string //
+        //===============//
+
+        {
+            type Case = [string, string];
+
+            const cases: Case[] = [
+                [ 'A',   '0100 0001'],
+                [ 'AB',  '0100 0001 0100 0010'],
+                [ 'ABZ', '0100 0001 0100 0010 0101 1010'],
+                [ 'Ω',   '1100 1110 1010 1001'],
+                [ '಄',  '1110 0000 1011 0010 1000 0100'],
+                [ '𓅱',  '1111 0000 1001 0011 1000 0101 1011 0001'],
+                [ 'ТОН', '1101 0000 1010 0010 1101 0000 1001 1110 1101 0000 1001 1101'],
+            ];
+
+            for (const values of cases) {
+
+                const [string, expectedBits] = values;
+
+                it(`writes string (${string})`, async () => {
+
+                    const bitString = new BitString(48);
+                    bitString.writeString(string);
+
+                    expectBits(
+                        bitString,
+                        expectedBits.replace(/\s+/g, '')
+                    );
+
+                });
+
+            }
+
+        }
+
+        it('should write multibyte string', () => {
+
+            const text = '1B: A, 2B: Ω, 3B: ಄, 4B: 𓅱';
+            const textLength = new TextEncoder()
+                .encode(text)
+                .length
+            ;
+
+            const bitString = new BitString(
+                8 * textLength
+            );
+
+            bitString.writeString(text);
+            expect(bitString.getFreeBits()).toEqual(0);
+
+            const decodedText = new TextDecoder()
+                .decode(bitString.array)
+            ;
+
+            expect(decodedText).toEqual(text);
+
+        });
+
+        it('throws on incorrect value', async () => {
+
+            const values = [
+                [], {}, new Date(), Symbol(),
+                () => {}, 100, Promise.resolve(),
+                new Map(), new Set(),
+            ];
+
+            const bitString = new BitString(1);
+
+            for (const value of values) {
+                expect(() => bitString.writeString(value as any))
+                    .toThrow('must be a string')
+                ;
+            }
+
+        });
+
+    });
+
+    describe('writeGrams()', () => {
+
+        const inputTypes: InputType[] = [
+            'number',
+            'string',
+            'BN',
+        ];
+
+        for (const inputType of inputTypes) {
+
+            const inputValue = (value: number): AnyBN => {
+                switch (inputType) {
+                    case 'number':
+                        return value;
+                    case 'string':
+                        return value.toString();
+                    case 'BN':
+                        return new BN(value);
+                }
+            }
+
+            describe(`${inputType} input`, () => {
+
+                //==================//
+                // writes the grams //
+                //==================//
+
+                {
+                    type Case = [number, string];
+
+                    const cases: Case[] = [
+                        [           0, '0000'],
+                        [           1, '0001 0000 0001'],
+                        [         100, '0001 0110 0100'],
+                        [ 15123456789, '0101 0000 0011 1000' +
+                                       '0101 0110 1101 1010' +
+                                       '0011 0001 0101'
+                        ],
+                    ];
+
+                    for (const values of cases) {
+
+                        const [value, expectedBits] = values;
+
+                        it(`writes the grams: ${value}`, async () => {
+
+                            const bitString = new BitString(44);
+                            bitString.writeGrams(inputValue(value));
+
+                            expectBits(
+                                bitString,
+                                expectedBits.replace(/\s+/g, '')
+                            );
+
+                        });
+
+                    }
+
+                }
+
+                it('throws error on BitString overflow', async () => {
+
+                    const bitString = new BitString(1);
+
+                    expect(() => bitString.writeGrams(inputValue(16)))
+                        .toThrow('BitString overflow')
+                    ;
+
+                });
+
+                it('throws error on negative values', async () => {
+
+                    const bitString = new BitString(16);
+
+                    expect(() => bitString.writeGrams(inputValue(-1)))
+                        .toThrow(/positive number.*must be specified/)
+                    ;
+
+                });
+
+            });
+
+        }
+
+    });
+
+    describe('writeCoins()', () => {
+
+        const inputTypes: InputType[] = [
+            'number',
+            'string',
+            'BN',
+        ];
+
+        for (const inputType of inputTypes) {
+
+            const inputValue = (value: number): AnyBN => {
+                switch (inputType) {
+                    case 'number':
+                        return value;
+                    case 'string':
+                        return value.toString();
+                    case 'BN':
+                        return new BN(value);
+                }
+            }
+
+            describe(`${inputType} input`, () => {
+
+                //==================//
+                // writes the coins //
+                //==================//
+
+                {
+                    type Case = [number, string];
+
+                    const cases: Case[] = [
+                        [           0, '0000'],
+                        [           1, '0001 0000 0001'],
+                        [         100, '0001 0110 0100'],
+                        [ 15123456789, '0101 0000 0011 1000' +
+                                       '0101 0110 1101 1010' +
+                                       '0011 0001 0101'
+                        ],
+                    ];
+
+                    for (const values of cases) {
+
+                        const [value, expectedBits] = values;
+
+                        it(`writes the coins: ${value}`, async () => {
+
+                            const bitString = new BitString(44);
+                            bitString.writeCoins(inputValue(value));
+
+                            expectBits(
+                                bitString,
+                                expectedBits.replace(/\s+/g, '')
+                            );
+
+                        });
+
+                    }
+
+                }
+
+                it('throws error on BitString overflow', async () => {
+
+                    const bitString = new BitString(1);
+
+                    expect(() => bitString.writeCoins(inputValue(16)))
+                        .toThrow('BitString overflow')
+                    ;
+
+                });
+
+                it('throws error on negative values', async () => {
+
+                    const bitString = new BitString(16);
+
+                    expect(() => bitString.writeCoins(inputValue(-1)))
+                        .toThrow(/positive number.*must be specified/)
+                    ;
+
+                });
+
+            });
+
+        }
+
+    });
+
     describe('getTopUppedArray()', () => {
 
         it('no leftovers, without completion', async () => {
@@ -962,33 +1308,6 @@ describe('BitString', () => {
             expectBits(bitString,
                 '0000 0100 0000 1000 0'
             );
-
-        });
-
-    });
-
-    describe('writeString()', () => {
-
-        it('should write multibyte string', () => {
-
-            const text = '1B: A, 2B: Ω, 3B: ಄, 4B: 𓅱';
-            const textLength = new TextEncoder()
-                .encode(text)
-                .length
-            ;
-
-            const bitString = new BitString(
-                8 * textLength
-            );
-
-            bitString.writeString(text);
-            expect(bitString.getFreeBits()).toEqual(0);
-
-            const decodedText = new TextDecoder()
-                .decode(bitString.array)
-            ;
-
-            expect(decodedText).toEqual(text);
 
         });
 

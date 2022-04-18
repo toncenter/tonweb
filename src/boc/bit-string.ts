@@ -165,8 +165,7 @@ export class BitString {
         value = new BN(value);
 
         if (
-            bitLength === 0 ||
-            (value.toString(2).length > bitLength)
+            bitLength === 0 || (value.bitLength() > bitLength)
         ) {
             throw Error(
                 `Specified bit-length (${bitLength}) is ` +
@@ -199,9 +198,6 @@ export class BitString {
 
         this.checkBitLengthOrThrow(bitLength);
 
-        // Using two's complement method to represent signed integers
-        // {$link https://en.wikipedia.org/wiki/Two%27s_complement}
-
         value = new BN(value);
 
         if (bitLength === 1) {
@@ -222,6 +218,9 @@ export class BitString {
         }
 
         if (value.isNeg()) {
+
+            // Using two's complement method to represent negative integers
+            // {$link https://en.wikipedia.org/wiki/Two%27s_complement}
 
             // Negative sign bit
             this.writeBit(true);
@@ -257,21 +256,27 @@ export class BitString {
 
     /**
      * Writes the specified array of the unsigned 8-bit integers
-     * to the bit-string, starting at the current index and advances
-     * the current index cursor by the number of bits written.
+     * to the bit-string.
      */
-    public writeBytes(values: Uint8Array): void {
-        for (const value of values) {
+    public writeBytes(bytes: Uint8Array): void {
+        if (!(bytes instanceof Uint8Array)) {
+            throw new Error(
+                'Specified value must be a Uint8Array'
+            );
+        }
+        for (const value of bytes) {
             this.writeUint8(value);
         }
     }
 
     /**
      * Represents the specified multibyte string as bytes and writes
-     * them to the bit-string, starting at the current index and
-     * advances the current index cursor by the number of bits written.
+     * them to the bit-string.
      */
     public writeString(text: string): void {
+        if (typeof text !== 'string') {
+            throw new Error(`Specified value must be a string`);
+        }
         this.writeBytes(
             stringToBytes(text)
         );
@@ -279,26 +284,36 @@ export class BitString {
 
     /**
      * Writes the specified amount in nanograms to the
-     * bit-string, starting at the current index and advances
-     * the current index cursor by the number of bits written.
+     * bit-string.
      */
-    public writeGrams(nanograms: (number | BN)): void {
+    public writeGrams(nanograms: AnyBN): void {
+
         nanograms = new BN(nanograms);
+
+        if (nanograms.ltn(0)) {
+            throw new Error(
+                `A positive number of nanograms must be specified`
+            )
+        }
+
         if (nanograms.isZero()) {
             this.writeUint(0, 4);
+
         } else {
-            const length = Math.ceil((nanograms.toString(16).length) / 2);
-            this.writeUint(length, 4);
-            this.writeUint(nanograms, length * 8);
+            const byteLength = nanograms.byteLength();
+            this.writeUint(byteLength, 4);
+            this.writeUint(nanograms, byteLength * 8);
         }
+
     }
 
     /**
      * Writes the specified TON amount in nanotons to the
-     * bit-string, starting at the current index and advances
-     * the current index cursor by the number of bits written.
+     * bit-string.
+     *
+     * @todo: why do we have a duplicate method?
      */
-    public writeCoins(nanotons: (number | BN)): void {
+    public writeCoins(nanotons: AnyBN): void {
         return this.writeGrams(nanotons);
     }
 

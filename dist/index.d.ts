@@ -44,6 +44,8 @@ export declare type AddressState = ('uninitialized' | 'frozen' | 'active');
 
 export declare type AddressType = (Address_2 | string);
 
+declare type AnyBN = (number | string | BN_2);
+
 export declare interface AppConfiguration {
     version: string;
 }
@@ -103,6 +105,10 @@ declare function base64ToBytes(base64: string): Uint8Array;
  */
 declare function base64toString(base64: string): string;
 
+declare type Bit = boolean;
+
+declare type BitInput = (boolean | 0 | 1 | number);
+
 export declare type BitString = BitString_2;
 
 declare class BitString_2 {
@@ -140,7 +146,7 @@ declare class BitString_2 {
      * Returns the bit value at the specified index
      * in the bit-string.
      */
-    get(index: number): boolean;
+    get(index: number): Bit;
     /**
      * Sets the bit value to one at the specified index.
      *
@@ -166,63 +172,57 @@ declare class BitString_2 {
      *
      * @todo: implement iteration protocol
      */
-    forEach(callback: (bitValue: boolean) => void): void;
+    forEach(callback: (bit: Bit) => void): void;
     /**
-     * Writes the specified bit value to the bit-string
-     * at the current index and advances the current index
-     * cursor.
+     * Writes the specified bit value to the end of the bit-string.
+     *
+     * @param bit - Bit value (a boolean or a number: `0` or `1`)
      */
-    writeBit(value: (boolean | number)): void;
+    writeBit(bit: BitInput): void;
     /**
-     * Writes the specified array of bit values to the
-     * bit-string, starting at the current index and advances
-     * the current index cursor by the number of bits written.
+     * Writes the specified array of bit values
+     * to the end of the bit-string.
+     *
+     * @param values - An array of individual bits
      */
-    writeBitArray(values: Array<boolean | number>): void;
+    writeBitArray(values: BitInput[]): void;
     /**
      * Writes the specified unsigned integer of the specified
-     * length in bits to the bit-string, starting at the
-     * current index and advances the current index cursor
-     * by the number of bits written.
+     * length in bits to the bit-string.
      */
-    writeUint(value: (number | BN_2), bitLength: number): void;
-    /**
-     * Writes the specified signed integer of the specified
-     * length in bits to the bit-string, starting at the
-     * current index and advances the current index cursor
-     * by the number of bits written.
-     */
-    writeInt(value: (number | BN_2), bitLength: number): void;
+    writeUint(value: AnyBN, bitLength: number): void;
     /**
      * Writes the specified unsigned 8-bit integer to the
-     * bit-string, starting at the current index and advances
-     * the current index cursor by the number of bits written.
+     * bit-string.
      */
-    writeUint8(value: number): void;
+    writeUint8(value: AnyBN): void;
+    /**
+     * Writes the specified signed integer of the specified
+     * length in bits to the bit-string.
+     */
+    writeInt(value: AnyBN, bitLength: number): void;
     /**
      * Writes the specified array of the unsigned 8-bit integers
-     * to the bit-string, starting at the current index and advances
-     * the current index cursor by the number of bits written.
+     * to the bit-string.
      */
-    writeBytes(values: Uint8Array): void;
+    writeBytes(bytes: Uint8Array): void;
     /**
      * Represents the specified multibyte string as bytes and writes
-     * them to the bit-string, starting at the current index and
-     * advances the current index cursor by the number of bits written.
+     * them to the bit-string.
      */
     writeString(text: string): void;
     /**
      * Writes the specified amount in nanograms to the
-     * bit-string, starting at the current index and advances
-     * the current index cursor by the number of bits written.
+     * bit-string.
      */
-    writeGrams(nanograms: (number | BN_2)): void;
+    writeGrams(nanograms: AnyBN): void;
     /**
      * Writes the specified TON amount in nanotons to the
-     * bit-string, starting at the current index and advances
-     * the current index cursor by the number of bits written.
+     * bit-string.
+     *
+     * @todo: why do we have a duplicate method?
      */
-    writeCoins(nanotons: (number | BN_2)): void;
+    writeCoins(nanotons: AnyBN): void;
     /**
      * Writes the specified address to the bit-string,
      * starting at the current index and advances the
@@ -245,6 +245,8 @@ declare class BitString_2 {
     toString(): string;
     /**
      * Serializes BitString into as a sequence of bytes (octets).
+     *
+     * @todo: rename this method to `getBytes()` for clarity
      */
     getTopUppedArray(): Uint8Array;
     /**
@@ -255,14 +257,24 @@ declare class BitString_2 {
      * Sets this data to match provided topUppedArray.
      *
      * @todo: provide a more meaningful method description
-     * @todo: replace with static method `createFromBytes()`
+     * @todo: replace with `static createFromBytes()`
      */
-    setTopUppedArray(bytes: Uint8Array, fulfilledBytes?: boolean): void;
+    setTopUppedArray(bytes: Uint8Array, noCompletion?: boolean): void;
     /**
      * Checks if the specified index is allowed for
      * the bit string, throws error in case of overflow.
      */
     private checkIndexOrThrow;
+    /**
+     * Checks if the specified value is a correct bit value,
+     * throws error in case it's not.
+     */
+    private checkBitOrThrow;
+    /**
+     * Checks if the specified bit length is valid in TVM,
+     * throws error in case it's not.
+     */
+    private checkBitLengthOrThrow;
 }
 
 export declare type BlockHandler = ((blockHeader: any, blockShards?: any) => (Promise<void> | void));
