@@ -1,7 +1,7 @@
 const {Contract} = require("../../index");
 const {Cell} = require("../../../boc");
 const {createOffchainUriCell, parseOffchainUriCell, parseAddress} = require("../nft/NftUtils");
-const {BN} = require("../../../utils");
+const {Address, BN, bytesToBase64} = require("../../../utils");
 
 /**
  * ATTENTION: this is DRAFT, there will be changes
@@ -70,6 +70,23 @@ class JettonMinter extends Contract {
         const tokenWalletCode = result[4];
 
         return {totalSupply, isMutable, adminAddress, jettonContentUri, tokenWalletCode};
+    }
+
+    /**
+     * params   {{ownerAddress: Address}}
+     * @return {Promise<Address>}
+     */
+    async getWalletAddress(ownerAddress) {
+        const myAddress = await this.getAddress();
+        const cell = new Cell()
+        cell.bits.writeAddress(ownerAddress)
+
+        const result = await this.provider.call2(
+            myAddress.toString(),
+            'get_wallet_address',
+            [['tvm.Slice', bytesToBase64(await cell.toBoc(false))]],
+        );
+        return parseAddress(result)
     }
 
 }
