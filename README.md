@@ -1,36 +1,43 @@
+
 ![splash_js_sdk](https://user-images.githubusercontent.com/1449561/154848382-e89fef68-3aee-4ca6-8d52-1466bfdf2c89.png)
 
-# TonWeb - JavaScript SDK for [The Open Network](https://ton.org)
+# TonWeb — JavaScript SDK for [The Open Network](https://ton.org)
 
 [![NPM](https://img.shields.io/npm/v/tonweb.svg)](https://www.npmjs.org/package/tonweb)
 
-## Install Web
 
-`npm install tonweb` or `yarn add tonweb`
+## Install for Web or Node.js
+
+```shell
+npm install tonweb
+```
 
 ```js
-import TonWeb from "tonweb";
+import TonWeb from 'tonweb';
 
 const tonweb = new TonWeb();
 ```
 
-or
 
-`<script src="tonweb.js"></script>`
+## Install to page directly
 
-`const tonweb = new window.TonWeb();`
+```html
+<body>
+    <!-- Page's content -->
+    
+    <!-- Specify a path to tonweb.js -->
+    <script type="application/javascript" src="tonweb.js"></script>
+    
+    <script type="application/javascript">
+        const tonWeb = new self.TonWeb();
+    </script>
 
-## Install NodeJS
-
-`npm install tonweb` or `yarn add tonweb`
-
-```js
-const TonWeb = require('tonweb');
-
-const tonweb = new TonWeb();
+</body>
+    
 ```
 
-## Overview example
+
+## Usage example
 
 ```js
 const tonweb = new TonWeb();
@@ -70,76 +77,138 @@ tonweb.sendBoc(bocBytes);
 
 ```
 
-## API
+## TonCenter API
 
-By default, mainnet [toncenter.com](https://toncenter.com) API is used. Please note that without the API key there will be a request rate limit.
+TonWeb communicates with TON nodes using public
+[TonCenter API][toncenter] centrally hosted
+by the TON FOUNDATION.
 
-You can start your own TON HTTP API instance as it is [open source](https://github.com/toncenter/ton-http-api).
+By default, `mainnet` network is used in guest mode (w/o the API key).
+Please note, that without the TonCenter API key there will be
+strict request limits (1 RPS currently).
 
-Use mainnet TonCenter API with high ratelimit API key:
+You can increase the limits to 10 RPS by
+[registering your own API key]([toncenter-bot]) for free
+using a special Telegram bot.
+
+If your requirements are even higher, you can
+[start your own][toncenter-own] TON HTTP API instance and
+use it without any artificial limits (you will be limited
+only by the TON network capacity and your hardware).
+
+Use `mainnet` TonCenter API with the API key:
 
 ```js
-const tonweb = new TonWeb(new TonWeb.HttpProvider('https://toncenter.com/api/v2/jsonRPC', {apiKey: 'YOUR_MAINNET_TONCENTER_API_KEY'}));
+const tonweb = new TonWeb(
+    new TonWeb.HttpProvider(
+        'https://toncenter.com/api/v2/jsonRPC', {
+            apiKey: 'YOUR_MAINNET_TONCENTER_API_KEY'
+        }
+    )
+);
 ```
 
-Use testnet TonCenter API with high ratelimit API key:
+Use `testnet` TonCenter API with the API key:
 
 ```js
-const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {apiKey: 'YOUR_TESTNET_TONCENTER_API_KEY'}));
+const tonweb = new TonWeb(
+    new TonWeb.HttpProvider(
+        'https://testnet.toncenter.com/api/v2/jsonRPC', {
+            apiKey: 'YOUR_TESTNET_TONCENTER_API_KEY'
+        }
+    )
+);
 ```
+
+
+## Type safety
+
+The library is covered with TypeScript types and declaration
+files are provided with the package. We are strongly recommend
+to use TypeScript for your projects due to the great type safety
+benefits that it provides.
+
 
 ## Documentation
 
 Each part is documented separately:
 
-[tonweb](https://github.com/toncenter/tonweb/blob/master/src/README.md) - root class and methods
+| Module                                                    | Description                                                  |
+| --------------------------------------------------------- | ------------------------------------------------------------ |
+| [tonweb](./src/README.md)                                 | Root class and methods.                                      |
+| [tonweb-contract-wallet](./src/contract/wallet/README.md) | Interaction with wallet's smart contracts.                   |
+| [tonweb-contract](./src/contract/README.md)               | Abstract interface to interact with TON smart contracts.     |
+| [tonweb-boc](./src/boc/README.md)                         | Serializations of Cell and BitString.                        |
+| [tonweb-utils](./src/utils/README.md)                     | Work with TON Addresses, coin values, byte arrays, hex, hash functions. |
+| [tonweb-nft](./src/contract/token/nft/README.md)          | work with **TON NFT** (non-fungible tokens).                 |
+| [tonweb-jettons](./src/contract/token/ft/README.md)       | work with **TON Jettons** (fungible tokens).                 |
 
-[tonweb-contract-wallet](https://github.com/toncenter/tonweb/blob/master/src/contract/wallet/README.md) - interaction with wallet's smart contracts.
 
-[tonweb-contract](https://github.com/toncenter/tonweb/blob/master/src/contract/README.md) - abstract interface to interact with TON smart contracts.
+## Support
 
-[tonweb-boc](https://github.com/toncenter/tonweb/blob/master/src/boc/README.md) - serializations of Cell and BitString
-
-[tonweb-utils](https://github.com/toncenter/tonweb/blob/master/src/utils/README.md) - work with TON Addresses, coin values, byte arrays, hex, hash functions.
+We have Telegram chats for developers with a lively community,
+don't hesitate to ask any questions there:
 
 
-**Also we use JSDoc in code**
+## Self-executing Node.js script
+
+You can use TonWeb as an alternative to Fift, e.g.
+to build binary messages for smart-contracts.
+
+1. Install the TonWeb globally:
+```shell
+npm install -g tonweb
+```
+
+2. Create a text file with the following content:
+
+```shell
+#!/usr/bin/env bash
+
+NODE_PATH="$(npm root -g):$NODE_PATH" node <<EOF
+
+  const TonWeb = require('tonweb');
+    
+  console.log('TonWeb v' + TonWeb.version);
+    
+  const tonWeb = new TonWeb();
+    
+  // Work with tonWeb…
+
+EOF
+```
+
+3. Make it executable:
+```shell
+chmod +x ./script-file
+```
+
+4. Run the script:
+```shell
+./script-file
+```
 
 ## Roadmap
 
-1. Unit-tests
+1. TypeScript support `(present, 90% done)`
+2. Unit-tests `(in progress)`
+3. Better documentation `(TBD)`
 
-2. Typescript
 
-## Build
+## Contributing
 
-```bash
-npm install 
+Please see the [contribution guide](./CONTRIBUTING.md).
 
-npm run build
-```
 
-## Use as alternative to Fift for building binary messages to smart-contracts
+## License
 
-```bash
-npm install -g tonweb
+© TON FOUNDATION
 
-export NODE_PATH=$(npm root --quiet -g)
-```
+GNU GENERAL PUBLIC LICENSE  Version 3, 29 June 2007
 
-Then create your_script.js
+[» Read full license text](./LICENSE)
 
-```js
-const TonWeb = require('tonweb');
 
-const tonweb = new TonWeb();
-
-. . .
-
-```
-
-run script
-
-```bash
-node your_script.js
-```
+  [toncenter]: https://toncenter.com/
+  [toncenter-own]: https://github.com/toncenter/ton-http-api#building-and-running
+  [toncenter-bot]: https://t.me/tonapibot
