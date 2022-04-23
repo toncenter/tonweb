@@ -148,12 +148,10 @@ Each part is documented separately:
 
 We have Telegram chats for developers with a lively community, don't hesitate to ask any questions there:
 
-| Link                                   | Title        | Description                                      |
-| -------------------------------------- | ------------ | ------------------------------------------------ |
-| [@tondev_eng](https://t.me/tondev_eng) | TON Dev Chat | TON developers community in 🇬🇧 English language. |
-| [@tondev](https://t.me/tondev)         | TON Дев Чат  | TON developers community in 🇷🇺 Russian language. |
-
-
+| Link                                   | Title        | Description                                     |
+| -------------------------------------- | ------------ |-------------------------------------------------|
+| [@tondev_eng](https://t.me/tondev_eng) | TON Dev Chat | 🇬🇧 English-speaking TON developers community. |
+| [@tondev](https://t.me/tondev)         | TON Дев Чат  | 🇷🇺 Russian-speaking TON developers community. |
 
 
 ## Self-executing Node.js script
