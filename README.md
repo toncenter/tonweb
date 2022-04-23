@@ -15,7 +15,7 @@ npm install tonweb
 ```js
 import TonWeb from 'tonweb';
 
-const tonweb = new TonWeb();
+const tonWeb = new TonWeb();
 ```
 
 
@@ -40,7 +40,7 @@ const tonweb = new TonWeb();
 ## Usage example
 
 ```js
-const tonweb = new TonWeb();
+const tonWeb = new TonWeb();
 
 const wallet = tonweb.wallet.create({publicKey});
 
@@ -88,7 +88,7 @@ Please note, that without the TonCenter API key there will be
 strict request limits (1 RPS currently).
 
 You can increase the limits to 10 RPS by
-[registering your own API key]([toncenter-bot]) for free
+[registering your own API key][toncenter-bot] for free
 using a special Telegram bot.
 
 If your requirements are even higher, you can
@@ -96,10 +96,10 @@ If your requirements are even higher, you can
 use it without any artificial limits (you will be limited
 only by the TON network capacity and your hardware).
 
-Use `mainnet` TonCenter API with the API key:
+### Use `mainnet` TonCenter API with the API key:
 
 ```js
-const tonweb = new TonWeb(
+const tonWeb = new TonWeb(
     new TonWeb.HttpProvider(
         'https://toncenter.com/api/v2/jsonRPC', {
             apiKey: 'YOUR_MAINNET_TONCENTER_API_KEY'
@@ -108,10 +108,10 @@ const tonweb = new TonWeb(
 );
 ```
 
-Use `testnet` TonCenter API with the API key:
+### Use `testnet` TonCenter API with the API key:
 
 ```js
-const tonweb = new TonWeb(
+const tonWeb = new TonWeb(
     new TonWeb.HttpProvider(
         'https://testnet.toncenter.com/api/v2/jsonRPC', {
             apiKey: 'YOUR_TESTNET_TONCENTER_API_KEY'
@@ -123,7 +123,7 @@ const tonweb = new TonWeb(
 
 ## Type safety
 
-The library is covered with TypeScript types and declaration
+The library is covered with TypeScript types. Declaration
 files are provided with the package. We are strongly recommend
 to use TypeScript for your projects due to the great type safety
 benefits that it provides.
@@ -146,8 +146,14 @@ Each part is documented separately:
 
 ## Support
 
-We have Telegram chats for developers with a lively community,
-don't hesitate to ask any questions there:
+We have Telegram chats for developers with a lively community, don't hesitate to ask any questions there:
+
+| Link                                   | Title        | Description                                      |
+| -------------------------------------- | ------------ | ------------------------------------------------ |
+| [@tondev_eng](https://t.me/tondev_eng) | TON Dev Chat | TON developers community in 🇬🇧 English language. |
+| [@tondev](https://t.me/tondev)         | TON Дев Чат  | TON developers community in 🇷🇺 Russian language. |
+
+
 
 
 ## Self-executing Node.js script
@@ -209,6 +215,6 @@ GNU GENERAL PUBLIC LICENSE  Version 3, 29 June 2007
 [» Read full license text](./LICENSE)
 
 
-  [toncenter]: https://toncenter.com/
-  [toncenter-own]: https://github.com/toncenter/ton-http-api#building-and-running
-  [toncenter-bot]: https://t.me/tonapibot
+[toncenter]: https://toncenter.com/
+[toncenter-own]: https://github.com/toncenter/ton-http-api#building-and-running
+[toncenter-bot]: https://t.me/tonapibot
