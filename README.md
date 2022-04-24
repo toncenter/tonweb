@@ -12,12 +12,6 @@
 npm install tonweb
 ```
 
-```js
-import TonWeb from 'tonweb';
-
-const tonWeb = new TonWeb();
-```
-
 
 ## Install to page directly
 
@@ -37,11 +31,43 @@ const tonWeb = new TonWeb();
 ```
 
 
-## Usage example
+## TonCenter API
+
+Due to the current technology limitations, TonWeb must
+communicate with the TON nodes using a special proxy-server
+called [TonCenter HTTP API][toncenter], which must be 
+[hosted by you][toncenter-own] separately.
+
+You can also use our [publicly hosted](#public-toncenter-api)
+TonCenter API if you are learning or just getting started,
+but it enforces strict request limits, so it's not recommended
+to be used in production.
+
+
+## Usage
+
+1. Instantiate `HttpProvider` and the `TonWeb`.
 
 ```js
-const tonWeb = new TonWeb();
+import TonWeb from 'tonweb';
 
+// Create an instance of HttpProvider that is used to
+// communicate with the TonCenter
+const httpProvider = new TonWeb.HttpProvider(
+    // Use the URL of your hosted TonCenter API
+    'https://toncetner.example.com/api/v2/jsonRPC', {
+        // You can configure TonCenter to require the API key
+        apiKey: 'OPTIONAL_API_KEY'
+    }
+);
+
+// Create an instance of TonWeb
+const tonWeb = new TonWeb(httpProvider);
+```
+
+2. Use various provided APIs and utilities:
+
+```js
 const wallet = tonweb.wallet.create({publicKey});
 
 const address = await wallet.getAddress();
@@ -74,50 +100,6 @@ const history = await tonweb.getTransactions(address);
 const balance = await tonweb.getBalance(address);
 
 tonweb.sendBoc(bocBytes);
-
-```
-
-## TonCenter API
-
-TonWeb communicates with TON nodes using public
-[TonCenter API][toncenter] centrally hosted
-by the TON FOUNDATION.
-
-By default, `mainnet` network is used in guest mode (w/o the API key).
-Please note, that without the TonCenter API key there will be
-strict request limits (1 RPS currently).
-
-You can increase the limits to 10 RPS by
-[registering your own API key][toncenter-bot] for free
-using a special Telegram bot.
-
-If your requirements are even higher, you can
-[start your own][toncenter-own] TON HTTP API instance and
-use it without any artificial limits (you will be limited
-only by the TON network capacity and your hardware).
-
-### Use `mainnet` TonCenter API with the API key:
-
-```js
-const tonWeb = new TonWeb(
-    new TonWeb.HttpProvider(
-        'https://toncenter.com/api/v2/jsonRPC', {
-            apiKey: 'YOUR_MAINNET_TONCENTER_API_KEY'
-        }
-    )
-);
-```
-
-### Use `testnet` TonCenter API with the API key:
-
-```js
-const tonWeb = new TonWeb(
-    new TonWeb.HttpProvider(
-        'https://testnet.toncenter.com/api/v2/jsonRPC', {
-            apiKey: 'YOUR_TESTNET_TONCENTER_API_KEY'
-        }
-    )
-);
 ```
 
 
@@ -191,6 +173,53 @@ chmod +x ./script-file
 ```shell
 ./script-file
 ```
+
+
+## Public TonCenter API
+
+Though, [hosting your own][toncenter-own] TonCenter API
+server is highly recommended, TON FOUNDATION provides a
+[public TonCenter API server][toncenter],
+that could be used for testing/development purposes or
+for projects with low throughput requirements.
+Both `testnet` and `mainnet` are supported.
+
+The public server enforces a very strict request limits:
+
+| Mode                | Limit  |
+| ------------------- | ------ |
+| Without the API key | 1 RPS  |
+| With the API key    | 10 RPS |
+
+You can obtain an API key by [registering][toncenter-bot]
+for free using a special Telegram bot.
+
+
+### Use `mainnet` public TonCenter API with the API key:
+
+```js
+const tonWeb = new TonWeb(
+    new TonWeb.HttpProvider(
+        'https://toncenter.com/api/v2/jsonRPC', {
+            apiKey: 'YOUR_MAINNET_TONCENTER_API_KEY'
+        }
+    )
+);
+```
+
+
+### Use `testnet` public TonCenter API with the API key:
+
+```js
+const tonWeb = new TonWeb(
+    new TonWeb.HttpProvider(
+        'https://testnet.toncenter.com/api/v2/jsonRPC', {
+            apiKey: 'YOUR_TESTNET_TONCENTER_API_KEY'
+        }
+    )
+);
+```
+
 
 ## Roadmap
 
