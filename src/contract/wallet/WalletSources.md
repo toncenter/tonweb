@@ -29,12 +29,25 @@ dup <s csr.
 2 boc+>B Bx. cr
 ```
 
+The idea of the code is as follows: 
+1. set codepage 0 (default);
+2. stop execution if it is not external message (which has code -1);
+3. read 512 bits from the incoming message (signature); copy remainder (one copy will be used for parsing another for hashing);
+4. parse 32bit seqno;
+5. load storage, load cell, parse stored seqno and pubkey;
+6. throw if stored seqno is not equal to seqno in message;
+7. hash copy of incoming message (without signature);
+8. check that provided signature signs that hash with accordance to stored public key; throw if not; accept message;
+9. if there is reference in message remainder - parse 8bit mode and send reference as message with that mode;
+10. increase seqno;
+11. store it and pubkey to the storage;
+
 That gives:
 * Cell `x{FF0020DDA4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED54}`
 * In serialized form `B5EE9C72410101010044000084FF0020DDA4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED5441FDF089`
 
 ### revision 2
-In this revision additional `seqno` was introduced https://github.com/newton-blockchain/ton/blob/47814dca3d4d7d253f0dcbb2ef176f45aafc6871/crypto/smartcont/new-wallet.fif:
+In this revision additional `seqno` get_method was introduced https://github.com/newton-blockchain/ton/blob/47814dca3d4d7d253f0dcbb2ef176f45aafc6871/crypto/smartcont/new-wallet.fif:
 ```
 #!/usr/bin/fift -s
 "TonUtil.fif" include
@@ -70,7 +83,7 @@ That gives:
 * Cell `x{FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED54}`
 * In serialized form `B5EE9C724101010100530000A2FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED54D0E2786F`
 ### revision 3
-In this revision additional `get_public_key` was introduced https://github.com/newton-blockchain/ton/blob/master/crypto/smartcont/new-wallet.fif:
+In this revision additional `get_public_key` get_method was introduced https://github.com/newton-blockchain/ton/blob/master/crypto/smartcont/new-wallet.fif:
 ```
 #!/usr/bin/fift -s
 "TonUtil.fif" include
@@ -112,6 +125,8 @@ That gives:
 
 Fift-ASM for v2 r1 may be found here https://github.com/newton-blockchain/ton/blob/fd7a8de9708c9ece8d802890519735b55bc99a8e/crypto/smartcont/new-wallet-v2.fif
 
+This version introduces `valid_until` parameter in the message and also allows to send up to 4 internal messages in one tx (each reference of incoming message will be sent).
+
 ```
 "TonUtil.fif" include
 "Asm.fif" include
@@ -148,7 +163,7 @@ That gives:
 * In serialized form `B5EE9C724101010100570000AAFF0020DD2082014C97BA9730ED44D0D70B1FE0A4F2608308D71820D31FD31F01F823BBF263ED44D0D31FD3FFD15131BAF2A103F901541042F910F2A2F800029320D74A96D307D402FB00E8D1A4C8CB1FCBFFC9ED54A1370BB6`
 ### revision 2
 
-Fift-ASM for v2 r2 may be found here  https://github.com/newton-blockchain/ton/blob/master/crypto/smartcont/new-wallet-v2.fif :
+Fift-ASM for v2 r2 may be found here  https://github.com/newton-blockchain/ton/blob/master/crypto/smartcont/new-wallet-v2.fif (`get_public_key` added) :
 
 ```
 "TonUtil.fif" include
@@ -186,6 +201,8 @@ That gives:
 
 ## V3 wallet
 Fift-ASM for v3 may be found here  https://github.com/newton-blockchain/ton/blob/3002321eb779e9936243e3b5f00be7579fb07654/crypto/smartcont/new-wallet-v3.fif :
+
+This version introduces `subwallet_id` parameter of the wallet which allows to create many wallets with the same public key (without risks of replaying messages between the wallets).
 
 ```
 "TonUtil.fif" include
@@ -263,10 +280,14 @@ That gives:
 There are also a list of new wallets supported by TonWeb
 
 ## V4 wallet
+The main difference from previous versions consist in plugins functionality: trusted conjugated contracts may implement complex logic while being able to use all funds from main wallet.
+
+That way wallet can be extended in numerous ways, including partial, infinite or programmatic allowances, special connectors to specific DApps, custom user-governed add-ons.
+
+More info in original repo [wallet-contract](https://github.com/ton-blockchain/wallet-contract)
 ### revision 1
 Is not used (and never was used in public).
 ### revision 2
-Original repo https://github.com/ton-blockchain/wallet-contract
 * [func](https://github.com/ton-blockchain/wallet-contract/blob/3fd1d7ae39f1c46ec1f2be54c4040d8d87505e0f/func/wallet-v4-code.fc)
 * Cell
 ```
@@ -294,6 +315,8 @@ x{FF00F4A413F4BCF2C80B}
 * Serialized `B5EE9C72410215010002F5000114FF00F4A413F4BCF2C80B010201200203020148040504F8F28308D71820D31FD31FD31F02F823BBF263ED44D0D31FD31FD3FFF404D15143BAF2A15151BAF2A205F901541064F910F2A3F80024A4C8CB1F5240CB1F5230CBFF5210F400C9ED54F80F01D30721C0009F6C519320D74A96D307D402FB00E830E021C001E30021C002E30001C0039130E30D03A4C8CB1F12CB1FCBFF1112131403EED001D0D3030171B0915BE021D749C120915BE001D31F218210706C7567BD228210626C6E63BDB022821064737472BDB0925F03E002FA403020FA4401C8CA07CBFFC9D0ED44D0810140D721F404305C810108F40A6FA131B3925F05E004D33FC8258210706C7567BA9131E30D248210626C6E63BAE30004060708020120090A005001FA00F404308210706C7567831EB17080185005CB0527CF165003FA02F40012CB69CB1F5210CB3F0052F8276F228210626C6E63831EB17080185005CB0527CF1624FA0214CB6A13CB1F5230CB3F01FA02F4000092821064737472BA8E3504810108F45930ED44D0810140D720C801CF16F400C9ED54821064737472831EB17080185004CB0558CF1622FA0212CB6ACB1FCB3F9410345F04E2C98040FB000201200B0C0059BD242B6F6A2684080A06B90FA0218470D4080847A4937D29910CE6903E9FF9837812801B7810148987159F31840201580D0E0011B8C97ED44D0D70B1F8003DB29DFB513420405035C87D010C00B23281F2FFF274006040423D029BE84C600201200F100019ADCE76A26840206B90EB85FFC00019AF1DF6A26840106B90EB858FC0006ED207FA00D4D422F90005C8CA0715CBFFC9D077748018C8CB05CB0222CF165005FA0214CB6B12CCCCC971FB00C84014810108F451F2A702006C810108D718C8542025810108F451F2A782106E6F746570748018C8CB05CB025004CF16821005F5E100FA0213CB6A12CB1FC971FB00020072810108D718305202810108F459F2A7F82582106473747270748018C8CB05CB025005CF16821005F5E100FA0214CB6A13CB1F12CB3FC973FB00000AF400C9ED5446A9F34F`
 
 ## Lockup wallet
+Lockup wallet introduce functionality of temporary locked (can not be spent at all till the moment X) and temporary restricted (can only be sent to _white list_ which usually contains elector till the moment X). Wallet can only have one immutable whitelist (set at contract deploy), but many packages of locked and restricted money (each with it's own time threshold). Creation of new locked/restricted packages is only allowed to owner of second public key (which also is immutable, set at contract deploy and stored in contract storage).
+
 Original repo https://github.com/ton-blockchain/lockup-wallet-contract.
 * [func](/src/contract/lockup/restricted.fc)
 * [compilled fift-code](/src/contract/lockup/restricted-code.fif)
