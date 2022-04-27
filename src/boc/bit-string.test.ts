@@ -1190,6 +1190,10 @@ describe('BitString', () => {
 
     describe('writeAddress()', () => {
 
+        //==============================//
+        // writes the address in format //
+        //==============================//
+
         {
             const addresses = {
                 'NF': '0:2cf55953e92efbeadab7ba725c3f93a0b23f842cbba72d7b8e6f510a70e422e3',
@@ -1229,15 +1233,49 @@ describe('BitString', () => {
 
         }
 
-        it('writes empty address', () => {
 
-            const bitString = new BitString(267);
+        //======================//
+        // writes empty address //
+        //======================//
 
-            bitString.writeAddress();
+        {
+            const emptyValues = [undefined, null];
 
-            expectBits(bitString, '00');
+            for (const emptyValue of emptyValues) {
+
+                it(`writes empty address (${emptyValue})`, () => {
+
+                    const bitString = new BitString(2);
+
+                    bitString.writeAddress(emptyValue);
+
+                    expectBits(bitString, '00');
+
+                });
+
+            }
+
+        }
+
+        it('throws on incorrect value', async () => {
+
+            const values = [
+                [], {}, new Date(), Symbol(),
+                () => {}, 100, Promise.resolve(),
+                new Map(), new Set(),
+                0, '', 'hello',
+            ];
+
+            const bitString = new BitString(1);
+
+            for (const value of values) {
+                expect(() => bitString.writeAddress(value as any))
+                    .toThrow('must be an instance of Address')
+                ;
+            }
 
         });
+
 
     });
 

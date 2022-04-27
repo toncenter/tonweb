@@ -324,25 +324,31 @@ export class BitString {
      */
     public writeAddress(address?: Address): void {
 
-        if (!address) {
+        // Writing empty address
+        if (address === undefined || address === null) {
             this.writeUint(0, 2);
-
-        } else {
-
-            // addr_none$00 = MsgAddressExt;
-            this.writeUint(2, 2);
-
-            // addr_std$10 anycast:(Maybe Anycast)
-            // @todo: split addresses (anycast)
-            this.writeUint(0, 1);
-
-            // workchain_id:int8
-            this.writeInt(address.wc, 8);
-
-            // address:uint256 = MsgAddressInt;
-            this.writeBytes(address.hashPart);
-
+            return;
         }
+
+        if (!(address instanceof Address)) {
+            throw new Error(
+                `Specified address must be ` +
+                `an instance of Address`
+            );
+        }
+
+        // addr_none$00 = MsgAddressExt;
+        this.writeUint(2, 2);
+
+        // addr_std$10 anycast:(Maybe Anycast)
+        // @todo: split addresses (anycast)
+        this.writeUint(0, 1);
+
+        // workchain_id:int8
+        this.writeInt(address.wc, 8);
+
+        // address:uint256 = MsgAddressInt;
+        this.writeBytes(address.hashPart);
 
     }
 
