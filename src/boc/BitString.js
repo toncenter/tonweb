@@ -178,12 +178,14 @@ class BitString {
     }
 
     /**
-     * @param s {string}
+     * Write UTF-8 string
+     *
+     * @param value {string}
      */
-    writeString(s) {
-        for (let i = 0; i < s.length; i++) {
-            this.writeUint8(s.charCodeAt(i));
-        }
+    writeString(value) {
+        this.writeBytes(
+            new TextEncoder().encode(value)
+        );
     }
 
     /**

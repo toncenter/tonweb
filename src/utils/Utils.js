@@ -251,6 +251,7 @@ function bytesToBase64(bytes) {
     return result;
 }
 
+// todo: base64 decoding process could ignore one extra character at the end of string and the byte-length check below won't be able to catch it.
 function base64toString(base64) {
     if (typeof self === 'undefined') {
         return Buffer.from(base64, 'base64').toString('binary'); // todo: (tolya-yanot) Buffer silently ignore incorrect base64 symbols, we need to throw error
