@@ -2,6 +2,7 @@
 import BN from 'bn.js';
 
 import { AnyBN } from '../common/numbers';
+import { Address } from '../utils/address';
 import { BitString } from './bit-string';
 
 
@@ -1187,6 +1188,68 @@ describe('BitString', () => {
 
     });
 
+    describe('writeAddress()', () => {
+
+        {
+            const addresses = {
+                'NF': '0:2cf55953e92efbeadab7ba725c3f93a0b23f842cbba72d7b8e6f510a70e422e3',
+                'F_NS_NB_NT': 'UQAs9VlT6S776tq3unJcP5Ogsj+ELLunLXuOb1EKcOQi41+E',
+                'F_S_NB_NT': 'UQAs9VlT6S776tq3unJcP5Ogsj-ELLunLXuOb1EKcOQi41-E',
+                'F_NS_NB_T': '0QAs9VlT6S776tq3unJcP5Ogsj+ELLunLXuOb1EKcOQi4+QO',
+                'F_S_NB_T': '0QAs9VlT6S776tq3unJcP5Ogsj-ELLunLXuOb1EKcOQi4-QO',
+                'F_NS_B_NT': 'EQAs9VlT6S776tq3unJcP5Ogsj+ELLunLXuOb1EKcOQi4wJB',
+                'F_S_B_NT': 'EQAs9VlT6S776tq3unJcP5Ogsj-ELLunLXuOb1EKcOQi4wJB',
+                'F_NS_B_T': 'kQAs9VlT6S776tq3unJcP5Ogsj+ELLunLXuOb1EKcOQi47nL',
+                'F_S_B_T': 'kQAs9VlT6S776tq3unJcP5Ogsj-ELLunLXuOb1EKcOQi47nL'
+            };
+
+            const expectedBits = (
+                '1000000000000101100111101010101100101010011111010010010111011111' +
+                '0111110101011011010101101111011101001110010010111000011111110010' +
+                '0111010000010110010001111111000010000101100101110111010011100101' +
+                '1010111101110001110011011110101000100001010011100001110010000100' +
+                '01011100011'
+            );
+
+            for (const [format, address] of Object.entries(addresses)) {
+
+                it(`writes the address in ${format} format`, () => {
+
+                    const bitString = new BitString(267);
+
+                    bitString.writeAddress(
+                        new Address(address)
+                    );
+
+                    expectBits(bitString, expectedBits);
+
+                });
+
+            }
+
+        }
+
+        it('writes empty address', () => {
+
+            const bitString = new BitString(267);
+
+            bitString.writeAddress();
+
+            expectBits(bitString, '00');
+
+        });
+
+    });
+
+    describe('writeBitString()', () => {
+    });
+
+    describe('clone()', () => {
+    });
+
+    describe('toString()', () => {
+    });
+
     describe('getTopUppedArray()', () => {
 
         it('no leftovers, without completion', async () => {
@@ -1311,6 +1374,9 @@ describe('BitString', () => {
 
         });
 
+    });
+
+    describe('toHex()', () => {
     });
 
 });

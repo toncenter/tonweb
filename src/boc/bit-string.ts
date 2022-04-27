@@ -318,31 +318,36 @@ export class BitString {
     }
 
     /**
-     * Writes the specified address to the bit-string,
-     * starting at the current index and advances the
-     * current index cursor by the number of bits written.
+     * Writes the specified address to the bit-string.
+     *
+     * @todo: allow to specify address as string
      */
     public writeAddress(address?: Address): void {
 
-        // addr_none$00 = MsgAddressExt;
-        // addr_std$10 anycast:(Maybe Anycast)
-        // workchain_id:int8 address:uint256 = MsgAddressInt;
-
         if (!address) {
             this.writeUint(0, 2);
+
         } else {
+
+            // addr_none$00 = MsgAddressExt;
             this.writeUint(2, 2);
-            this.writeUint(0, 1); // TODO split addresses (anycast)
+
+            // addr_std$10 anycast:(Maybe Anycast)
+            // @todo: split addresses (anycast)
+            this.writeUint(0, 1);
+
+            // workchain_id:int8
             this.writeInt(address.wc, 8);
+
+            // address:uint256 = MsgAddressInt;
             this.writeBytes(address.hashPart);
+
         }
 
     }
 
     /**
-     * Appends the specified bit-string to the bit-string,
-     * starting at the current index and advances the
-     * current index cursor by the number of bits written.
+     * Appends the specified bit-string to this bit-string.
      */
     public writeBitString(bitString: BitString): void {
         bitString.forEach(bit => this.writeBit(bit));
@@ -401,30 +406,6 @@ export class BitString {
     }
 
     /**
-     * Returns the bit-string represented as HEX-string (like in Fift).
-     */
-    public toHex(): string {
-        if (this.cursor % 4 === 0) {
-            const s = bytesToHex(this.array.slice(0, Math.ceil(this.cursor / 8))).toUpperCase();
-            if (this.cursor % 8 === 0) {
-                return s;
-            } else {
-                // @todo: don't use non-standard `substr()` function,
-                //        use slice() instead?
-                return s.substr(0, s.length - 1);
-            }
-        } else {
-            const temp = this.clone();
-            temp.writeBit(1);
-            while (temp.cursor % 4 !== 0) {
-                temp.writeBit(0);
-            }
-            const hex = temp.toHex().toUpperCase();
-            return hex + '_';
-        }
-    }
-
-    /**
      * Sets this data to match provided topUppedArray.
      *
      * @todo: provide a more meaningful method description
@@ -473,6 +454,30 @@ export class BitString {
         // represented by n + 1 octets, with the last octet
         // always equal to 0x80 = 128.
 
+    }
+
+    /**
+     * Returns the bit-string represented as HEX-string (like in Fift).
+     */
+    public toHex(): string {
+        if (this.cursor % 4 === 0) {
+            const s = bytesToHex(this.array.slice(0, Math.ceil(this.cursor / 8))).toUpperCase();
+            if (this.cursor % 8 === 0) {
+                return s;
+            } else {
+                // @todo: don't use non-standard `substr()` function,
+                //        use slice() instead?
+                return s.substr(0, s.length - 1);
+            }
+        } else {
+            const temp = this.clone();
+            temp.writeBit(1);
+            while (temp.cursor % 4 !== 0) {
+                temp.writeBit(0);
+            }
+            const hex = temp.toHex().toUpperCase();
+            return hex + '_';
+        }
     }
 
 
