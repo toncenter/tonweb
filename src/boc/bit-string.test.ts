@@ -1402,8 +1402,7 @@ describe('BitString', () => {
 
     });
 
-    describe('toString()', () => {
-    });
+    describe('toString()', () => toHexTests('toString'));
 
     describe('getTopUppedArray()', () => {
 
@@ -1531,11 +1530,68 @@ describe('BitString', () => {
 
     });
 
-    describe('toHex()', () => {
+    describe('toHex()', () => toHexTests('toHex'));
+
+    it('internal: writeBits()', () => {
+
+        const bitString = new BitString(12);
+        writeBits(bitString, '10 1100 0111');
+        expectEqualBits(bitString, '1011 0001 11');
+
     });
 
 });
 
+function toHexTests(funcName: ('toHex' | 'toString')) {
+
+    //===================================//
+    // converts bit-string to HEX-string //
+    //===================================//
+
+    {
+        const cases = [
+            ['', ''],
+            ['1', 'C_'],
+            ['11', 'E_'],
+            ['111', 'F_'],
+            ['1111', 'F'],
+            ['1111 0', 'F4_'],
+            ['1111 00', 'F2_'],
+            ['1111 000', 'F1_'],
+            ['1111 0000', 'F0'],
+            ['1111 0000 1', 'F0C_'],
+            ['1111 0000 10', 'F0A_'],
+            ['1111 0000 101', 'F0B_'],
+            ['1111 0000 1010', 'F0A'],
+        ];
+
+        for (const caseData of cases) {
+            const [bits, hex] = caseData;
+
+            it(`converts bit-string to HEX-string (${hex})`, () => {
+
+                const bitString = new BitString(12);
+
+                writeBits(bitString, bits);
+
+                expect(bitString[funcName]()).toEqual(hex);
+
+            });
+
+        }
+    }
+
+    it(`shouldn't overflow`, () => {
+
+        const bitString = new BitString(7);
+
+        writeBits(bitString, '1010 101');
+
+        expect(bitString[funcName]()).toEqual('AB_');
+
+    });
+
+}
 
 function testWrongIndex(method: IndexMethods) {
 
@@ -1586,4 +1642,11 @@ function toStringOfBits(
         bit => bits += (bit ? '1' : '0')
     );
     return bits;
+}
+
+function writeBits(bitString: BitString, bits: string) {
+    bits = bits.replace(/\s+/g, '');
+    for (const bit of bits) {
+        bitString.writeBit(bit === '1');
+    }
 }

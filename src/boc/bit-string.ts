@@ -15,6 +15,8 @@ export type BitInput = (
 
 export type Bit = boolean;
 
+const completionTag = '_';
+
 
 export class BitString {
 
@@ -58,6 +60,9 @@ export class BitString {
     /**
      * Returns number of bytes actually used by the bit-string.
      * Rounds up to a whole byte.
+     *
+     * @todo: rename to `getUsedBytesCount()`
+     * @todo: implement `getUsedBytes(): Uint8Array`
      */
     public getUsedBytes(): number {
         return Math.ceil(this.getUsedBits() / 8);
@@ -475,24 +480,42 @@ export class BitString {
      * Returns the bit-string represented as HEX-string (like in Fift).
      */
     public toHex(): string {
-        if (this.cursor % 4 === 0) {
-            const s = bytesToHex(this.array.slice(0, Math.ceil(this.cursor / 8))).toUpperCase();
-            if (this.cursor % 8 === 0) {
-                return s;
-            } else {
-                // @todo: don't use non-standard `substr()` function,
-                //        use slice() instead?
-                return s.substr(0, s.length - 1);
-            }
-        } else {
-            const temp = this.clone();
-            temp.writeBit(1);
-            while (temp.cursor % 4 !== 0) {
-                temp.writeBit(0);
-            }
-            const hex = temp.toHex().toUpperCase();
-            return hex + '_';
+
+        // Chapter 1.0.1 of the "Telegram Open Network Virtual Machine".
+        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
+        //
+
+        const usedBits = this.getUsedBits();
+        const bytes = this.array.slice(0, this.getUsedBytes());
+
+        const requireCompletion = (usedBits % 4 !== 0);
+
+        const lastByteUsed = (
+            (usedBits % 8 === 0) ||
+            (usedBits % 8 > 4)
+        );
+
+        if (requireCompletion) {
+            // Setting the first completion bit,
+            // trailing zeroes are already present
+            setBit(bytes, usedBits);
+
+            // @todo: check the case when array of bytes
+            //        is set externally
+
         }
+
+        let hexString = bytesToHex(bytes).toUpperCase();
+
+        if (!lastByteUsed) {
+            hexString = hexString.slice(0, (hexString.length - 1));
+        }
+
+        return (
+            `${hexString}` +
+            `${requireCompletion ? completionTag : ''}`
+        );
+
     }
 
 
