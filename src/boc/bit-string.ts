@@ -356,7 +356,16 @@ export class BitString {
      * Appends the specified bit-string to this bit-string.
      */
     public writeBitString(bitString: BitString): void {
+
+        if (!(bitString instanceof BitString)) {
+            throw new Error(
+                `Specified value must be ` +
+                `an instance of BitString`
+            );
+        }
+
         bitString.forEach(bit => this.writeBit(bit));
+
     }
 
     /**
