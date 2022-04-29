@@ -440,6 +440,20 @@ export class BitString {
         // Chapter 1.0.4 of the "Telegram Open Network Virtual Machine".
         // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
 
+        if (!(bytes instanceof Uint8Array)) {
+            throw new Error(
+                `Specified "bytes" value must be ` +
+                `an instance of Uint8Array`
+            );
+        }
+
+        if (typeof noCompletion !== 'boolean') {
+            throw new Error(
+                `Specified "noCompletion" flag ` +
+                `must be a boolean`
+            );
+        }
+
         this.length = (bytes.length * 8);
         this.array = bytes;
         this.cursor = this.length;

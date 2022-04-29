@@ -22,7 +22,7 @@ type InputType = (
 );
 
 
-
+// Shorthand helper that creates bytes array
 const B = (...bytes: number[]) => new Uint8Array(bytes);
 
 
@@ -328,7 +328,7 @@ describe('BitString', () => {
             // 1110 0111 (E7)
             // 0101 ----
 
-            const bitString = new BitString(20);
+            const bitString = new BitString(24);
             bitString.writeBytes(B(0xAA, 0xE7));
             bitString.writeBit(0);
             bitString.writeBit(1);
@@ -479,7 +479,8 @@ describe('BitString', () => {
 
             const values = [
                 {}, new Date(), Symbol(), 'array',
-                () => {}, 100, Promise.resolve(),
+                () => {}, 100, Promise.resolve(), true, false,
+                NaN, undefined, null, '', 0,
             ];
 
             const bitString = new BitString(1);
@@ -909,7 +910,8 @@ describe('BitString', () => {
             const values = [
                 {}, new Date(), Symbol(), 'array',
                 () => {}, 100, Promise.resolve(),
-                [], new Map(), new Set()
+                [], new Map(), new Set(), true, false,
+                NaN, undefined, null,
             ];
 
             const bitString = new BitString(1);
@@ -1263,7 +1265,8 @@ describe('BitString', () => {
                 [], {}, new Date(), Symbol(),
                 () => {}, 100, Promise.resolve(),
                 new Map(), new Set(),
-                0, '', 'hello',
+                0, '', 'hello', true, false,
+                NaN,
             ];
 
             const bitString = new BitString(1);
@@ -1335,7 +1338,8 @@ describe('BitString', () => {
                 [], {}, new Date(), Symbol(),
                 () => {}, 100, Promise.resolve(),
                 new Map(), new Set(),
-                0, '', 'hello',
+                0, '', 'hello', true, false,
+                NaN, undefined, null,
             ];
 
             const bitString = new BitString(1);
@@ -1454,6 +1458,51 @@ describe('BitString', () => {
             ;
         });
 
+        //==============================//
+        // converts bit-string to bytes //
+        //==============================//
+
+        {
+            const cases = [
+                [                   '', ''],
+                [                  '1', '1100 0000'],
+                [                 '11', '1110 0000'],
+                [                '111', '1111 0000'],
+                [               '1111', '1111 1000'],
+                [             '1111 0', '1111 0100'],
+                [            '1111 00', '1111 0010'],
+                [           '1111 000', '1111 0001'],
+                [          '1111 0000', '1111 0000'],
+                [        '1111 0000 1', '1111 0000 1100 0000'],
+                [       '1111 0000 10', '1111 0000 1010 0000'],
+                [      '1111 0000 101', '1111 0000 1011 0000'],
+                [     '1111 0000 1010', '1111 0000 1010 1000'],
+                [   '1111 0000 1010 1', '1111 0000 1010 1100'],
+                [  '1111 0000 1010 11', '1111 0000 1010 1110'],
+                [ '1111 0000 1010 110', '1111 0000 1010 1101'],
+                ['1111 0000 1010 1100', '1111 0000 1010 1100'],
+            ];
+
+            for (const caseData of cases) {
+                const [bits, expectedBits] = caseData;
+
+                it(`converts bit-string to bytes (${bits})`, () => {
+
+                    const bitString = new BitString(16);
+
+                    writeBits(bitString, bits);
+
+                    expectEqualBits(
+                        bitString.getTopUppedArray(),
+                        expectedBits
+                    );
+
+                });
+
+            }
+
+        }
+
     });
 
     describe('setTopUppedArray()', () => {
@@ -1528,6 +1577,102 @@ describe('BitString', () => {
 
         });
 
+        //==============================//
+        // parses bit-string from bytes //
+        //==============================//
+
+        {
+            const cases: Array<[string, string, boolean]> = [
+                [                   '', '', true],
+                [                  '1', '1100 0000', false],
+                [                 '11', '1110 0000', false],
+                [                '111', '1111 0000', false],
+                [               '1111', '1111 1000', false],
+                [             '1111 0', '1111 0100', false],
+                [            '1111 00', '1111 0010', false],
+                [           '1111 000', '1111 0001', false],
+                [          '1111 0000', '1111 0000', true],
+                [        '1111 0000 1', '1111 0000 1100 0000', false],
+                [       '1111 0000 10', '1111 0000 1010 0000', false],
+                [      '1111 0000 101', '1111 0000 1011 0000', false],
+                [     '1111 0000 1010', '1111 0000 1010 1000', false],
+                [   '1111 0000 1010 1', '1111 0000 1010 1100', false],
+                [  '1111 0000 1010 11', '1111 0000 1010 1110', false],
+                [ '1111 0000 1010 110', '1111 0000 1010 1101', false],
+                ['1111 0000 1010 1100', '1111 0000 1010 1100', true],
+            ];
+
+            for (const caseData of cases) {
+                const [expectedBits, bits, noCompletion] = caseData;
+
+                it(`parses bit-string from bytes (${expectedBits})`, () => {
+
+                    const bitString = new BitString(16);
+
+                    bitString.setTopUppedArray(
+                        bitsToBytes(bits),
+                        noCompletion
+                    );
+
+                    expectEqualBits(bitString, expectedBits);
+
+                });
+
+            }
+
+        }
+
+        it(`throws error when completion first bit can't be found`, () => {
+
+            const bitString = new BitString(0);
+
+            expect(() => bitString.setTopUppedArray(
+                bitsToBytes('0000 0000'),
+                false
+            ))
+                .toThrow('Failed to find first bit of the completion')
+            ;
+
+        });
+
+        it('throws on incorrect "bytes" value', async () => {
+
+            const values = [
+                [], {}, new Date(), Symbol(),
+                () => {}, 100, Promise.resolve(),
+                new Map(), new Set(),
+                0, '', 'hello', true, NaN, undefined, null,
+            ];
+
+            const bitString = new BitString(1);
+
+            for (const value of values) {
+                expect(() => bitString.setTopUppedArray(value as any))
+                    .toThrow('must be an instance of Uint8Array')
+                ;
+            }
+
+        });
+
+        it('throws on incorrect "noCompletion" flag', async () => {
+
+            const values = [
+                [], {}, new Date(), Symbol(),
+                () => {}, 100, Promise.resolve(),
+                new Map(), new Set(),
+                0, '', 'hello', NaN, null,
+            ];
+
+            const bitString = new BitString(8);
+
+            for (const value of values) {
+                expect(() => bitString.setTopUppedArray(B(0x00), value as any))
+                    .toThrow('must be a boolean')
+                ;
+            }
+
+        });
+
     });
 
     describe('toHex()', () => toHexTests('toHex'));
@@ -1537,6 +1682,15 @@ describe('BitString', () => {
         const bitString = new BitString(12);
         writeBits(bitString, '10 1100 0111');
         expectEqualBits(bitString, '1011 0001 11');
+
+    });
+
+    it('internal: bitsToBytes()', () => {
+
+        expect(bitsToBytes(
+            '0001 0001 1010 1011 0000 0000'
+
+        )).toEqual(B(0x11, 0xAB, 0x00))
 
     });
 
@@ -1613,8 +1767,8 @@ function testWrongIndex(method: IndexMethods) {
 
 
 function expectEqualBits(
-    testString: (BitString | string),
-    expectedString: (BitString | string)
+    testString: (BitString | Uint8Array | string),
+    expectedString: (BitString | Uint8Array | string)
 ) {
 
     testString = prepare(testString);
@@ -1623,14 +1777,28 @@ function expectEqualBits(
     expect(testString).toEqual(expectedString);
 
 
-    function prepare(value: (BitString | string)): string {
+    function prepare(
+        value: (BitString | Uint8Array | string)
+
+    ): string {
+
         if (value instanceof BitString) {
             value = toStringOfBits(value);
+
+        } else if (value instanceof Uint8Array) {
+            const bitString = new BitString(value.byteLength * 8);
+            bitString.writeBytes(value);
+            return prepare(bitString);
+
         } else if (typeof value !== 'string') {
             throw new Error(`Unknown input type`);
+
         }
-        return value.replace(/\s+/g, '')
+
+        return value.replace(/\s+/g, '');
+
     }
+
 }
 
 function toStringOfBits(
@@ -1649,4 +1817,25 @@ function writeBits(bitString: BitString, bits: string) {
     for (const bit of bits) {
         bitString.writeBit(bit === '1');
     }
+}
+
+function bitsToBytes(bits: string): Uint8Array {
+    bits = bits.replace(/\s+/g, '');
+    if (bits.length % 8 !== 0) {
+        throw new Error(`Number of bits must be divisible by 8`);
+    }
+    const bytes: number[] = [];
+    let count = 0;
+    let octet = '';
+    for (const bit of bits) {
+        octet += bit;
+        count++;
+        if (count === 8) {
+            bytes.push(new BN(octet, 2).toNumber());
+            count = 0;
+            octet = '';
+        }
+    }
+    // const bytes = new Uint8Array(bits.length / 8);
+    return new Uint8Array(bytes);
 }
