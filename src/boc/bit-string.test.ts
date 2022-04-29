@@ -209,7 +209,7 @@ describe('BitString', () => {
                 .replace(/\s+/g, '')
             ;
 
-            expectEqual(bitString, expected);
+            expectEqualBits(bitString, expected);
 
             let bits = '';
             for (let i = 0; i < 20; i++) {
@@ -247,7 +247,7 @@ describe('BitString', () => {
                 .replace(/\s+/g, '')
             ;
 
-            expectEqual(bitString, expected);
+            expectEqualBits(bitString, expected);
 
         });
 
@@ -279,7 +279,7 @@ describe('BitString', () => {
                 .replace(/\s+/g, '')
             ;
 
-            expectEqual(bitString, expected);
+            expectEqualBits(bitString, expected);
 
         });
 
@@ -310,7 +310,7 @@ describe('BitString', () => {
                 .replace(/\s+/g, '')
             ;
 
-            expectEqual(bitString, expected);
+            expectEqualBits(bitString, expected);
 
         });
 
@@ -370,7 +370,7 @@ describe('BitString', () => {
                 .replace(/\s+/g, '')
             ;
 
-            expectEqual(bitString, expected);
+            expectEqualBits(bitString, expected);
 
         });
 
@@ -424,7 +424,7 @@ describe('BitString', () => {
                 .replace(/\s+/g, '')
             ;
 
-            expectEqual(bitString, expected);
+            expectEqualBits(bitString, expected);
 
         });
 
@@ -469,7 +469,7 @@ describe('BitString', () => {
                 .replace(/\s+/g, '')
             ;
 
-            expectEqual(bitString, expected);
+            expectEqualBits(bitString, expected);
 
             expect(bitString.getUsedBits()).toEqual(8);
 
@@ -541,7 +541,7 @@ describe('BitString', () => {
                             const bitString = new BitString(bitLength);
                             bitString.writeUint(inputValue(value), bitLength);
 
-                            expectEqual(
+                            expectEqualBits(
                                 bitString,
                                 expectedBits.replace(/\s+/g, '')
                             );
@@ -663,7 +663,7 @@ describe('BitString', () => {
                             const bitString = new BitString(8);
                             bitString.writeUint8(inputValue(value));
 
-                            expectEqual(
+                            expectEqualBits(
                                 bitString,
                                 expectedBits.replace(/\s+/g, '')
                             );
@@ -763,7 +763,7 @@ describe('BitString', () => {
                             const bitString = new BitString(bitLength);
                             bitString.writeInt(inputValue(value), bitLength);
 
-                            expectEqual(
+                            expectEqualBits(
                                 bitString,
                                 expectedBits.replace(/\s+/g, '')
                             );
@@ -867,7 +867,7 @@ describe('BitString', () => {
                     const bitString = new BitString(24);
                     bitString.writeBytes(bytes);
 
-                    expectEqual(
+                    expectEqualBits(
                         bitString,
                         expectedBits.replace(/\s+/g, '')
                     );
@@ -886,7 +886,7 @@ describe('BitString', () => {
             bitString.writeBytes(B(240));
             bitString.writeBitArray([1, 0, 0, 1]);
 
-            expectEqual(
+            expectEqualBits(
                 bitString,
                 ('0000 1111 1010 0101 1111 0000 1001')
                     .replace(/\s+/g, '')
@@ -900,7 +900,7 @@ describe('BitString', () => {
             bitString.writeBytes(B());
 
             expect(bitString.getUsedBits()).toEqual(0);
-            expectEqual(bitString, '');
+            expectEqualBits(bitString, '');
 
         });
 
@@ -962,7 +962,7 @@ describe('BitString', () => {
                     const bitString = new BitString(48);
                     bitString.writeString(string);
 
-                    expectEqual(
+                    expectEqualBits(
                         bitString,
                         expectedBits.replace(/\s+/g, '')
                     );
@@ -1065,7 +1065,7 @@ describe('BitString', () => {
                             const bitString = new BitString(44);
                             bitString.writeGrams(inputValue(value));
 
-                            expectEqual(
+                            expectEqualBits(
                                 bitString,
                                 expectedBits.replace(/\s+/g, '')
                             );
@@ -1151,7 +1151,7 @@ describe('BitString', () => {
                             const bitString = new BitString(44);
                             bitString.writeCoins(inputValue(value));
 
-                            expectEqual(
+                            expectEqualBits(
                                 bitString,
                                 expectedBits.replace(/\s+/g, '')
                             );
@@ -1225,7 +1225,7 @@ describe('BitString', () => {
                         new Address(address)
                     );
 
-                    expectEqual(bitString, expectedBits);
+                    expectEqualBits(bitString, expectedBits);
 
                 });
 
@@ -1249,7 +1249,7 @@ describe('BitString', () => {
 
                     bitString.writeAddress(emptyValue);
 
-                    expectEqual(bitString, '00');
+                    expectEqualBits(bitString, '00');
 
                 });
 
@@ -1278,7 +1278,7 @@ describe('BitString', () => {
 
     });
 
-    describe.only('writeBitString()', () => {
+    describe('writeBitString()', () => {
 
         it('writes the bit-string', () => {
 
@@ -1294,7 +1294,7 @@ describe('BitString', () => {
 
             bitString.writeBitString(srcBitString);
 
-            expectEqual(bitString, refBitString);
+            expectEqualBits(bitString, refBitString);
 
         });
 
@@ -1310,7 +1310,7 @@ describe('BitString', () => {
 
             bitString.writeBitString(emptyBitString);
 
-            expectEqual(bitString, refBitString);
+            expectEqualBits(bitString, refBitString);
 
         });
 
@@ -1351,6 +1351,55 @@ describe('BitString', () => {
     });
 
     describe('clone()', () => {
+
+        it('clones the bit-string', () => {
+
+            const bitString = new BitString(10);
+            bitString.writeUint8(100);
+
+            const clonedBitString = bitString.clone();
+
+            expectEqualBits(clonedBitString, bitString);
+
+            expect(clonedBitString.getUsedBits()).toEqual(8);
+            expect(clonedBitString.getFreeBits()).toEqual(2);
+
+        });
+
+        it('cursor position should be preserved', () => {
+
+            const bitString = new BitString(10);
+            bitString.writeBit(0);
+            bitString.writeBit(1);
+            bitString.writeBit(1);
+
+            const clonedBitString = bitString.clone();
+            clonedBitString.writeBit(0);
+            clonedBitString.writeBit(0);
+            clonedBitString.writeBit(1);
+
+            expectEqualBits(clonedBitString, '011 001');
+
+        });
+
+        it(`mutation shouldn't propagate to clones`, () => {
+
+            const bitString = new BitString(10);
+            bitString.writeBit(1);
+            bitString.writeBit(0);
+            bitString.writeBit(1);
+
+            const clonedBitString = bitString.clone();
+
+            bitString.writeBit(0);
+            bitString.writeBit(1);
+            bitString.writeBit(0);
+
+            expectEqualBits(bitString, '101 010');
+            expectEqualBits(clonedBitString, '101');
+
+        });
+
     });
 
     describe('toString()', () => {
@@ -1420,7 +1469,7 @@ describe('BitString', () => {
             bitString.setTopUppedArray(
                 B(4, 8, 15)
             );
-            expectEqual(bitString,
+            expectEqualBits(bitString,
                 '0000 0100 0000 1000 0000 1111'
             );
 
@@ -1438,7 +1487,7 @@ describe('BitString', () => {
             bitString.setTopUppedArray(
                 B(4, 8, 0xB0), false
             );
-            expectEqual(bitString,
+            expectEqualBits(bitString,
                 '0000 0100 0000 1000 101'
             );
 
@@ -1456,7 +1505,7 @@ describe('BitString', () => {
             bitString.setTopUppedArray(
                 B(4, 8, 0xFF), false
             );
-            expectEqual(bitString,
+            expectEqualBits(bitString,
                 '0000 0100 0000 1000 1111 111'
             );
 
@@ -1474,7 +1523,7 @@ describe('BitString', () => {
             bitString.setTopUppedArray(
                 B(4, 8, 0x40), false
             );
-            expectEqual(bitString,
+            expectEqualBits(bitString,
                 '0000 0100 0000 1000 0'
             );
 
@@ -1507,7 +1556,7 @@ function testWrongIndex(method: IndexMethods) {
 }
 
 
-function expectEqual(
+function expectEqualBits(
     testString: (BitString | string),
     expectedString: (BitString | string)
 ) {
