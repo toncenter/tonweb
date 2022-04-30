@@ -13,7 +13,7 @@ However, internally it keeps track of 3 categories of balances:
 3. **Restricted** coins, which can be spent after a timelock OR onto a whitelisted address.
 
 When the user tries to spend coins, the contract first checks which coins can be made liquid
-(i.e. whose timelocks are satisfied). 
+(i.e. whose timelocks are satisfied).
 
 If the user tries to spend more than currently available, their message will fail.
 
@@ -55,7 +55,7 @@ In tonweb, the wallet is instantiated with the following JSON
 {
     wallet_type: "lockup-0.1",
     workchain: 0, // use -1 for masterchain if you need validator/elector in the whitelist
-    config_pubkey: <base64-encoded pubkey>,
+    config_public_key: <base64-encoded pubkey>,
     allowed_destinations: <base64-encoded BoC representation of the whitelisted addresses>
 }
 ```

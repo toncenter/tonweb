@@ -116,7 +116,7 @@ Each part is documented separately:
 ```bash
 npm install 
 
-npm run build
+npx webpack --mode=none
 ```
 
 ## Use as alternative to Fift for building binary messages to smart-contracts
