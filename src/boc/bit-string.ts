@@ -19,24 +19,41 @@ import {
 const completionTag = '_';
 
 
+/**
+ * Represents an array of bits of the fixed length. Allows
+ * to serialize various data types to bits and supports
+ * single-bit operations. Serves as a data container for
+ * {@link Cell | Cells}.
+ */
 export class BitString {
 
-    // @todo: rename and make this private
+    /**
+     * @internal
+     * @todo: rename to `bytes` and make this private
+     */
     public array: Uint8Array;
 
-    // @todo: make this private
+    /**
+     * @internal
+     * @todo: make this private
+     */
     public cursor = 0;
 
+    /**
+     * @internal
+     * @todo: make this private
+     */
+    public length: number;
 
-    constructor(
-        /**
-         * A length of bit string in bits.
-         *
-         * @todo: length shouldn't be public and mutable,
-         *        but this is required by clone() method
-         */
-        public length: number
-    ) {
+
+    /**
+     * @param length - A length of the bit-string in bits,
+     *                 can't be changed after creation.
+     */
+    constructor(length: number) {
+
+        this.length = length;
+
         this.array = new Uint8Array(
             Math.ceil(length / 8)
         );
@@ -72,6 +89,8 @@ export class BitString {
     /**
      * Returns the bit value at the specified index
      * in the bit-string.
+     *
+     * @param index - An index of the bit to read.
      */
     public get(index: number): Bit {
         this.checkIndexOrThrow(index);
@@ -81,7 +100,9 @@ export class BitString {
     }
 
     /**
-     * Sets the bit value to one at the specified index.
+     * Sets the bit at the specified index.
+     *
+     * @param index - An index of the bit to set.
      *
      * @todo: should rename this method to `setBit()`
      */
@@ -91,7 +112,9 @@ export class BitString {
     }
 
     /**
-     * Sets the bit value to zero at the specified index.
+     * Clears the bit at the specified index.
+     *
+     * @param index - An index of the bit to clear.
      *
      * @todo: should rename this method to `clearBit()`
      */
@@ -101,8 +124,9 @@ export class BitString {
     }
 
     /**
-     * Toggles the bit value at the specified index,
-     * turns one into zero and zero into one.
+     * Toggles the bit at the specified index.
+     *
+     * @param index - An index of the bit to toggle.
      *
      * @todo: should rename this method to `toggleBit()`
      */
@@ -112,8 +136,12 @@ export class BitString {
     }
 
     /**
-     * Iterates the bit-string and calls the specified
-     * user function for each bit, passing in the bit value.
+     * Iterates the bits of the bit-string and calls the
+     * specified user function for each bit, passing in
+     * the value.
+     *
+     * @param callback - A callback function to execute
+     *                   for each sequential bit.
      *
      * @todo: implement iteration protocol
      */
@@ -130,9 +158,11 @@ export class BitString {
     }
 
     /**
-     * Writes the specified bit value to the end of the bit-string.
+     * Appends the specified bit value to the end
+     * of the bit-string.
      *
-     * @param bit - Bit value (a boolean or a number: `0` or `1`)
+     * @param bit - Bit value
+     *              (a boolean or a number: `0` or `1`).
      */
     public writeBit(bit: BitInput): void {
 
@@ -149,10 +179,12 @@ export class BitString {
     }
 
     /**
-     * Writes the specified array of bit values
+     * Appends the specified array of bit values
      * to the end of the bit-string.
      *
-     * @param values - An array of individual bits
+     * @param values - An array of individual bits.
+     *                 Each bit should a boolean or
+     *                 a number: `0` or `1`.
      */
     public writeBitArray(values: BitInput[]): void {
         if (!Array.isArray(values)) {
@@ -166,8 +198,17 @@ export class BitString {
     }
 
     /**
-     * Writes the specified unsigned integer of the specified
-     * length in bits to the bit-string.
+     * Appends the specified unsigned integer of the
+     * specified length in bits to the bit-string.
+     *
+     * @param value - Unsigned integer value as `number`,
+     *                `BN` or `string`. Shouldn't occupy
+     *                more bits than specified in
+     *                the `bitLength` argument.
+     *
+     * @param bitLength - The number of bits that should be
+     *                    occupied by the specified integer
+     *                    in the bit-string.
      */
     public writeUint(
         value: BigIntInput,
@@ -200,16 +241,29 @@ export class BitString {
     }
 
     /**
-     * Writes the specified unsigned 8-bit integer to the
+     * Appends the specified unsigned 8-bit integer to the
      * bit-string.
+     *
+     * @param value - Unsigned integer value as `number`,
+     *                `BN` or `string`. Shouldn't occupy
+     *                more than 8 bits.
      */
     public writeUint8(value: BigIntInput): void {
         this.writeUint(value, 8);
     }
 
     /**
-     * Writes the specified signed integer of the specified
+     * Appends the specified signed integer of the specified
      * length in bits to the bit-string.
+     *
+     * @param value - Integer value as `number`, `BN` or
+     *                `string`. Shouldn't occupy
+     *                more bits than specified in
+     *                the `bitLength` argument.
+     *
+     * @param bitLength - The number of bits that should be
+     *                    occupied by the specified integer
+     *                    in the bit-string.
      */
     public writeInt(
         value: BigIntInput,
@@ -276,8 +330,11 @@ export class BitString {
     }
 
     /**
-     * Writes the specified array of the unsigned 8-bit integers
-     * to the bit-string.
+     * Appends the specified array of the unsigned 8-bit
+     * integers to the bit-string.
+     *
+     * @param bytes - An `Uint8Array` representing an array
+     *                of bytes to append.
      */
     public writeBytes(bytes: Uint8Array): void {
         if (!(bytes instanceof Uint8Array)) {
@@ -291,21 +348,35 @@ export class BitString {
     }
 
     /**
-     * Represents the specified multibyte string as bytes and writes
-     * them to the bit-string.
+     * Represents the specified multibyte string as bytes
+     * and appends them to the end of the bit-string.
+     *
+     * @param text - A multibyte string to append
+     *               to the bit-string. UTF-8 values are
+     *               supported.
      */
     public writeString(text: string): void {
+
         if (typeof text !== 'string') {
-            throw new Error(`Specified value must be a string`);
+            throw new Error(
+                `Specified value must be a string`
+            );
         }
+
         this.writeBytes(
             stringToBytes(text)
         );
+
     }
 
     /**
-     * Writes the specified amount in nanograms to the
+     * Appends the specified amount of nanograms to the
      * bit-string.
+     *
+     * @param nanograms - Unsigned integer value as `number`,
+     *                    `BN` or `string`, representing the
+     *                    number of nanograms to append to the
+     *                    bit-string.
      */
     public writeGrams(nanograms: BigIntInput): void {
 
@@ -333,6 +404,11 @@ export class BitString {
      * Writes the specified TON amount in nanotons to the
      * bit-string.
      *
+     * @param nanotons - Unsigned integer value as `number`,
+     *                   `BN` or `string`, representing the
+     *                   number of nanotons to append to the
+     *                   bit-string.
+     *
      * @todo: why do we have a duplicate method?
      */
     public writeCoins(nanotons: BigIntInput): void {
@@ -342,9 +418,12 @@ export class BitString {
     }
 
     /**
-     * Writes the specified address to the bit-string.
+     * Appends the specified address to the bit-string.
      *
-     * @todo: allow to specify address as string
+     * @param address - An instance of
+     *                  {@link Address | Address} to append.
+     *
+     * @todo: allow to specify address as a string
      */
     public writeAddress(address?: Address): void {
 
@@ -378,6 +457,10 @@ export class BitString {
 
     /**
      * Appends the specified bit-string to this bit-string.
+     *
+     * @param bitString - An instance of another
+     *                    {@link BitString | BitString}
+     *                    to append.
      */
     public writeBitString(bitString: BitString): void {
 
@@ -394,6 +477,10 @@ export class BitString {
 
     /**
      * Creates a cloned instance of the bit-string.
+     *
+     * @returns Returns new {@link BitString | BitString}
+     *          with exactly the same content and length
+     *          as this one.
      */
     public clone(): BitString {
 
@@ -419,7 +506,9 @@ export class BitString {
     }
 
     /**
-     * Serializes BitString into as a sequence of bytes (octets).
+     * Serializes bit-string into as a sequence of bytes (octets).
+     * The completion bits are added if the number of used
+     * bits is not divisible by eight.
      *
      * @todo: rename this method to `getBytes()` for clarity
      */
@@ -453,9 +542,15 @@ export class BitString {
     }
 
     /**
-     * Sets this data to match provided topUppedArray.
+     * Parses the specified array of bytes and replaces
+     * bit-string data with it.
      *
-     * @todo: provide a more meaningful method description
+     * @param bytes - An array of bytes to parse.
+     *
+     * @param noCompletion - Flag indicating that the specified
+     *                       array of bytes doesn't have a
+     *                       completion bits.
+     *
      * @todo: replace with `static createFromBytes()`
      */
     public setTopUppedArray(
@@ -518,7 +613,8 @@ export class BitString {
     }
 
     /**
-     * Returns the bit-string represented as HEX-string (like in Fift).
+     * Returns the bit-string represented as a HEX-string
+     * (like in Fift).
      */
     public toHex(): string {
 
@@ -616,8 +712,8 @@ export class BitString {
 /**
  * Sets bit by the specific index in the specified array of bytes.
  *
- * @param bytes - An array of bytes representing a bit-string
- * @param index - Absolute index of the bit to set
+ * @param bytes - An array of bytes representing a bit-string.
+ * @param index - Absolute index of the bit to set.
  */
 function setBit(bytes: Uint8Array, index: number) {
     bytes[(index / 8) | 0] |= 1 << (7 - (index % 8));

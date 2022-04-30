@@ -1,4 +1,5 @@
 /.idea/
+/docs/
 /coverage/
 /dist/*
 !/dist/index.d.ts

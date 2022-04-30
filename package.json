@@ -7,6 +7,10 @@
   "scripts": {
     "build": "./bin/update-version && npm run build:tsc",
     "build:tsc": "rimraf ./dist && tsc -p ./tsconfig.lib.json && api-extractor run --local && rimraf ./dist/types",
+    "docs:generate": "typedoc",
+    "docs:publish": "run-s docs:generate docs:upload",
+    "docs:serve": "http-server docs/",
+    "docs:upload": "gh-pages -d docs/",
     "prepack": "npm test && npm run build",
     "test": "jest",
     "test:coverage": "jest --coverage"
@@ -67,11 +71,15 @@
     "@types/ledgerhq__hw-transport-webusb": "^4.70.1",
     "@types/node": "^15.14.9",
     "buffer": "6.0.3",
+    "gh-pages": "^3.2.3",
+    "http-server": "^14.1.0",
     "jest": "^27.5.1",
     "jest-junit": "^13.0.0",
+    "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.1.3",
     "ts-node": "^10.7.0",
+    "typedoc": "^0.22.15",
     "typescript": "^4.6.2"
   }
 }

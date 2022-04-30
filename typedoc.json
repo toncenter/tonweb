@@ -1,0 +1,10 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "src/boc/bit-string.ts"
+  ],
+  "out": "docs",
+  "cleanOutputDir": true,
+  "excludeInternal": true,
+  "tsconfig": "tsconfig.lib.json"
+}
