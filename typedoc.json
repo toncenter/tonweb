@@ -5,6 +5,7 @@
   ],
   "out": "docs",
   "cleanOutputDir": true,
+  "excludePrivate": true,
   "excludeInternal": true,
   "tsconfig": "tsconfig.lib.json"
 }

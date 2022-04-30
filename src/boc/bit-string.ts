@@ -29,33 +29,54 @@ export class BitString {
 
     /**
      * @internal
-     * @todo: rename to `bytes` and make this private
+     * @deprecated - Don't access the underlying bytes directly,
+     *               use {@link BitString.getTopUppedArray | getTopUppedArray()}
+     *               instead.
+     *
+     * This getter is available only for backward-compatibility.
+     *
+     * @todo: remove this getter
      */
-    public array: Uint8Array;
+    public get array(): Uint8Array {
+
+        // Returning a copy of the original bytes
+        // to prevent them from being mutated
+        return this.bytes.slice(0);
+
+    }
 
     /**
      * @internal
-     * @todo: make this private
+     * @deprecated: don't use internal cursor directly,
+     *              use {@link BitString.getUsedBits | getUsedBits()}
+     *              instead.
+     *
+     * This getter is available only for backward-compatibility.
+     *
+     * @todo: remove this getter
      */
-    public cursor = 0;
+    public get cursor(): number {
+        return this.nextBitIndex;
+    }
+
+    public get length(): number {
+        return this.bitLength;
+    }
+
+
+    private bytes: Uint8Array;
+
+    private nextBitIndex = 0;
+
 
     /**
-     * @internal
-     * @todo: make this private
+     * @param bitLength - A length of the bit-string in bits,
+     *                    can't be changed after creation.
      */
-    public length: number;
+    constructor(private bitLength: number) {
 
-
-    /**
-     * @param length - A length of the bit-string in bits,
-     *                 can't be changed after creation.
-     */
-    constructor(length: number) {
-
-        this.length = length;
-
-        this.array = new Uint8Array(
-            Math.ceil(length / 8)
+        this.bytes = new Uint8Array(
+            Math.ceil(bitLength / 8)
         );
 
     }
@@ -65,14 +86,14 @@ export class BitString {
      * Returns number of unfilled bits in the bit-string.
      */
     public getFreeBits(): number {
-        return (this.length - this.cursor);
+        return (this.bitLength - this.nextBitIndex);
     }
 
     /**
      * Returns number of filled bits in the bit-string.
      */
     public getUsedBits(): number {
-        return this.cursor;
+        return this.nextBitIndex;
     }
 
     /**
@@ -94,7 +115,7 @@ export class BitString {
      */
     public get(index: number): Bit {
         this.checkIndexOrThrow(index);
-        const byteValue = this.array[(index / 8) | 0];
+        const byteValue = this.bytes[(index / 8) | 0];
         const offset = (7 - (index % 8));
         return (byteValue & (1 << offset)) > 0;
     }
@@ -108,7 +129,7 @@ export class BitString {
      */
     public on(index: number): void {
         this.checkIndexOrThrow(index);
-        setBit(this.array, index);
+        setBit(this.bytes, index);
     }
 
     /**
@@ -120,7 +141,7 @@ export class BitString {
      */
     public off(index: number): void {
         this.checkIndexOrThrow(index);
-        this.array[(index / 8) | 0] &= ~(1 << (7 - (index % 8)));
+        this.bytes[(index / 8) | 0] &= ~(1 << (7 - (index % 8)));
     }
 
     /**
@@ -132,7 +153,7 @@ export class BitString {
      */
     public toggle(index: number): void {
         this.checkIndexOrThrow(index);
-        this.array[(index / 8) | 0] ^= 1 << (7 - (index % 8));
+        this.bytes[(index / 8) | 0] ^= 1 << (7 - (index % 8));
     }
 
     /**
@@ -151,7 +172,7 @@ export class BitString {
                 `Specified callback must be a function`
             );
         }
-        const max = this.cursor;
+        const max = this.nextBitIndex;
         for (let i = 0; i < max; i++) {
             callback(this.get(i));
         }
@@ -169,12 +190,12 @@ export class BitString {
         expectBit(bit);
 
         if (bit) {
-            this.on(this.cursor);
+            this.on(this.nextBitIndex);
         } else {
-            this.off(this.cursor);
+            this.off(this.nextBitIndex);
         }
 
-        this.cursor++;
+        this.nextBitIndex++;
 
     }
 
@@ -488,14 +509,27 @@ export class BitString {
         //        to prevent from public accessing the
         //        properties that should be private
 
-        const bitString = new BitString(0);
+        const bitString = new BitString(this.bitLength);
 
-        bitString.array = this.array.slice(0);
-        bitString.length = this.length
-        bitString.cursor = this.cursor;
+        bitString.__cloneFrom(this);
 
         return bitString;
 
+    }
+
+    /**
+     * @internal
+     * @deprecated
+     *
+     * This method is only used internally to support
+     * `BitString.clone()` method.
+     *
+     * @todo: remove this
+     */
+    public __cloneFrom(bitString: BitString): void {
+        this.bytes = bitString.array;
+        this.bitLength = bitString.length;
+        this.nextBitIndex = bitString.cursor;
     }
 
     /**
@@ -524,7 +558,7 @@ export class BitString {
         // split into groups.
 
         const usedBits = this.getUsedBits();
-        const bytes = this.array.slice(0, this.getUsedBytes());
+        const bytes = this.bytes.slice(0, this.getUsedBytes());
 
         // Checking if completion is needed
         if (usedBits % 8 !== 0) {
@@ -576,19 +610,19 @@ export class BitString {
             );
         }
 
-        this.length = (bytes.length * 8);
-        this.array = bytes;
-        this.cursor = this.length;
+        this.bitLength = (bytes.length * 8);
+        this.bytes = bytes;
+        this.nextBitIndex = this.bitLength;
 
-        if (noCompletion || !this.length) {
+        if (noCompletion || !this.bitLength) {
             return;
 
         } else {
             // Parsing bytes with completion
             let foundEndBit = false;
             for (let c = 0; c < 7; c++) {
-                this.cursor -= 1;
-                if (this.get(this.cursor) === true) {
+                this.nextBitIndex -= 1;
+                if (this.get(this.nextBitIndex) === true) {
                     foundEndBit = true;
                     break;
                 }
@@ -623,7 +657,7 @@ export class BitString {
         //
 
         const usedBits = this.getUsedBits();
-        const bytes = this.array.slice(0, this.getUsedBytes());
+        const bytes = this.bytes.slice(0, this.getUsedBytes());
 
         const requireCompletion = (usedBits % 4 !== 0);
 
@@ -674,7 +708,7 @@ export class BitString {
             );
         }
 
-        if (index >= this.length) {
+        if (index >= this.bitLength) {
             throw Error('BitString overflow');
         }
 
