@@ -1,19 +1,20 @@
 
 import BN from 'bn.js';
 
-import { AnyBN } from '../common/numbers';
 import { stringToBytes } from '../utils/text-encoding';
 import { bytesToHex } from '../utils/common';
 import { Address } from '../utils/address';
 
+import {
+    BigIntInput,
+    Bit,
+    BitInput,
+    expectBit,
+    expectSafeInteger,
+    parseBigIntInput,
 
-export type BitInput = (
-    | boolean
-    | 0 | 1
-    | number
-);
+} from '../common/numbers';
 
-export type Bit = boolean;
 
 const completionTag = '_';
 
@@ -117,6 +118,11 @@ export class BitString {
      * @todo: implement iteration protocol
      */
     public forEach(callback: (bit: Bit) => void): void {
+        if (typeof callback !== 'function') {
+            throw new Error(
+                `Specified callback must be a function`
+            );
+        }
         const max = this.cursor;
         for (let i = 0; i < max; i++) {
             callback(this.get(i));
@@ -129,13 +135,17 @@ export class BitString {
      * @param bit - Bit value (a boolean or a number: `0` or `1`)
      */
     public writeBit(bit: BitInput): void {
-        this.checkBitOrThrow(bit);
+
+        expectBit(bit);
+
         if (bit) {
             this.on(this.cursor);
         } else {
             this.off(this.cursor);
         }
+
         this.cursor++;
+
     }
 
     /**
@@ -160,14 +170,20 @@ export class BitString {
      * length in bits to the bit-string.
      */
     public writeUint(
-        value: AnyBN,
+        value: BigIntInput,
         bitLength: number
 
     ): void {
 
-        this.checkBitLengthOrThrow(bitLength);
+        value = parseBigIntInput(value);
 
-        value = new BN(value);
+        if (value.isNeg()) {
+            throw new Error(
+                `Specified value must be positive`
+            );
+        }
+
+        this.checkBitLengthOrThrow(bitLength);
 
         if (
             bitLength === 0 || (value.bitLength() > bitLength)
@@ -187,7 +203,7 @@ export class BitString {
      * Writes the specified unsigned 8-bit integer to the
      * bit-string.
      */
-    public writeUint8(value: AnyBN): void {
+    public writeUint8(value: BigIntInput): void {
         this.writeUint(value, 8);
     }
 
@@ -196,14 +212,14 @@ export class BitString {
      * length in bits to the bit-string.
      */
     public writeInt(
-        value: AnyBN,
+        value: BigIntInput,
         bitLength: number
 
     ): void {
 
         this.checkBitLengthOrThrow(bitLength);
 
-        value = new BN(value);
+        value = parseBigIntInput(value);
 
         if (bitLength === 1) {
             if (value.eqn(-1)) {
@@ -291,13 +307,14 @@ export class BitString {
      * Writes the specified amount in nanograms to the
      * bit-string.
      */
-    public writeGrams(nanograms: AnyBN): void {
+    public writeGrams(nanograms: BigIntInput): void {
 
-        nanograms = new BN(nanograms);
+        nanograms = parseBigIntInput(nanograms);
 
-        if (nanograms.ltn(0)) {
+        if (nanograms.isNeg()) {
             throw new Error(
-                `A positive number of nanograms must be specified`
+                `Nanograms value must be equal to ` +
+                `or greater than zero`
             )
         }
 
@@ -318,8 +335,10 @@ export class BitString {
      *
      * @todo: why do we have a duplicate method?
      */
-    public writeCoins(nanotons: AnyBN): void {
+    public writeCoins(nanotons: BigIntInput): void {
+
         return this.writeGrams(nanotons);
+
     }
 
     /**
@@ -377,11 +396,19 @@ export class BitString {
      * Creates a cloned instance of the bit-string.
      */
     public clone(): BitString {
+
+        // @todo: this should be implemented as a constructor
+        //        to prevent from public accessing the
+        //        properties that should be private
+
         const bitString = new BitString(0);
+
         bitString.array = this.array.slice(0);
         bitString.length = this.length
         bitString.cursor = this.cursor;
+
         return bitString;
+
     }
 
     /**
@@ -538,30 +565,23 @@ export class BitString {
      * the bit string, throws error in case of overflow.
      */
     private checkIndexOrThrow(index: number): void {
+
+        expectSafeInteger(index, (
+            'Incorrect BitString index, ' +
+            'specified value must be a valid integer'
+        ));
+
         if (index < 0) {
             throw Error(
                 'Incorrect BitString index, ' +
                 'must be greater than zero'
             );
         }
+
         if (index >= this.length) {
             throw Error('BitString overflow');
         }
-    }
 
-    /**
-     * Checks if the specified value is a correct bit value,
-     * throws error in case it's not.
-     */
-    private checkBitOrThrow(value: BitInput): void {
-        const validValues = [false, 0, true, 1];
-        if (!validValues.includes(value)) {
-            throw new Error(
-                'Incorrect bit value specified, ' +
-                'it must be either boolean or a number ' +
-                '0 or 1'
-            );
-        }
     }
 
     /**
@@ -569,6 +589,10 @@ export class BitString {
      * throws error in case it's not.
      */
     private checkBitLengthOrThrow(bitLength: number): void {
+
+        expectSafeInteger(bitLength, (
+            'Specified bit-length must be a valid integer'
+        ));
 
         // Chapter 1.5 of the "Telegram Open Network Virtual Machine".
         // ${link https://ton-blockchain.github.io/docs/tvm.pdf}

@@ -1,7 +1,7 @@
 
 import BN from 'bn.js';
 
-import { AnyBN } from '../common/numbers';
+import { BigIntInput } from '../common/numbers';
 import { Address } from '../utils/address';
 import { BitString } from './bit-string';
 
@@ -348,6 +348,25 @@ describe('BitString', () => {
 
         });
 
+        it('throws on incorrect argument', async () => {
+
+            const values = [
+                [], {}, new Date(), Symbol(),
+                0, 100, Promise.resolve(),
+                new Map(), new Set(),
+                '', 'hello', true, NaN, undefined, null,
+            ];
+
+            const bitString = new BitString(1);
+
+            for (const value of values) {
+                expect(() => bitString.forEach(value as any))
+                    .toThrow('must be a function')
+                ;
+            }
+
+        });
+
     });
 
     describe('writeBit()', () => {
@@ -386,7 +405,7 @@ describe('BitString', () => {
 
             for (const value of values) {
                 expect(() => bitString.writeBit(value as any))
-                    .toThrow('Incorrect bit value specified')
+                    .toThrow('Expected value to be a bit')
                 ;
             }
 
@@ -440,7 +459,7 @@ describe('BitString', () => {
 
             for (const value of values) {
                 expect(() => bitString.writeBitArray([value as any]))
-                    .toThrow('Incorrect bit value specified')
+                    .toThrow('Expected value to be a bit')
                 ;
             }
 
@@ -505,7 +524,7 @@ describe('BitString', () => {
 
         for (const inputType of inputTypes) {
 
-            const inputValue = (value: number): AnyBN => {
+            const inputValue = (value: number): BigIntInput => {
                 switch (inputType) {
                     case 'number':
                         return value;
@@ -553,12 +572,22 @@ describe('BitString', () => {
 
                 }
 
-                it('throws error on BitString overflow', async () => {
+                it('throws on BitString overflow', async () => {
 
                     const bitString = new BitString(4);
 
                     expect(() => bitString.writeUint(inputValue(16), 5))
                         .toThrow('BitString overflow')
+                    ;
+
+                });
+
+                it('throws on negative values', async () => {
+
+                    const bitString = new BitString(0);
+
+                    expect(() => bitString.writeUint(inputValue(-1), 8))
+                        .toThrow('Specified value must be positive')
                     ;
 
                 });
@@ -599,18 +628,38 @@ describe('BitString', () => {
 
         }
 
+        it('throws error on incorrect value type', () => {
+            const bitString = new BitString(0);
+            testBigIntInput((value: BigIntInput) =>
+                bitString.writeUint(value, 8)
+            );
+        });
+
         it('throws error on incorrect bit-length', () => {
 
-            const cases = [-10, -2, -1, 0, 257, 258, 300];
+            const invalidTypeValues = [
+                [], {}, new Date(), Symbol(),
+                () => {}, Promise.resolve(),
+                new Map(), new Set(),
+                '', 'hello', NaN, null,
+            ];
 
-            for (const bitLength of cases) {
+            const invalidRangeValues = [
+                -10, -2, -1, 0, 257, 258, 300,
+            ];
 
-                const bitString = new BitString(1023);
+            const bitString = new BitString(1023);
 
-                expect(() => bitString.writeUint(100500, bitLength))
-                    .toThrow(/Bit length must be/)
+            for (const bitLength of invalidTypeValues) {
+                expect(() => bitString.writeUint(100500, bitLength as any))
+                    .toThrow('must be a valid integer')
                 ;
+            }
 
+            for (const bitLength of invalidRangeValues) {
+                expect(() => bitString.writeUint(100500, bitLength as any))
+                    .toThrow('must be greater than zero and less or equal to 256')
+                ;
             }
 
         });
@@ -627,7 +676,7 @@ describe('BitString', () => {
 
         for (const inputType of inputTypes) {
 
-            const inputValue = (value: number): AnyBN => {
+            const inputValue = (value: number): BigIntInput => {
                 switch (inputType) {
                     case 'number':
                         return value;
@@ -687,22 +736,23 @@ describe('BitString', () => {
 
             });
 
-        }
+            it('throws on negative values', async () => {
 
-        it('throws error on incorrect bit-length', () => {
+                const bitString = new BitString(0);
 
-            const cases = [-10, -2, -1, 0, 257, 258, 300];
-
-            for (const bitLength of cases) {
-
-                const bitString = new BitString(1023);
-
-                expect(() => bitString.writeUint(100500, bitLength))
-                    .toThrow(/Bit length must be/)
+                expect(() => bitString.writeUint(inputValue(-1), 8))
+                    .toThrow('Specified value must be positive')
                 ;
 
-            }
+            });
 
+        }
+
+        it('throws error on incorrect value type', () => {
+            const bitString = new BitString(0);
+            testBigIntInput(
+                (value => bitString.writeUint8(value))
+            );
         });
 
     });
@@ -717,7 +767,7 @@ describe('BitString', () => {
 
         for (const inputType of inputTypes) {
 
-            const inputValue = (value: number): AnyBN => {
+            const inputValue = (value: number): BigIntInput => {
                 switch (inputType) {
                     case 'number':
                         return value;
@@ -839,6 +889,13 @@ describe('BitString', () => {
 
             }
 
+        });
+
+        it('throws error on incorrect value type', () => {
+            const bitString = new BitString(0);
+            testBigIntInput((value: BigIntInput) =>
+                bitString.writeInt(value, 16)
+            );
         });
 
     });
@@ -1018,177 +1075,9 @@ describe('BitString', () => {
 
     });
 
-    describe('writeGrams()', () => {
+    describe('writeGrams()', () => testGrams('writeGrams'));
 
-        const inputTypes: InputType[] = [
-            'number',
-            'string',
-            'BN',
-        ];
-
-        for (const inputType of inputTypes) {
-
-            const inputValue = (value: number): AnyBN => {
-                switch (inputType) {
-                    case 'number':
-                        return value;
-                    case 'string':
-                        return value.toString();
-                    case 'BN':
-                        return new BN(value);
-                }
-            }
-
-            describe(`${inputType} input`, () => {
-
-                //==================//
-                // writes the grams //
-                //==================//
-
-                {
-                    type Case = [number, string];
-
-                    const cases: Case[] = [
-                        [           0, '0000'],
-                        [           1, '0001 0000 0001'],
-                        [         100, '0001 0110 0100'],
-                        [ 15123456789, '0101 0000 0011 1000' +
-                                       '0101 0110 1101 1010' +
-                                       '0011 0001 0101'
-                        ],
-                    ];
-
-                    for (const values of cases) {
-
-                        const [value, expectedBits] = values;
-
-                        it(`writes the grams: ${value}`, async () => {
-
-                            const bitString = new BitString(44);
-                            bitString.writeGrams(inputValue(value));
-
-                            expectEqualBits(
-                                bitString,
-                                expectedBits.replace(/\s+/g, '')
-                            );
-
-                        });
-
-                    }
-
-                }
-
-                it('throws error on BitString overflow', async () => {
-
-                    const bitString = new BitString(1);
-
-                    expect(() => bitString.writeGrams(inputValue(16)))
-                        .toThrow('BitString overflow')
-                    ;
-
-                });
-
-                it('throws error on negative values', async () => {
-
-                    const bitString = new BitString(16);
-
-                    expect(() => bitString.writeGrams(inputValue(-1)))
-                        .toThrow(/positive number.*must be specified/)
-                    ;
-
-                });
-
-            });
-
-        }
-
-    });
-
-    describe('writeCoins()', () => {
-
-        const inputTypes: InputType[] = [
-            'number',
-            'string',
-            'BN',
-        ];
-
-        for (const inputType of inputTypes) {
-
-            const inputValue = (value: number): AnyBN => {
-                switch (inputType) {
-                    case 'number':
-                        return value;
-                    case 'string':
-                        return value.toString();
-                    case 'BN':
-                        return new BN(value);
-                }
-            }
-
-            describe(`${inputType} input`, () => {
-
-                //==================//
-                // writes the coins //
-                //==================//
-
-                {
-                    type Case = [number, string];
-
-                    const cases: Case[] = [
-                        [           0, '0000'],
-                        [           1, '0001 0000 0001'],
-                        [         100, '0001 0110 0100'],
-                        [ 15123456789, '0101 0000 0011 1000' +
-                                       '0101 0110 1101 1010' +
-                                       '0011 0001 0101'
-                        ],
-                    ];
-
-                    for (const values of cases) {
-
-                        const [value, expectedBits] = values;
-
-                        it(`writes the coins: ${value}`, async () => {
-
-                            const bitString = new BitString(44);
-                            bitString.writeCoins(inputValue(value));
-
-                            expectEqualBits(
-                                bitString,
-                                expectedBits.replace(/\s+/g, '')
-                            );
-
-                        });
-
-                    }
-
-                }
-
-                it('throws error on BitString overflow', async () => {
-
-                    const bitString = new BitString(1);
-
-                    expect(() => bitString.writeCoins(inputValue(16)))
-                        .toThrow('BitString overflow')
-                    ;
-
-                });
-
-                it('throws error on negative values', async () => {
-
-                    const bitString = new BitString(16);
-
-                    expect(() => bitString.writeCoins(inputValue(-1)))
-                        .toThrow(/positive number.*must be specified/)
-                    ;
-
-                });
-
-            });
-
-        }
-
-    });
+    describe('writeCoins()', () => testGrams('writeCoins'));
 
     describe('writeAddress()', () => {
 
@@ -1406,7 +1295,7 @@ describe('BitString', () => {
 
     });
 
-    describe('toString()', () => toHexTests('toString'));
+    describe('toString()', () => testToHex('toString'));
 
     describe('getTopUppedArray()', () => {
 
@@ -1675,7 +1564,7 @@ describe('BitString', () => {
 
     });
 
-    describe('toHex()', () => toHexTests('toHex'));
+    describe('toHex()', () => testToHex('toHex'));
 
     it('internal: writeBits()', () => {
 
@@ -1696,7 +1585,8 @@ describe('BitString', () => {
 
 });
 
-function toHexTests(funcName: ('toHex' | 'toString')) {
+
+function testToHex(funcName: ('toHex' | 'toString')) {
 
     //===================================//
     // converts bit-string to HEX-string //
@@ -1751,17 +1641,178 @@ function testWrongIndex(method: IndexMethods) {
 
     const bitString = new BitString(0);
 
-    const indices = [
+    const invalidIndices = [
         -100, -10, -2, -1,
+        NaN, [], {}, new Date(), Symbol(),
+        () => {}, Promise.resolve(),
+        new Map(), new Set(),
+        '', 'hello', null,
+    ];
+
+    const overflowIndices = [
         0, 1, 2, 3, 10, 100,
         Number.MAX_SAFE_INTEGER,
     ];
 
-    for (const index of indices) {
-        expect(() => bitString[method](index)).toThrow(
-            /(Incorrect BitString index|BitString overflow)/
-        );
+    for (const index of invalidIndices) {
+        console.log(index);
+        expect(() => bitString[method](index as any))
+            .toThrow('Incorrect BitString index')
+        ;
     }
+
+    for (const index of overflowIndices) {
+        expect(() => bitString[method](index as any))
+            .toThrow('BitString overflow')
+        ;
+    }
+
+}
+
+function testBigIntInput(
+    func: (value: BigIntInput) => void
+) {
+
+    const invalidIntegers = [
+        NaN, 100.5, Math.PI,
+    ];
+
+    const unsafeIntegers = [
+        Number.MAX_VALUE,
+        (Number.MAX_SAFE_INTEGER + 1),
+    ];
+
+    const invalidStrings = [
+        '100.5', '100 5', 'hello',
+    ];
+
+    const invalidTypes = [
+        [], {}, new Date(), Symbol(),
+        () => {}, Promise.resolve(),
+        new Map(), new Set(),
+        null, undefined,
+    ];
+
+    for (const value of invalidIntegers) {
+        expect(() => func(value as any))
+            .toThrow(/Expected.*value to be a valid integer/)
+        ;
+    }
+
+    for (const value of unsafeIntegers) {
+        expect(() => func(value as any))
+            .toThrow(/Expected.*value to be a safe integer/)
+        ;
+    }
+
+    expect(() => func(''))
+        .toThrow(`Specified string shouldn't be empty`)
+    ;
+
+    for (const value of invalidStrings) {
+        expect(() => func(value as any))
+            .toThrow('Specified string contains invalid characters')
+        ;
+    }
+
+    for (const value of invalidTypes) {
+        expect(() => func(value as any))
+            .toThrow('Specified value has an incorrect type')
+        ;
+    }
+
+}
+
+function testGrams(funcName: ('writeGrams' | 'writeCoins')) {
+
+    const inputTypes: InputType[] = [
+        'number',
+        'string',
+        'BN',
+    ];
+
+    for (const inputType of inputTypes) {
+
+        const inputValue = (value: number): BigIntInput => {
+            switch (inputType) {
+                case 'number':
+                    return value;
+                case 'string':
+                    return value.toString();
+                case 'BN':
+                    return new BN(value);
+            }
+        }
+
+        describe(`${inputType} input`, () => {
+
+            //==================//
+            // writes the grams //
+            //==================//
+
+            {
+                type Case = [number, string];
+
+                const cases: Case[] = [
+                    [           0, '0000'],
+                    [           1, '0001 0000 0001'],
+                    [         100, '0001 0110 0100'],
+                    [ 15123456789, '0101 0000 0011 1000' +
+                    '0101 0110 1101 1010' +
+                    '0011 0001 0101'
+                    ],
+                ];
+
+                for (const values of cases) {
+
+                    const [value, expectedBits] = values;
+
+                    it(`writes the grams: ${value}`, async () => {
+
+                        const bitString = new BitString(44);
+                        bitString[funcName](inputValue(value));
+
+                        expectEqualBits(
+                            bitString,
+                            expectedBits.replace(/\s+/g, '')
+                        );
+
+                    });
+
+                }
+
+            }
+
+            it('throws error on BitString overflow', async () => {
+
+                const bitString = new BitString(1);
+
+                expect(() => bitString[funcName](inputValue(16)))
+                    .toThrow('BitString overflow')
+                ;
+
+            });
+
+            it('throws error on negative values', async () => {
+
+                const bitString = new BitString(16);
+
+                expect(() => bitString[funcName](inputValue(-1)))
+                    .toThrow('Nanograms value must be equal to or greater than zero')
+                ;
+
+            });
+
+        });
+
+    }
+
+    it('throws error on incorrect value type', () => {
+        const bitString = new BitString(0);
+        testBigIntInput(
+            (value => bitString[funcName](value))
+        );
+    });
 
 }
 
