@@ -1,3 +1,4 @@
+
 const utils = require("./utils");
 const Address = utils.Address;
 const boc = require("./boc");
@@ -13,7 +14,9 @@ const {SubscriptionContract} = require("./contract/subscription/index");
 const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
 const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
 const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
-const version = '0.0.38';
+const { version } = require('./version');
+const { FetchHttpClient } = require('./http-client/fetch-http-client');
+
 
 class TonWeb {
     constructor(provider) {
@@ -81,12 +84,15 @@ TonWeb.LockupWallets = LockupWallets;
 TonWeb.SubscriptionContract = SubscriptionContract;
 TonWeb.BlockSubscription = BlockSubscription;
 TonWeb.InMemoryBlockStorage = InMemoryBlockStorage;
+TonWeb.FetchHttpClient = FetchHttpClient;
+
 TonWeb.ledger = {
     TransportWebUSB,
     TransportWebHID,
     BluetoothTransport,
     AppTon,
 };
+
 TonWeb.token = {
     nft: NFT,
     ft: JETTON,
