@@ -44,8 +44,6 @@ export declare type AddressState = ('uninitialized' | 'frozen' | 'active');
 
 export declare type AddressType = (Address_2 | string);
 
-declare type AnyBN = (number | string | BN_2);
-
 export declare interface AppConfiguration {
     version: string;
 }
@@ -105,30 +103,52 @@ declare function base64ToBytes(base64: string): Uint8Array;
  */
 declare function base64toString(base64: string): string;
 
+declare type BigIntInput = (number | string | BN_2);
+
 declare type Bit = boolean;
 
 declare type BitInput = (boolean | 0 | 1 | number);
 
 export declare type BitString = BitString_2;
 
+/**
+ * Represents an array of bits of the fixed length. Allows
+ * to serialize various data types to bits and supports
+ * single-bit operations. Serves as a data container for
+ * {@link Cell | Cells}.
+ */
 declare class BitString_2 {
+    private bitLength;
     /**
-     * A length of bit string in bits.
+     * @internal
+     * @deprecated - Don't access the underlying bytes directly,
+     *               use {@link BitString.getTopUppedArray | getTopUppedArray()}
+     *               instead.
      *
-     * @todo: length shouldn't be public and mutable,
-     *        but this is required by clone() method
+     * This getter is available only for backward-compatibility.
+     *
+     * @todo: remove this getter
      */
-    length: number;
-    array: Uint8Array;
-    cursor: number;
-    constructor(
+    get array(): Uint8Array;
     /**
-     * A length of bit string in bits.
+     * @internal
+     * @deprecated: don't use internal cursor directly,
+     *              use {@link BitString.getUsedBits | getUsedBits()}
+     *              instead.
      *
-     * @todo: length shouldn't be public and mutable,
-     *        but this is required by clone() method
+     * This getter is available only for backward-compatibility.
+     *
+     * @todo: remove this getter
      */
-    length: number);
+    get cursor(): number;
+    get length(): number;
+    private bytes;
+    private nextBitIndex;
+    /**
+     * @param bitLength - A length of the bit-string in bits,
+     *                    can't be changed after creation.
+     */
+    constructor(bitLength: number);
     /**
      * Returns number of unfilled bits in the bit-string.
      */
@@ -140,136 +160,216 @@ declare class BitString_2 {
     /**
      * Returns number of bytes actually used by the bit-string.
      * Rounds up to a whole byte.
+     *
+     * @todo: rename to `getUsedBytesCount()`
+     * @todo: implement `getUsedBytes(): Uint8Array`
      */
     getUsedBytes(): number;
     /**
      * Returns the bit value at the specified index
      * in the bit-string.
+     *
+     * @param index - An index of the bit to read.
      */
     get(index: number): Bit;
     /**
-     * Sets the bit value to one at the specified index.
+     * Sets the bit at the specified index.
+     *
+     * @param index - An index of the bit to set.
      *
      * @todo: should rename this method to `setBit()`
      */
     on(index: number): void;
     /**
-     * Sets the bit value to zero at the specified index.
+     * Clears the bit at the specified index.
+     *
+     * @param index - An index of the bit to clear.
      *
      * @todo: should rename this method to `clearBit()`
      */
     off(index: number): void;
     /**
-     * Toggles the bit value at the specified index,
-     * turns one into zero and zero into one.
+     * Toggles the bit at the specified index.
+     *
+     * @param index - An index of the bit to toggle.
      *
      * @todo: should rename this method to `toggleBit()`
      */
     toggle(index: number): void;
     /**
-     * Iterates the bit-string and calls the specified
-     * user function for each bit, passing in the bit value.
+     * Iterates the bits of the bit-string and calls the
+     * specified user function for each bit, passing in
+     * the value.
+     *
+     * @param callback - A callback function to execute
+     *                   for each sequential bit.
      *
      * @todo: implement iteration protocol
      */
     forEach(callback: (bit: Bit) => void): void;
     /**
-     * Writes the specified bit value to the end of the bit-string.
+     * Appends the specified bit value to the end
+     * of the bit-string.
      *
-     * @param bit - Bit value (a boolean or a number: `0` or `1`)
+     * @param bit - Bit value
+     *              (a boolean or a number: `0` or `1`).
      */
     writeBit(bit: BitInput): void;
     /**
-     * Writes the specified array of bit values
+     * Appends the specified array of bit values
      * to the end of the bit-string.
      *
-     * @param values - An array of individual bits
+     * @param values - An array of individual bits.
+     *                 Each bit should a boolean or
+     *                 a number: `0` or `1`.
      */
     writeBitArray(values: BitInput[]): void;
     /**
-     * Writes the specified unsigned integer of the specified
-     * length in bits to the bit-string.
+     * Appends the specified unsigned integer of the
+     * specified length in bits to the bit-string.
+     *
+     * @param value - Unsigned integer value as `number`,
+     *                `BN` or `string`. Shouldn't occupy
+     *                more bits than specified in
+     *                the `bitLength` argument.
+     *
+     * @param bitLength - The number of bits that should be
+     *                    occupied by the specified integer
+     *                    in the bit-string.
      */
-    writeUint(value: AnyBN, bitLength: number): void;
+    writeUint(value: BigIntInput, bitLength: number): void;
     /**
-     * Writes the specified unsigned 8-bit integer to the
+     * Appends the specified unsigned 8-bit integer to the
      * bit-string.
+     *
+     * @param value - Unsigned integer value as `number`,
+     *                `BN` or `string`. Shouldn't occupy
+     *                more than 8 bits.
      */
-    writeUint8(value: AnyBN): void;
+    writeUint8(value: BigIntInput): void;
     /**
-     * Writes the specified signed integer of the specified
+     * Appends the specified signed integer of the specified
      * length in bits to the bit-string.
+     *
+     * @param value - Integer value as `number`, `BN` or
+     *                `string`. Shouldn't occupy
+     *                more bits than specified in
+     *                the `bitLength` argument.
+     *
+     * @param bitLength - The number of bits that should be
+     *                    occupied by the specified integer
+     *                    in the bit-string.
      */
-    writeInt(value: AnyBN, bitLength: number): void;
+    writeInt(value: BigIntInput, bitLength: number): void;
     /**
-     * Writes the specified array of the unsigned 8-bit integers
-     * to the bit-string.
+     * Appends the specified array of the unsigned 8-bit
+     * integers to the bit-string.
+     *
+     * @param bytes - An `Uint8Array` representing an array
+     *                of bytes to append.
      */
     writeBytes(bytes: Uint8Array): void;
     /**
-     * Represents the specified multibyte string as bytes and writes
-     * them to the bit-string.
+     * Represents the specified multibyte string as bytes
+     * and appends them to the end of the bit-string.
+     *
+     * @param text - A multibyte string to append
+     *               to the bit-string. UTF-8 values are
+     *               supported.
      */
     writeString(text: string): void;
     /**
-     * Writes the specified amount in nanograms to the
+     * Appends the specified amount of nanograms to the
      * bit-string.
+     *
+     * @param nanograms - Unsigned integer value as `number`,
+     *                    `BN` or `string`, representing the
+     *                    number of nanograms to append to the
+     *                    bit-string.
      */
-    writeGrams(nanograms: AnyBN): void;
+    writeGrams(nanograms: BigIntInput): void;
     /**
      * Writes the specified TON amount in nanotons to the
      * bit-string.
      *
+     * @param nanotons - Unsigned integer value as `number`,
+     *                   `BN` or `string`, representing the
+     *                   number of nanotons to append to the
+     *                   bit-string.
+     *
      * @todo: why do we have a duplicate method?
      */
-    writeCoins(nanotons: AnyBN): void;
+    writeCoins(nanotons: BigIntInput): void;
     /**
-     * Writes the specified address to the bit-string,
-     * starting at the current index and advances the
-     * current index cursor by the number of bits written.
+     * Appends the specified address to the bit-string.
+     *
+     * @param address - An instance of
+     *                  {@link Address | Address} to append.
+     *
+     * @todo: allow to specify address as a string
      */
     writeAddress(address?: Address_2): void;
     /**
-     * Appends the specified bit-string to the bit-string,
-     * starting at the current index and advances the
-     * current index cursor by the number of bits written.
+     * Appends the specified bit-string to this bit-string.
+     *
+     * @param bitString - An instance of another
+     *                    {@link BitString | BitString}
+     *                    to append.
      */
     writeBitString(bitString: BitString_2): void;
     /**
      * Creates a cloned instance of the bit-string.
+     *
+     * @returns Returns new {@link BitString | BitString}
+     *          with exactly the same content and length
+     *          as this one.
      */
     clone(): BitString_2;
+    /**
+     * @internal
+     * @deprecated
+     *
+     * This method is only used internally to support
+     * `BitString.clone()` method.
+     *
+     * @todo: remove this
+     */
+    __cloneFrom(bitString: BitString_2): void;
     /**
      * Returns the bit-string represented as HEX-string.
      */
     toString(): string;
     /**
-     * Serializes BitString into as a sequence of bytes (octets).
+     * Serializes bit-string into as a sequence of bytes (octets).
+     * The completion bits are added if the number of used
+     * bits is not divisible by eight.
      *
      * @todo: rename this method to `getBytes()` for clarity
      */
     getTopUppedArray(): Uint8Array;
     /**
-     * Returns the bit-string represented as HEX-string (like in Fift).
-     */
-    toHex(): string;
-    /**
-     * Sets this data to match provided topUppedArray.
+     * Parses the specified array of bytes and replaces
+     * bit-string data with it.
      *
-     * @todo: provide a more meaningful method description
+     * @param bytes - An array of bytes to parse.
+     *
+     * @param noCompletion - Flag indicating that the specified
+     *                       array of bytes doesn't have a
+     *                       completion bits.
+     *
      * @todo: replace with `static createFromBytes()`
      */
     setTopUppedArray(bytes: Uint8Array, noCompletion?: boolean): void;
+    /**
+     * Returns the bit-string represented as a HEX-string
+     * (like in Fift).
+     */
+    toHex(): string;
     /**
      * Checks if the specified index is allowed for
      * the bit string, throws error in case of overflow.
      */
     private checkIndexOrThrow;
-    /**
-     * Checks if the specified value is a correct bit value,
-     * throws error in case it's not.
-     */
-    private checkBitOrThrow;
     /**
      * Checks if the specified bit length is valid in TVM,
      * throws error in case it's not.
