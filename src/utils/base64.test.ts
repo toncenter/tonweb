@@ -1,5 +1,13 @@
 
-import { base64ToBytes, base64toString, bytesToBase64, stringToBase64 } from './base64';
+import TonWeb from '__tonweb__';
+
+const {
+    base64ToBytes,
+    base64toString,
+    bytesToBase64,
+    stringToBase64,
+
+} = TonWeb.utils;
 
 
 const CASES = {

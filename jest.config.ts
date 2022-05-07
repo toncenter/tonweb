@@ -29,4 +29,7 @@ export default <Config.InitialOptions>{
     setupFiles: [
         '<rootDir>/test/setup.ts',
     ],
+    moduleNameMapper: {
+        '__tonweb__': '<rootDir>/src/index.ts',
+    },
 };

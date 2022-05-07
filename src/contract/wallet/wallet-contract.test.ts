@@ -1,18 +1,16 @@
 
-import { Cell } from '../../boc/cell/cell';
-import { HttpProvider } from '../../http-provider/http-provider';
+import TonWeb from '__tonweb__';
+
+import {
+    Cell as CellType,
+    HttpProvider as HttpProviderType,
+    TransferMethodParams,
+    WalletContractOptions,
+
+} from '__tonweb__';
+
 import { TestHttpProvider } from '../../http-provider/test-http-provider';
-import { bytesToBase64 } from '../../utils/base64';
-import { LockupWalletV1 } from '../lockup/lockup-wallet-v1';
-import { SimpleWalletContractR1 } from './simple/simple-wallet-contract-r1';
-import { SimpleWalletContractR2 } from './simple/simple-wallet-contract-r2';
-import { SimpleWalletContractR3 } from './simple/simple-wallet-contract-r3';
-import { WalletV2ContractR1 } from './v2/wallet-v2-contract-r1';
-import { WalletV2ContractR2 } from './v2/wallet-v2-contract-r2';
-import { WalletV3ContractR1 } from './v3/wallet-v3-contract-r1';
-import { WalletV3ContractR2 } from './v3/wallet-v3-contract-r2';
-import { WalletV4ContractR1 } from './v4/wallet-v4-contract-r1';
-import { WalletV4ContractR2 } from './v4/wallet-v4-contract-r2';
+import { WalletContract } from './wallet-contract';
 
 import {
     testAddress,
@@ -22,12 +20,19 @@ import {
 
 } from '../../test/common';
 
-import {
-    TransferMethodParams,
-    WalletContract,
-    WalletContractOptions,
+const { Cell } = TonWeb.boc;
+const { bytesToBase64 } = TonWeb.utils;
 
-} from './wallet-contract';
+const LockupWalletV1 = TonWeb.LockupWallets.LockupWalletV1;
+const SimpleWalletContractR1 = TonWeb.Wallets.all.simpleR1;
+const SimpleWalletContractR2 = TonWeb.Wallets.all.simpleR2;
+const SimpleWalletContractR3 = TonWeb.Wallets.all.simpleR3;
+const WalletV2ContractR1 = TonWeb.Wallets.all.v2R1;
+const WalletV2ContractR2 = TonWeb.Wallets.all.v2R2;
+const WalletV3ContractR1 = TonWeb.Wallets.all.v3R1;
+const WalletV3ContractR2 = TonWeb.Wallets.all.v3R2;
+const WalletV4ContractR1 = TonWeb.Wallets.all.v4R1;
+const WalletV4ContractR2 = TonWeb.Wallets.all.v4R2;
 
 
 interface WalletTestDescriptor {
@@ -508,7 +513,7 @@ for (const test of wallets) {
 
 
     function createWallet(args?: {
-        provider?: HttpProvider;
+        provider?: HttpProviderType;
         options?: Partial<WalletContractOptions>;
 
     }): WalletContract {
@@ -596,7 +601,7 @@ for (const test of wallets) {
 
     async function testTransferMessage(options: {
         seqno: number;
-        payload?: (string | Uint8Array | Cell);
+        payload?: (string | Uint8Array | CellType);
         sendMode?: number;
         expectedMessageBocB64: string;
     }) {

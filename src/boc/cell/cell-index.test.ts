@@ -1,6 +1,10 @@
 
-import { Cell } from './cell';
+import TonWeb from '__tonweb__';
+import { Cell as CellType } from '__tonweb__';
+
 import { indexCell } from './cell-index';
+
+const { Cell } = TonWeb.boc;
 
 
 // @todo: add test with cycles (not DAG)
@@ -132,7 +136,7 @@ type CellsSchema = Array<
 >;
 
 interface CellsIndex {
-    [key: string]: Cell;
+    [key: string]: CellType;
 }
 
 /**
@@ -151,9 +155,9 @@ function createCells(schema: CellsSchema): CellsIndex {
         name: string,
         children: string[] = []
 
-    ): Cell {
+    ): CellType {
 
-        let cell: Cell;
+        let cell: CellType;
 
         if (cells[name]) {
             cell = cells[name];
@@ -178,7 +182,7 @@ function createCells(schema: CellsSchema): CellsIndex {
 }
 
 function cellsToNames(
-    cells: Cell[],
+    cells: CellType[],
     cellsIndex: CellsIndex
 
 ): string[] {

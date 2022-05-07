@@ -1,7 +1,10 @@
 
+import TonWeb from '__tonweb__';
+
 import { jest } from '@jest/globals';
 
-import { Cell } from '../../../boc/cell/cell';
+const { Cell } = TonWeb.boc;
+
 import { writeTimestampToSigningMessage } from './signing';
 
 

@@ -1,12 +1,14 @@
 
-import BN from 'bn.js';
+import TonWeb from '__tonweb__';
+import { BitString as BitStringType } from '__tonweb__';
 
 import { BigIntInput } from '../common/numbers';
-import { Address } from '../utils/address';
-import { BitString } from './bit-string';
+
+const { Address, BN } = TonWeb.utils;
+const { BitString } = TonWeb.boc;
 
 
-type BitStringMethods<Method extends keyof BitString> = Method;
+type BitStringMethods<Method extends keyof BitStringType> = Method;
 
 type IndexMethods = BitStringMethods<
     | 'get'
@@ -32,7 +34,7 @@ describe('BitString', () => {
 
         it('reserves a correct number of bytes', async () => {
 
-            let bitString: BitString;
+            let bitString: BitStringType;
 
             bitString = new BitString(0);
             expect(bitString.array.length).toEqual(0);
@@ -57,7 +59,7 @@ describe('BitString', () => {
 
         it('calculates free bits', async () => {
 
-            let bitString: BitString;
+            let bitString: BitStringType;
 
             bitString = new BitString(0);
             expect(bitString.getFreeBits()).toEqual(0);
@@ -100,7 +102,7 @@ describe('BitString', () => {
 
         it('calculates used bits', async () => {
 
-            let bitString: BitString;
+            let bitString: BitStringType;
 
             bitString = new BitString(0);
             expect(bitString.getUsedBits()).toEqual(0);
@@ -143,7 +145,7 @@ describe('BitString', () => {
 
         it('calculates used bytes', async () => {
 
-            let bitString: BitString;
+            let bitString: BitStringType;
 
             bitString = new BitString(0);
             expect(bitString.getUsedBytes()).toEqual(0);
@@ -1818,8 +1820,8 @@ function testGrams(funcName: ('writeGrams' | 'writeCoins')) {
 
 
 function expectEqualBits(
-    testString: (BitString | Uint8Array | string),
-    expectedString: (BitString | Uint8Array | string)
+    testString: (BitStringType | Uint8Array | string),
+    expectedString: (BitStringType | Uint8Array | string)
 ) {
 
     testString = prepare(testString);
@@ -1829,7 +1831,7 @@ function expectEqualBits(
 
 
     function prepare(
-        value: (BitString | Uint8Array | string)
+        value: (BitStringType | Uint8Array | string)
 
     ): string {
 
@@ -1853,7 +1855,7 @@ function expectEqualBits(
 }
 
 function toStringOfBits(
-    bitString: BitString
+    bitString: BitStringType
 
 ): string {
     let bits = '';
@@ -1863,7 +1865,7 @@ function toStringOfBits(
     return bits;
 }
 
-function writeBits(bitString: BitString, bits: string) {
+function writeBits(bitString: BitStringType, bits: string) {
     bits = bits.replace(/\s+/g, '');
     for (const bit of bits) {
         bitString.writeBit(bit === '1');

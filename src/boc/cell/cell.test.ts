@@ -1,5 +1,7 @@
 
-import { Cell } from './cell';
+import TonWeb from '__tonweb__';
+
+const { Cell } = TonWeb.boc;
 
 
 describe('Cell', () => {

@@ -4,7 +4,13 @@
   "compilerOptions": {
     "rootDir": "./",
     "noEmitOnError": true,
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "__tonweb__": [
+        "src/index.ts",
+      ],
+    },
   },
   "include": [
     "src/",
@@ -12,5 +18,5 @@
   ],
   "exclude": [
     "node_modules/"
-  ]
+  ],
 }
