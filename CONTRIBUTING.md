@@ -34,7 +34,7 @@ To do this, just install the version of the library
 you would like to test:
 
 ```shell
-npm i -D tonweb@<version number>
+npm i -D tonweb@<version>
 ```
 
 Then run `npm run test:package` or `npm run test:package:coverage`.
@@ -55,5 +55,5 @@ $it.skipForPackage('my-test', () => {
 });
 ```
 
-Suck skipped tests will still be displayed in the "skipped"
+Such skipped tests will still be displayed in the "skipped"
 section of the Jest test report.
