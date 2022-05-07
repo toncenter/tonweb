@@ -21,7 +21,7 @@ export interface NftSaleMethods extends ContractMethods {
     getData: () => Promise<NftSaleData>;
 }
 
-// @todo: type these anys
+// @todo type these anys
 export interface NftSaleData {
     marketplaceAddress?: Address;
     nftAddress?: Address;

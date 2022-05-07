@@ -20,7 +20,7 @@ export function writeTimestampToSigningMessage(
 
     } else {
         // Setting message expiration time to 60 seconds
-        // @todo: make this configurable
+        // @todo make this configurable
         const messageTtl = 60;
         const date = new Date();
         const timestamp = Math.floor(date.getTime() / 1e3);

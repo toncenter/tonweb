@@ -224,7 +224,7 @@ export class HttpProvider {
     /**
      * Invokes get-method of smart contract.
      *
-     * @todo: rename to `runGetMethodRaw()`
+     * @todo rename to `runGetMethodRaw()`
      *
      * {@link https://toncenter.com/api/v2/#/run%20method/run_get_method_runGetMethod_post}
      *
@@ -240,7 +240,7 @@ export class HttpProvider {
     ): Promise<RunGetMethodResult> {
 
         /**
-         * @todo: think about throw error
+         * @todo think about throw error
          *        if result.exit_code !== 0
          *        (the change breaks backward compatibility)
          */
@@ -255,7 +255,7 @@ export class HttpProvider {
     /**
      * Invokes get-method of smart contract.
      *
-     * @todo: rename to `runGetMethod()`
+     * @todo rename to `runGetMethod()`
      *
      * {@link https://toncenter.com/api/v2/#/run%20method/run_get_method_runGetMethod_post}
      *

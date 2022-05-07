@@ -12,7 +12,7 @@ export type LogFunction = (message: string) => void;
 export class InMemoryBlockStorage implements BlockStorage {
 
     /**
-     * @todo: should we use `Map` here?
+     * @todo should we use `Map` here?
      * Map of the processed masterchain blocks:
      * `key` is the block number, while
      * `value` reflects `isProcessed` state.
@@ -22,7 +22,7 @@ export class InMemoryBlockStorage implements BlockStorage {
     } = {};
 
     /**
-     * @todo: should we use `Map` here?
+     * @todo should we use `Map` here?
      * Map of the processed shardchain blocks:
      * The `key` should be constructed this way:
      * `${workchain}_${shardId}_${shardBlockNumber}`

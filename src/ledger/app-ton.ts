@@ -29,8 +29,8 @@ export interface SignResult {
 
 export class AppTon {
 
-    // @todo: use enum for this
-    // @todo: these should be static
+    // @todo use enum for this
+    // @todo these should be static
     public readonly ADDRESS_FORMAT_HEX = 0;
     public readonly ADDRESS_FORMAT_USER_FRIENDLY = 1;
     public readonly ADDRESS_FORMAT_URL_SAFE = 2;
@@ -46,7 +46,7 @@ export class AppTon {
       public readonly ton: TonWeb
     ) {
 
-        // @todo: find out why decorateAppAPIMethods is called
+        // @todo find out why decorateAppAPIMethods is called
         // const scrambleKey = "w0w";
         // transport.decorateAppAPIMethods(
         //     this,
@@ -178,7 +178,7 @@ export class AppTon {
 
     ): Promise<Method> {
 
-        // @todo: don't use magic numbers
+        // @todo don't use magic numbers
         const sendMode = 3;
 
         const query = await wallet.createTransferMessage(

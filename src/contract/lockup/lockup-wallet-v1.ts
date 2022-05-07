@@ -166,10 +166,10 @@ export class LockupWalletV1 extends WalletContract<
         cell.bits.writeUint(this.options.walletId, 32);
         cell.bits.writeBytes(this.options.publicKey);
 
-        // @todo: write config.config_public_key
+        // @todo write config.config_public_key
         //        (need to sort out encoding - the params come in base64),
 
-        // @todo: write the dict of allowed destinations
+        // @todo write the dict of allowed destinations
         //        (address is a key to an empty value).
 
         cell.bits.writeBytes(base64ToBytes(this.options.config.config_public_key));

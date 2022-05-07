@@ -11,7 +11,7 @@ export interface ParsedTransferUrl {
 }
 
 
-// @todo: should we export this?
+// @todo should we export this?
 const tonTransferPrefix = 'ton://transfer/';
 
 
@@ -51,7 +51,7 @@ export function parseTransferUrl(url: string): ParsedTransferUrl {
         address,
     };
 
-    // @todo: use the `URLSearchParams` to parse the query string!
+    // @todo use the `URLSearchParams` to parse the query string!
 
     if (!rest) {
         return result;
@@ -121,7 +121,7 @@ export function parseTransferUrl(url: string): ParsedTransferUrl {
 /**
  * Formats TON transfer URL from the specified individual parts.
  *
- * @todo: pass all the parts as a single argument of `ParsedTransferUrl` type
+ * @todo pass all the parts as a single argument of `ParsedTransferUrl` type
  */
 export function formatTransferUrl(
     address: string,
@@ -132,7 +132,7 @@ export function formatTransferUrl(
 
     let url = tonTransferPrefix + address;
 
-    // @todo: use the `URLSearchParams` to build the query string!
+    // @todo use the `URLSearchParams` to build the query string!
 
     const params = [];
 

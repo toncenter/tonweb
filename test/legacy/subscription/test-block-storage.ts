@@ -65,7 +65,7 @@ export class TestBlocksStorage implements BlockStorage {
         shardBlockNumber: number,
         prevShardBlocks: ShardBlock[]
     ) {
-        // @todo: use workchain argument
+        // @todo use workchain argument
         console.log('shard processed ' + shardId + ' ' + shardBlockNumber);
         // UPDATE shardchainBlocks SET processed = TRUE WHERE shardId = ? && shardBlockNumber = ?
         if (this.shardchainBlocks[shardId + '_' + shardBlockNumber] === undefined) {
@@ -88,7 +88,7 @@ export class TestBlocksStorage implements BlockStorage {
                     shardId: arr[0],
                     shardBlockNumber: Number(arr[1]),
 
-                // @todo: return correct workchain
+                // @todo return correct workchain
                 } as ShardBlock
             }
         }
@@ -132,7 +132,7 @@ export class TestBlocksStorage implements BlockStorage {
                 continue;
             }
             // INSERT INTO shardchainBlocks VALUES (shardId, shardBlockNumber, FALSE)
-            // @todo: specify workchain
+            // @todo specify workchain
             console.log('insert shard ' + shardId + ' ' + shardBlockNumber);
             this.shardchainBlocks[shardId + '_' + shardBlockNumber] = false;
         }

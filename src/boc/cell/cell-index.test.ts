@@ -2,15 +2,15 @@
 import TonWeb from '__tonweb__';
 import { Cell as CellType } from '__tonweb__';
 
+import { $describe } from '../../test/globals';
 import { indexCell } from './cell-index';
 
 const { Cell } = TonWeb.boc;
 
 
-// @todo: add test with cycles (not DAG)
+// @todo add test with cycles (not DAG)
 
-
-describe('indexCell()', () => {
+$describe.skipForPackage('indexCell()', () => {
 
     it('no duplicates', async () => {
 

@@ -217,7 +217,7 @@ export type BitString = $BitString;
 
 import { Cell as $Cell } from './boc/cell/cell';
 
-// @todo: export cell-related types
+// @todo export cell-related types
 export {  } from './boc/cell/cell';
 
 export type Cell = $Cell;
@@ -771,7 +771,7 @@ export default class TonWeb {
 
     ): Promise<any> {
 
-        // @todo: type return value
+        // @todo type return value
 
         return this.provider.call(
             address.toString(),
@@ -783,4 +783,4 @@ export default class TonWeb {
 
 }
 
-// @todo: set window.TonWeb = TonWeb via webpack
+// @todo set window.TonWeb = TonWeb via webpack

@@ -31,7 +31,7 @@ export interface StateInit {
 }
 
 /**
- * @todo: this type is created on indirect data
+ * @todo this type is created on indirect data
  *        and needs proper revision
  */
 export interface Query {
@@ -113,7 +113,7 @@ export class Contract<
         ihrFees: (number | BN) = 0,
         fwdFees: (number | BN) = 0,
 
-        // @todo: do we really need BN for timestamps?
+        // @todo do we really need BN for timestamps?
         createdLt: (number | BN) = 0,
         createdAt: (number | BN) = 0
 
@@ -191,7 +191,7 @@ export class Contract<
         if (stateInit) {
             commonMsgInfo.bits.writeBit(true);
             // -1: need at least one bit for body
-            // @todo: we also should check for free refs here
+            // @todo we also should check for free refs here
             if (commonMsgInfo.bits.getFreeBits() - 1 >= stateInit.bits.getUsedBits()) {
                 commonMsgInfo.bits.writeBit(false);
                 commonMsgInfo.writeCell(stateInit);
@@ -203,7 +203,7 @@ export class Contract<
             commonMsgInfo.bits.writeBit(false);
         }
 
-        // @todo: we also should check for free refs here
+        // @todo we also should check for free refs here
         if (body) {
             if (commonMsgInfo.bits.getFreeBits() >= body.bits.getUsedBits()) {
                 commonMsgInfo.bits.writeBit(false);

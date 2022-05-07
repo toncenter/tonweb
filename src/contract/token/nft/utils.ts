@@ -60,7 +60,7 @@ export function parseAddress(cell: Cell): (Address | undefined) {
 
 
 /**
- * @todo: should this be a part of BitString implementation?
+ * @todo should this be a part of BitString implementation?
  */
 function readIntFromBitString(
     bitString: BitString,

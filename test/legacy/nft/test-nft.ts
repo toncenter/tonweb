@@ -33,7 +33,7 @@ const NftMarketplace = TonWeb.token.nft.NftMarketplace;
         royalty: 0.13,
         royaltyAddress: walletAddress,
 
-        // @todo: set these params correctly
+        // @todo set these params correctly
         royaltyFactor: 0,
         royaltyBase: 0,
     });

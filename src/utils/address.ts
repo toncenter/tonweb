@@ -257,7 +257,7 @@ export class Address {
         }
 
         // Workchain
-        // @todo: we should read signed integer here
+        // @todo we should read signed integer here
         const workchain = (address[1] === 0xff ? -1 : address[1]);
         this.checkWorkchainOrThrow(workchain);
 

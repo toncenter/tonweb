@@ -120,25 +120,23 @@ export declare type BitString = BitString_2;
 declare class BitString_2 {
     private bitLength;
     /**
-     * @internal
      * @deprecated - Don't access the underlying bytes directly,
      *               use {@link BitString.getTopUppedArray | getTopUppedArray()}
      *               instead.
      *
      * This getter is available only for backward-compatibility.
      *
-     * @todo: remove this getter
+     * @todo remove this getter
      */
     get array(): Uint8Array;
     /**
-     * @internal
      * @deprecated: don't use internal cursor directly,
      *              use {@link BitString.getUsedBits | getUsedBits()}
      *              instead.
      *
      * This getter is available only for backward-compatibility.
      *
-     * @todo: remove this getter
+     * @todo remove this getter
      */
     get cursor(): number;
     get length(): number;
@@ -161,8 +159,8 @@ declare class BitString_2 {
      * Returns number of bytes actually used by the bit-string.
      * Rounds up to a whole byte.
      *
-     * @todo: rename to `getUsedBytesCount()`
-     * @todo: implement `getUsedBytes(): Uint8Array`
+     * @todo rename to `getUsedBytesCount()`
+     * @todo implement `getUsedBytes(): Uint8Array`
      */
     getUsedBytes(): number;
     /**
@@ -177,7 +175,7 @@ declare class BitString_2 {
      *
      * @param index - An index of the bit to set.
      *
-     * @todo: should rename this method to `setBit()`
+     * @todo should rename this method to `setBit()`
      */
     on(index: number): void;
     /**
@@ -185,7 +183,7 @@ declare class BitString_2 {
      *
      * @param index - An index of the bit to clear.
      *
-     * @todo: should rename this method to `clearBit()`
+     * @todo should rename this method to `clearBit()`
      */
     off(index: number): void;
     /**
@@ -193,7 +191,7 @@ declare class BitString_2 {
      *
      * @param index - An index of the bit to toggle.
      *
-     * @todo: should rename this method to `toggleBit()`
+     * @todo should rename this method to `toggleBit()`
      */
     toggle(index: number): void;
     /**
@@ -204,7 +202,7 @@ declare class BitString_2 {
      * @param callback - A callback function to execute
      *                   for each sequential bit.
      *
-     * @todo: implement iteration protocol
+     * @todo implement iteration protocol
      */
     forEach(callback: (bit: Bit) => void): void;
     /**
@@ -297,7 +295,7 @@ declare class BitString_2 {
      *                   number of nanotons to append to the
      *                   bit-string.
      *
-     * @todo: why do we have a duplicate method?
+     * @todo why do we have a duplicate method?
      */
     writeCoins(nanotons: BigIntInput): void;
     /**
@@ -306,7 +304,7 @@ declare class BitString_2 {
      * @param address - An instance of
      *                  {@link Address | Address} to append.
      *
-     * @todo: allow to specify address as a string
+     * @todo allow to specify address as a string
      */
     writeAddress(address?: Address_2): void;
     /**
@@ -325,16 +323,7 @@ declare class BitString_2 {
      *          as this one.
      */
     clone(): BitString_2;
-    /**
-     * @internal
-     * @deprecated
-     *
-     * This method is only used internally to support
-     * `BitString.clone()` method.
-     *
-     * @todo: remove this
-     */
-    __cloneFrom(bitString: BitString_2): void;
+    /* Excluded from this release type: __cloneFrom */
     /**
      * Returns the bit-string represented as HEX-string.
      */
@@ -344,7 +333,7 @@ declare class BitString_2 {
      * The completion bits are added if the number of used
      * bits is not divisible by eight.
      *
-     * @todo: rename this method to `getBytes()` for clarity
+     * @todo rename this method to `getBytes()` for clarity
      */
     getTopUppedArray(): Uint8Array;
     /**
@@ -357,7 +346,7 @@ declare class BitString_2 {
      *                       array of bytes doesn't have a
      *                       completion bits.
      *
-     * @todo: replace with `static createFromBytes()`
+     * @todo replace with `static createFromBytes()`
      */
     setTopUppedArray(bytes: Uint8Array, noCompletion?: boolean): void;
     /**
@@ -543,11 +532,11 @@ declare class Cell_3 {
      * Returns cell's (De Bruijn) level, which affects
      * the number of higher hashes it has.
      *
-     * @todo: rename to `getLevel()`
+     * @todo rename to `getLevel()`
      */
     getMaxLevel(): number;
     /**
-     * @todo: add description
+     * @todo add description
      */
     isExplicitlyStoredHashes(): number;
     /**
@@ -559,19 +548,19 @@ declare class Cell_3 {
      * Returns standard cell representation.
      * Used for unique hash calculation.
      *
-     * @todo: should it be public?
+     * @todo should it be public?
      */
     getRepr(): Promise<Uint8Array>;
     /**
      * Returns cell's descriptors data.
      *
-     * @todo: should it be public?
+     * @todo should it be public?
      */
     getDataWithDescriptors(): Uint8Array;
     /**
      * Returns cell's references descriptor.
      *
-     * @todo: should it be public?
+     * @todo should it be public?
      */
     getRefsDescriptor(): Uint8Array;
     /**
@@ -582,10 +571,7 @@ declare class Cell_3 {
      * Returns unique hash of the cell representation.
      */
     hash(): Promise<CellHash>;
-    /**
-     * Returns unique string hash of the cell representation.
-     */
-    hashBase64(): Promise<CellHashBase64>;
+    /* Excluded from this release type: hashBase64 */
     /**
      * Recursively prints cell's content (like Fift).
      *
@@ -754,7 +740,7 @@ export declare interface FetchHttpClientOptions {
 /**
  * Formats TON transfer URL from the specified individual parts.
  *
- * @todo: pass all the parts as a single argument of `ParsedTransferUrl` type
+ * @todo pass all the parts as a single argument of `ParsedTransferUrl` type
  */
 declare function formatTransferUrl(address: string, amount?: string, text?: string): string;
 
@@ -919,7 +905,7 @@ declare class HttpProvider_2 {
     /**
      * Invokes get-method of smart contract.
      *
-     * @todo: rename to `runGetMethodRaw()`
+     * @todo rename to `runGetMethodRaw()`
      *
      * {@link https://toncenter.com/api/v2/#/run%20method/run_get_method_runGetMethod_post}
      *
@@ -931,7 +917,7 @@ declare class HttpProvider_2 {
     /**
      * Invokes get-method of smart contract.
      *
-     * @todo: rename to `runGetMethod()`
+     * @todo rename to `runGetMethod()`
      *
      * {@link https://toncenter.com/api/v2/#/run%20method/run_get_method_runGetMethod_post}
      *
@@ -1066,14 +1052,14 @@ export declare type InMemoryBlockStorage = InMemoryBlockStorage_2;
 declare class InMemoryBlockStorage_2 implements BlockStorage {
     private readonly logFunction;
     /**
-     * @todo: should we use `Map` here?
+     * @todo should we use `Map` here?
      * Map of the processed masterchain blocks:
      * `key` is the block number, while
      * `value` reflects `isProcessed` state.
      */
     private readonly masterBlocks;
     /**
-     * @todo: should we use `Map` here?
+     * @todo should we use `Map` here?
      * Map of the processed shardchain blocks:
      * The `key` should be constructed this way:
      * `${workchain}_${shardId}_${shardBlockNumber}`
@@ -1145,11 +1131,11 @@ declare class JettonWallet_2 extends Contract_2<JettonWalletOptions, JettonWalle
     constructor(provider: HttpProvider_2, options: JettonWalletOptions);
     getData(): Promise<WalletData>;
     /**
-     * @todo: should it be async?
+     * @todo should it be async?
      */
     createTransferBody(params: TransferBodyParams): Promise<Cell_3>;
     /**
-     * @todo: should it be async?
+     * @todo should it be async?
      */
     createBurnBody(params: BurnBodyParams): Promise<Cell_3>;
 }
@@ -1429,7 +1415,7 @@ export declare interface PayExternalMessage {
 }
 
 /**
- * @todo: this type is created on indirect data
+ * @todo this type is created on indirect data
  *        and needs proper revision
  */
 export declare interface Query {
@@ -1789,7 +1775,7 @@ declare class WalletContract_2<WalletType extends WalletContractOptions = Wallet
     createTransferMessage(
     /**
      * `nacl.KeyPair.secretKey`
-     * @todo: improve the description
+     * @todo improve the description
      */
     secretKey: Uint8Array, address: AddressType, nanograms: (BN_2 | number), seqno: number, payload?: (string | Uint8Array | Cell_3), sendMode?: number, dummySignature?: boolean, stateInit?: Cell_3): Promise<ExternalMessage>;
     deploy(secretKey: Uint8Array): Method;
@@ -1801,7 +1787,7 @@ declare class WalletContract_2<WalletType extends WalletContractOptions = Wallet
     protected createExternalMessage(signingMessage: Cell_3, 
     /**
      * `nacl.KeyPair.secretKey`
-     * @todo: improve the description
+     * @todo improve the description
      */
     secretKey: Uint8Array, seqno: number, dummySignature?: boolean): Promise<ExternalMessage>;
     private serializePayload;

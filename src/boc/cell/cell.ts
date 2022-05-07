@@ -79,7 +79,7 @@ export class Cell {
      * Writes the specified cell to this cell.
      */
     public writeCell(cell: Cell) {
-        // @todo: check for bits overflow and
+        // @todo check for bits overflow and
         //        the number of cell references
         this.bits.writeBitString(cell.bits);
         this.refs = this.refs.concat(cell.refs);
@@ -89,7 +89,7 @@ export class Cell {
      * Returns cell's (De Bruijn) level, which affects
      * the number of higher hashes it has.
      *
-     * @todo: rename to `getLevel()`
+     * @todo rename to `getLevel()`
      */
     public getMaxLevel(): number {
 
@@ -99,7 +99,7 @@ export class Cell {
         // The level of an ordinary cell is always equal
         // to the maximum of the levels of all its children.
 
-        // @todo: implement level calculation for exotic cells
+        // @todo implement level calculation for exotic cells
 
         // Our cell implementation supports only
         // ordinary cells now, so we can hard-code this
@@ -109,10 +109,10 @@ export class Cell {
     }
 
     /**
-     * @todo: add description
+     * @todo add description
      */
     public isExplicitlyStoredHashes(): number {
-        // @todo: does it require implementation?
+        // @todo does it require implementation?
         return 0;
     }
 
@@ -145,7 +145,7 @@ export class Cell {
      * Returns standard cell representation.
      * Used for unique hash calculation.
      *
-     * @todo: should it be public?
+     * @todo should it be public?
      */
     public async getRepr(): Promise<Uint8Array> {
 
@@ -179,7 +179,7 @@ export class Cell {
     /**
      * Returns cell's descriptors data.
      *
-     * @todo: should it be public?
+     * @todo should it be public?
      */
     public getDataWithDescriptors(): Uint8Array {
 
@@ -215,7 +215,7 @@ export class Cell {
     /**
      * Returns cell's references descriptor.
      *
-     * @todo: should it be public?
+     * @todo should it be public?
      */
     public getRefsDescriptor(): Uint8Array {
 
@@ -270,6 +270,8 @@ export class Cell {
 
     /**
      * Returns unique string hash of the cell representation.
+     *
+     * @alpha (not available in vanilla TonWeb)
      */
     public async hashBase64(): Promise<CellHashBase64> {
 
@@ -321,9 +323,9 @@ export class Cell {
         let offset = 0;
         let cellOffsetsIndex: number[] = [];
         for (const cell of orderedCells) {
-            // @todo: it should be async map or async for
+            // @todo it should be async map or async for
             cellOffsetsIndex.push(offset);
-            // @todo: use index cache to minimize number
+            // @todo use index cache to minimize number
             //        of calls to serializeForBoc/bocSerializationSize
             const cellSize = await cell
                 .bocSerializationSize(indexHashmap, refByteSize)
@@ -391,7 +393,7 @@ export class Cell {
 
         // Serialized cells [cell_data]
         for (let cell of orderedCells) {
-            // @todo: it should be async map or async for
+            // @todo it should be async map or async for
             const serializedCell = await cell
                 .serializeForBoc(indexHashmap, refByteSize)
             ;
@@ -425,7 +427,7 @@ export class Cell {
 
     private async serializeForBoc(
         indexHashmap: IndexHashmap,
-        // @todo: remove/use unused parameter
+        // @todo remove/use unused parameter
         refSize: any
 
     ): Promise<Uint8Array> {
@@ -579,7 +581,7 @@ function deserializeCellData(cellData, referenceIndexSize) {
     }
     const d1 = cellData[0], d2 = cellData[1];
     cellData = cellData.slice(2);
-    // @todo: remove/use unused variable `level`
+    // @todo remove/use unused variable `level`
     // const level = Math.floor(d1 / 32);
     const isExotic = d1 & 8;
     const refNum = d1 % 8;
@@ -594,7 +596,7 @@ function deserializeCellData(cellData, referenceIndexSize) {
     cellData = cellData.slice(dataBytesize);
     for (let r = 0; r < refNum; r++) {
         cell.refs.push(
-            // @todo: right now we are storing cell references as numbers in `refs`
+            // @todo right now we are storing cell references as numbers in `refs`
             //        and resolve them to Cell objects later on,
             //        however, this breaks typing and is not a best practice,
             //        the temporary structure should be introduced instead to support parsing.

@@ -62,7 +62,7 @@ interface WalletTestDescriptor {
  * All reference values are taken from the
  * vanilla version of the library.
  *
- * @todo: "addressMC" values are now taken from the output
+ * @todo "addressMC" values are now taken from the output
  *        of the library directly. We need another source
  *        of truth to validate these tests.
  */
@@ -483,7 +483,7 @@ for (const test of wallets) {
             const messageBocB64 = bytesToBase64(messageBoc);
             expect(messageBocB64).toEqual(test.deployQueryBoc64);
 
-            // @todo: test other properties of the external message
+            // @todo test other properties of the external message
 
         });
 
@@ -637,7 +637,7 @@ for (const test of wallets) {
         const messageBocB64 = bytesToBase64(messageBoc);
         expect(messageBocB64).toEqual(expectedMessageBocB64);
 
-        // @todo: test other properties of the external message
+        // @todo test other properties of the external message
 
     }
 

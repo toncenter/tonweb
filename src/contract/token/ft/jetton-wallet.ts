@@ -88,7 +88,7 @@ export class JettonWallet extends Contract<
     }
 
     /**
-     * @todo: should it be async?
+     * @todo should it be async?
      */
     public async createTransferBody(
         params: TransferBodyParams
@@ -117,7 +117,7 @@ export class JettonWallet extends Contract<
     }
 
     /**
-     * @todo: should it be async?
+     * @todo should it be async?
      */
     public async createBurnBody(
         params: BurnBodyParams

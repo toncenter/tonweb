@@ -369,7 +369,7 @@ describe('Address', () => {
 
         }
 
-        // @todo: add tests that modifies address flags directly
+        // @todo add tests that modifies address flags directly
 
     });
 

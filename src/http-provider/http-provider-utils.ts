@@ -42,7 +42,7 @@ export type ParseResponseResult = (
 
 
 /**
- * @todo: extract all the static methods as individual functions
+ * @todo extract all the static methods as individual functions
  *        there is no need to use class for this
  */
 export class HttpProviderUtils {
@@ -54,7 +54,7 @@ export class HttpProviderUtils {
 
         const typeName = obj['@type'];
 
-        // @todo: handle additional types:
+        // @todo handle additional types:
         //        - tvm.stackEntrySlice
         //        - tvm.stackEntryCell
         //        - tvm.stackEntryList
@@ -114,7 +114,7 @@ export class HttpProviderUtils {
     ): ParseResponseResult {
 
         if (result.exit_code !== 0) {
-            // @todo: use custom error class
+            // @todo use custom error class
             const error = new Error('Failed to parse response');
             (error as any).result = result;
             throw error;

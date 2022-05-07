@@ -28,14 +28,13 @@ const completionTag = '_';
 export class BitString {
 
     /**
-     * @internal
      * @deprecated - Don't access the underlying bytes directly,
      *               use {@link BitString.getTopUppedArray | getTopUppedArray()}
      *               instead.
      *
      * This getter is available only for backward-compatibility.
      *
-     * @todo: remove this getter
+     * @todo remove this getter
      */
     public get array(): Uint8Array {
 
@@ -46,14 +45,13 @@ export class BitString {
     }
 
     /**
-     * @internal
      * @deprecated: don't use internal cursor directly,
      *              use {@link BitString.getUsedBits | getUsedBits()}
      *              instead.
      *
      * This getter is available only for backward-compatibility.
      *
-     * @todo: remove this getter
+     * @todo remove this getter
      */
     public get cursor(): number {
         return this.nextBitIndex;
@@ -100,8 +98,8 @@ export class BitString {
      * Returns number of bytes actually used by the bit-string.
      * Rounds up to a whole byte.
      *
-     * @todo: rename to `getUsedBytesCount()`
-     * @todo: implement `getUsedBytes(): Uint8Array`
+     * @todo rename to `getUsedBytesCount()`
+     * @todo implement `getUsedBytes(): Uint8Array`
      */
     public getUsedBytes(): number {
         return Math.ceil(this.getUsedBits() / 8);
@@ -125,7 +123,7 @@ export class BitString {
      *
      * @param index - An index of the bit to set.
      *
-     * @todo: should rename this method to `setBit()`
+     * @todo should rename this method to `setBit()`
      */
     public on(index: number): void {
         this.checkIndexOrThrow(index);
@@ -137,7 +135,7 @@ export class BitString {
      *
      * @param index - An index of the bit to clear.
      *
-     * @todo: should rename this method to `clearBit()`
+     * @todo should rename this method to `clearBit()`
      */
     public off(index: number): void {
         this.checkIndexOrThrow(index);
@@ -149,7 +147,7 @@ export class BitString {
      *
      * @param index - An index of the bit to toggle.
      *
-     * @todo: should rename this method to `toggleBit()`
+     * @todo should rename this method to `toggleBit()`
      */
     public toggle(index: number): void {
         this.checkIndexOrThrow(index);
@@ -164,7 +162,7 @@ export class BitString {
      * @param callback - A callback function to execute
      *                   for each sequential bit.
      *
-     * @todo: implement iteration protocol
+     * @todo implement iteration protocol
      */
     public forEach(callback: (bit: Bit) => void): void {
         if (typeof callback !== 'function') {
@@ -430,7 +428,7 @@ export class BitString {
      *                   number of nanotons to append to the
      *                   bit-string.
      *
-     * @todo: why do we have a duplicate method?
+     * @todo why do we have a duplicate method?
      */
     public writeCoins(nanotons: BigIntInput): void {
 
@@ -444,7 +442,7 @@ export class BitString {
      * @param address - An instance of
      *                  {@link Address | Address} to append.
      *
-     * @todo: allow to specify address as a string
+     * @todo allow to specify address as a string
      */
     public writeAddress(address?: Address): void {
 
@@ -465,7 +463,7 @@ export class BitString {
         this.writeUint(2, 2);
 
         // addr_std$10 anycast:(Maybe Anycast)
-        // @todo: split addresses (anycast)
+        // @todo split addresses (anycast)
         this.writeUint(0, 1);
 
         // workchain_id:int8
@@ -505,7 +503,7 @@ export class BitString {
      */
     public clone(): BitString {
 
-        // @todo: this should be implemented as a constructor
+        // @todo this should be implemented as a constructor
         //        to prevent from public accessing the
         //        properties that should be private
 
@@ -524,7 +522,7 @@ export class BitString {
      * This method is only used internally to support
      * `BitString.clone()` method.
      *
-     * @todo: remove this
+     * @todo remove this
      */
     public __cloneFrom(bitString: BitString): void {
         this.bytes = bitString.array;
@@ -544,7 +542,7 @@ export class BitString {
      * The completion bits are added if the number of used
      * bits is not divisible by eight.
      *
-     * @todo: rename this method to `getBytes()` for clarity
+     * @todo rename this method to `getBytes()` for clarity
      */
     public getTopUppedArray(): Uint8Array {
 
@@ -566,7 +564,7 @@ export class BitString {
             // trailing zeroes are already present
             setBit(bytes, usedBits);
 
-            // @todo: check the case when array of bytes
+            // @todo check the case when array of bytes
             //        is set externally
 
         }
@@ -585,7 +583,7 @@ export class BitString {
      *                       array of bytes doesn't have a
      *                       completion bits.
      *
-     * @todo: replace with `static createFromBytes()`
+     * @todo replace with `static createFromBytes()`
      */
     public setTopUppedArray(
         bytes: Uint8Array,
@@ -635,7 +633,7 @@ export class BitString {
             }
         }
 
-        // @todo: implement support for `0x80` octet?
+        // @todo implement support for `0x80` octet?
         //
         // In some cases, it is more convenient to assume
         // the completion is enabled by default rather than
@@ -671,7 +669,7 @@ export class BitString {
             // trailing zeroes are already present
             setBit(bytes, usedBits);
 
-            // @todo: check the case when array of bytes
+            // @todo check the case when array of bytes
             //        is set externally
 
         }
@@ -740,7 +738,7 @@ export class BitString {
 
 
 /**
- * @todo: extract all bit-related functionality
+ * @todo extract all bit-related functionality
  */
 
 /**
