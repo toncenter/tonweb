@@ -76,7 +76,7 @@ class JettonMinter extends Contract {
      * params   {{ownerAddress: Address}}
      * @return {Promise<Address>}
      */
-    async getWalletAddress(ownerAddress) {
+    async getJettonWalletAddress(ownerAddress) {
         const myAddress = await this.getAddress();
         const cell = new Cell()
         cell.bits.writeAddress(ownerAddress)

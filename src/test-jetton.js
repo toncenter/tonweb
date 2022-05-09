@@ -46,6 +46,9 @@ const init = async () => {
         data.totalSupply = data.totalSupply.toString();
         data.adminAddress = data.adminAddress.toString(true, true, true);
         console.log(data);
+
+        const jettonWalletAddress = await minter.getJettonWalletAddress(walletAddress);
+        console.log('getJettonWalletAddress=', jettonWalletAddress.toString(true, true, true));
     }
 
     const mint = async () => {
@@ -68,7 +71,7 @@ const init = async () => {
         );
     }
 
-    const JETTON_WALLET_ADDRESS = 'EQC-UMngsf1v23looec9xy0ntBDyS_EVZ96PQuaiuCUi32rN';
+    const JETTON_WALLET_ADDRESS = 'EQBREXwQn9ZCVae_b_jdked2c4Z14uAAD-1Vq0sZ0pCXWw0S';
     // const JETTON_WALLET_ADDRESS = 'EQAFeJKruIRXk25m_jfCGSYu2v7wJHvJx12N0r3D9dnp_1Gq';
     console.log('jettonWalletAddress=', JETTON_WALLET_ADDRESS);
 
