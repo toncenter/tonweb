@@ -31,6 +31,7 @@ export declare class JettonMinter extends Contract<JettonMinterOptions, JettonMi
     constructor(provider: HttpProvider, options: JettonMinterOptions);
     createMintBody(params: MintBodyParams): Cell;
     getJettonData(): Promise<JettonData>;
+    getWalletAddress(ownerAddress: Address): Promise<Address>
     /**
      * Returns cell that contains jetton minter data.
      */
