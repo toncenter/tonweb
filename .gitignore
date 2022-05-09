@@ -1,6 +1,10 @@
 /.idea/
+/docs/
 /coverage/
+/dist/*
+!/dist/index.d.ts
 /node_modules/
 /test-reports/
+
 .DS_Store
 *.iml

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.common.json",
+  "compilerOptions": {
+    "rootDir": "./",
+    "noEmitOnError": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "__tonweb__": [
+        "src/index.ts",
+      ],
+    },
+  },
+  "include": [
+    "src/",
+    "test/"
+  ],
+  "exclude": [
+    "node_modules/"
+  ],
+}
