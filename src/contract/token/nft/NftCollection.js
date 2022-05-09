@@ -2,7 +2,7 @@ const {Contract} = require("../../index.js");
 const {Cell} = require("../../../boc");
 const {Address, bytesToBase64} = require("../../../utils");
 const {parseAddress} = require('./NftUtils.js');
-const {createOffchainUriCell, serializeUri, parseOffchainUriCell} = require("./NftUtils");
+const {createOffchainUriCell, serializeUri, parseOffchainUriCell, getRoyaltyParams} = require("./NftUtils");
 
 class NftCollection extends Contract {
     /**
@@ -177,14 +177,7 @@ class NftCollection extends Contract {
      */
     async getRoyaltyParams() {
         const myAddress = await this.getAddress();
-        const result = await this.provider.call2(myAddress.toString(), 'royalty_params');
-
-        const royaltyFactor = result[0].toNumber();
-        const royaltyBase = result[1].toNumber();
-        const royalty = royaltyFactor / royaltyBase;
-        const royaltyAddress = parseAddress(result[2]);
-
-        return {royalty, royaltyBase, royaltyFactor, royaltyAddress};
+        return getRoyaltyParams(this.provider, myAddress.toString());
     }
 }
 

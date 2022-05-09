@@ -155,6 +155,18 @@ async function init() {
         console.log(data);
     }
 
+    const getSingleNftItemInfo = async () => {
+        const nftItem = new NftItem(tonweb.provider, {address: 'EQC4FOmjcQAw2U-e00I-7Fs-NLiEF7lNQUxVpqOJ-ZKh-dGt'});
+
+        const data = await nftItem.methods.getData(nftItem);
+        data.ownerAddress = data.ownerAddress?.toString(true, true, true);
+        console.log(data);
+
+        const nftRoyalty = await nftItem.getRoyaltyParams();
+        nftRoyalty.royaltyAddress = nftRoyalty.royaltyAddress.toString(true, true, true);
+        console.log('nft item royalty = ', nftRoyalty);
+    }
+
     const marketplace = new NftMarketplace(tonweb.provider, {ownerAddress: walletAddress});
     const marketplaceAddress = await marketplace.getAddress();
     console.log('matketplace address=', marketplaceAddress.toString(true, true, true));
@@ -289,6 +301,7 @@ async function init() {
     // await getNftCollectionInfo();
     // await deployNftItem();
     // await getNftItemInfo();
+    // await getSingleNftItemInfo();
     // await deployMarketplace();
     // await deploySale();
     // await getSaleInfo();
