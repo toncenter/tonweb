@@ -296,6 +296,22 @@ function readNBytesUIntFromArray(n, ui8array) {
     return res;
 }
 
+/**
+ * @param x {BN}
+ * @returns {BN}
+ */
+function bitsNegate(x) {
+    return x.notn(64).addn(1);
+}
+
+/**
+ * @param x {BN}
+ * @returns {BN}
+ */
+function lowerBit(x) {
+    return x.and(bitsNegate(x));
+}
+
 module.exports = {
     BN,
     nacl,
@@ -313,5 +329,7 @@ module.exports = {
     base64toString,
     stringToBase64,
     compareBytes,
-    readNBytesUIntFromArray
+    readNBytesUIntFromArray,
+    bitsNegate,
+    lowerBit
 };
