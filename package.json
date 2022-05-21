@@ -72,6 +72,7 @@
     "@types/ledgerhq__hw-transport": "^4.21.4",
     "@types/ledgerhq__hw-transport-webusb": "^4.70.1",
     "@types/node": "^15.14.9",
+    "@types/node-fetch": "^2.6.1",
     "buffer": "6.0.3",
     "gh-pages": "^3.2.3",
     "http-server": "^14.1.0",

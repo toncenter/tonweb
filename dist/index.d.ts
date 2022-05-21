@@ -727,7 +727,6 @@ declare class FetchHttpClient_2 implements HttpClient {
     private readonly options;
     constructor(options?: FetchHttpClientOptions);
     sendRequest<ResponsePayloadType>(request: HttpRequest): Promise<HttpResponse<ResponsePayloadType>>;
-    private createHeaders;
 }
 
 export declare interface FetchHttpClientOptions {

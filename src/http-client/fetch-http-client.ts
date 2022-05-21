@@ -1,11 +1,12 @@
 
 import { version } from '../version';
+import { fetch, Headers } from './fetch-api';
+import { createHeaders, parseResponseBody } from './http-utils';
 
 import {
     HttpClient,
     HttpRequest,
     HttpResponse,
-    RequestHeaders,
 
 } from './http-client';
 
@@ -63,14 +64,14 @@ export class FetchHttpClient implements HttpClient {
 
     ): Promise<HttpResponse<ResponsePayloadType>> {
 
-        const headers = this.createHeaders(request.headers);
+        const headers = createHeaders(request.headers);
 
         headers.set('Content-Type', 'application/json');
         headers.set('User-Agent', `tonweb ${version}`);
 
         const requestOptions: RequestInit = {
             method: (request.method?.toUpperCase() || 'GET'),
-            headers: headers,
+            headers,
             body: JSON.stringify(request.body),
             redirect: 'error',
         };
@@ -114,44 +115,11 @@ export class FetchHttpClient implements HttpClient {
 
         }
 
-        if (!response.ok) {
-            throw new Error(
-                `HTTP request failed: ` +
-                `${response.status} ${response.statusText}`
-            );
-        }
-
-        const contentType = response.headers.get('content-type');
-        if (!contentType.startsWith('application/json')) {
-            throw new Error(
-                `Unexpected response content type, it must be JSON`
-            );
-        }
-
         return {
             status: response.status,
-            payload: await response.json(),
+            payload: await parseResponseBody(response),
         };
 
-    }
-
-
-    private createHeaders(headers: RequestHeaders): Headers {
-        const $headers = new Headers();
-        for (const entry of Object.entries(headers)) {
-            const [name, valueOrValues] = entry;
-            const values = (Array.isArray(valueOrValues)
-                ? valueOrValues
-                : [valueOrValues]
-            );
-            for (let value of values) {
-                value = value.trim();
-                if (value) {
-                    $headers.append(name, value);
-                }
-            }
-        }
-        return $headers;
     }
 
 }
