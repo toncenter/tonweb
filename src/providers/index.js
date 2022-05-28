@@ -6,6 +6,13 @@ if (typeof fetch === 'undefined') {
 
 const SHARD_ID_ALL = '-9223372036854775808'; // 0x8000000000000000
 
+class APIError extends Error {
+    constructor(response) {
+        super('API returned an error')
+        this.response = response
+    }
+}
+
 class HttpProvider {
     /**
      * @param host? {string}
@@ -36,7 +43,7 @@ class HttpProvider {
             body: JSON.stringify(request)
         })
             .then((response) => response.json())
-            .then(({ result, error }) => result || Promise.reject(error))
+            .then(({ ok, result, error }) => ok ? result : Promise.reject(new APIError(error)))
     }
 
     /**
