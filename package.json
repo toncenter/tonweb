@@ -57,6 +57,7 @@
     "@ledgerhq/hw-transport-web-ble": "5.48.0",
     "@ledgerhq/hw-transport-webhid": "5.48.0",
     "@ledgerhq/hw-transport-webusb": "5.48.0",
+    "@ton.js/ethjs-unit": "^0.1.7-beta.2",
     "@ton.js/types": "^0.0.5",
     "@types/bn.js": "~5.1.0",
     "bn.js": "5.1.1",

@@ -1,6 +1,6 @@
 
 import BN from 'bn.js';
-import ethUnit from 'ethjs-unit';
+import ethUnit from '@ton.js/ethjs-unit';
 
 
 const isCryptoAvailable = (
