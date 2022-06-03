@@ -38,7 +38,7 @@ async function init() {
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
                 toAddress: nftCollectionAddress.toString(true, true, true),
-                amount: TonWeb.utils.toNano(1),
+                amount: TonWeb.utils.toNano('1'),
                 seqno: seqno,
                 payload: null, // body
                 sendMode: 3,
@@ -62,7 +62,7 @@ async function init() {
         const seqno = (await wallet.methods.seqno().call()) || 0;
         console.log({seqno})
 
-        const amount = TonWeb.utils.toNano(0.05);
+        const amount = TonWeb.utils.toNano('0.05');
 
         console.log(
             await wallet.methods.transfer({
@@ -85,7 +85,7 @@ async function init() {
         const seqno = (await wallet.methods.seqno().call()) || 0;
         console.log({seqno})
 
-        const amount = TonWeb.utils.toNano(0.05);
+        const amount = TonWeb.utils.toNano('0.05');
 
         console.log(
             await wallet.methods.transfer({
@@ -105,7 +105,7 @@ async function init() {
         const seqno = (await wallet.methods.seqno().call()) || 0;
         console.log({seqno})
 
-        const amount = TonWeb.utils.toNano(0.05);
+        const amount = TonWeb.utils.toNano('0.05');
 
         console.log(
             await wallet.methods.transfer({
@@ -128,7 +128,7 @@ async function init() {
         const seqno = (await wallet.methods.seqno().call()) || 0;
         console.log({seqno})
 
-        const amount = TonWeb.utils.toNano(0.05);
+        const amount = TonWeb.utils.toNano('0.05');
 
         console.log(
             await wallet.methods.transfer({
@@ -180,7 +180,7 @@ async function init() {
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
                 toAddress: marketplaceAddress.toString(true, true, false), // non-bounceable
-                amount: TonWeb.utils.toNano(1),
+                amount: TonWeb.utils.toNano('1'),
                 seqno: seqno,
                 payload: null, // body
                 sendMode: 3,
@@ -204,7 +204,7 @@ async function init() {
         const seqno = (await wallet.methods.seqno().call()) || 0;
         console.log({seqno})
 
-        const amount = TonWeb.utils.toNano(0.05);
+        const amount = TonWeb.utils.toNano('0.05');
 
         console.log(
             await wallet.methods.transfer({
@@ -214,7 +214,7 @@ async function init() {
                 seqno: seqno,
                 payload: await nftItem.createTransferBody({
                     newOwnerAddress: saleAddress,
-                    forwardAmount: TonWeb.utils.toNano(0.02),
+                    forwardAmount: TonWeb.utils.toNano('0.02'),
                     forwardPayload: new TextEncoder().encode('gift'),
                     responseAddress: walletAddress
                 }),
@@ -227,7 +227,7 @@ async function init() {
         const seqno = (await wallet.methods.seqno().call()) || 0;
         console.log({seqno})
 
-        const amount = TonWeb.utils.toNano(0.05);
+        const amount = TonWeb.utils.toNano('0.05');
 
         console.log(
             await wallet.methods.transfer({
@@ -247,7 +247,7 @@ async function init() {
         const seqno = (await wallet.methods.seqno().call()) || 0;
         console.log({seqno})
 
-        const amount = TonWeb.utils.toNano(0.05);
+        const amount = TonWeb.utils.toNano('0.05');
 
         const body = new TonWeb.boc.Cell();
         body.bits.writeUint(1, 32); // OP deploy new auction
@@ -271,7 +271,7 @@ async function init() {
         const seqno = (await wallet.methods.seqno().call()) || 0;
         console.log({seqno})
 
-        const amount = TonWeb.utils.toNano(1);
+        const amount = TonWeb.utils.toNano('1');
 
         console.log(
             await wallet.methods.transfer({

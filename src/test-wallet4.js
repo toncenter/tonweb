@@ -40,7 +40,7 @@ async function init() {
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
                 toAddress: BENEFICIARY,
-                amount: TonWeb.utils.toNano(0.01), // 0.01 TON
+                amount: TonWeb.utils.toNano('0.01'), // 0.01 TON
                 seqno: seqno || 0,
                 payload: 'Hello',
                 sendMode: 3,
@@ -54,7 +54,7 @@ async function init() {
         wc: 0,
         wallet: walletAddress,
         beneficiary: new TonWeb.utils.Address(BENEFICIARY),
-        amount: TonWeb.utils.toNano(1), // 1 ton
+        amount: TonWeb.utils.toNano('1'), // 1 ton
         startAt: 123,
         period: 2 * 60, // 2 min,
         timeout: 30, // 30 sec
@@ -72,7 +72,7 @@ async function init() {
                 secretKey: keyPair.secretKey,
                 seqno: seqno,
                 pluginWc: 0,
-                amount: TonWeb.utils.toNano(1), // 1 ton
+                amount: TonWeb.utils.toNano('1'), // 1 ton
                 stateInit: (await subscription.createStateInit()).stateInit,
                 body: subscription.createBody(),
             }).send()
@@ -90,7 +90,7 @@ async function init() {
                 secretKey: keyPair.secretKey,
                 seqno: seqno,
                 pluginAddress: PLUGIN_ADDRESS,
-                // amount: TonWeb.utils.toNano(0)
+                // amount: TonWeb.utils.toNano('0')
             }).send()
         );
     }
@@ -104,7 +104,7 @@ async function init() {
                 secretKey: keyPair.secretKey,
                 seqno: seqno,
                 pluginAddress: PLUGIN_ADDRESS,
-                // amount: TonWeb.utils.toNano(0)
+                // amount: TonWeb.utils.toNano('0')
             }).send()
         );
     }
@@ -170,7 +170,7 @@ async function init() {
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
                 toAddress: PLUGIN_ADDRESS,
-                amount: TonWeb.utils.toNano(0.2),
+                amount: TonWeb.utils.toNano('0.2'),
                 seqno: seqno || 0,
                 payload: body.array,
                 sendMode: 3,
@@ -194,14 +194,14 @@ async function init() {
         const body = new TonWeb.boc.Cell();
         body.bits.writeUint(0x706c7567, 32); // op
         body.bits.writeUint(123, 64); // query id
-        body.bits.writeGrams(TonWeb.utils.toNano(2.22));
+        body.bits.writeGrams(TonWeb.utils.toNano('2.22'));
         body.bits.writeUint(0, 1); //  dict empty
 
         console.log(
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
                 toAddress: WALLET_ADDRESS,
-                amount: TonWeb.utils.toNano(0.016),
+                amount: TonWeb.utils.toNano('0.016'),
                 seqno: seqno || 0,
                 payload: body,
                 sendMode: 3,

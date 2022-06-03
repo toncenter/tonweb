@@ -34,9 +34,9 @@ TonWeb.utils.
 
 * Address - Address class
 
-* toNano(amount: number | BN | string): BN
+* toNano(amount: BN | string): BN
 
-* fromNano(amount: number | BN | string): string
+* fromNano(amount: BN | string): string
 
 * bytesToHex(bytes: Uint8Array): string
 

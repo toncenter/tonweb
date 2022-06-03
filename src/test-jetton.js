@@ -32,7 +32,7 @@ const init = async () => {
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
                 toAddress: minterAddress.toString(true, true, true),
-                amount: TonWeb.utils.toNano(0.5),
+                amount: TonWeb.utils.toNano('0.5'),
                 seqno: seqno,
                 payload: null, // body
                 sendMode: 3,
@@ -62,7 +62,7 @@ const init = async () => {
                 amount: TonWeb.utils.toNano('0.05'),
                 seqno: seqno,
                 payload: await minter.createMintBody({
-                    jettonAmount: TonWeb.utils.toNano(100500),
+                    jettonAmount: TonWeb.utils.toNano('100500'),
                     destination: walletAddress,
                     amount: TonWeb.utils.toNano('0.04')
                 }),
@@ -95,12 +95,12 @@ const init = async () => {
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
                 toAddress: JETTON_WALLET_ADDRESS,
-                amount: TonWeb.utils.toNano(0.4),
+                amount: TonWeb.utils.toNano('0.4'),
                 seqno: seqno,
                 payload: await jettonWallet.createTransferBody({
                     jettonAmount: TonWeb.utils.toNano('500'),
                     toAddress: new TonWeb.utils.Address(WALLET2_ADDRESS),
-                    forwardAmount: TonWeb.utils.toNano(0.1),
+                    forwardAmount: TonWeb.utils.toNano('0.1'),
                     forwardPayload: new TextEncoder().encode('gift'),
                     responseAddress: walletAddress
                 }),
@@ -118,7 +118,7 @@ const init = async () => {
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
                 toAddress: JETTON_WALLET_ADDRESS,
-                amount: TonWeb.utils.toNano(0.4),
+                amount: TonWeb.utils.toNano('0.4'),
                 seqno: seqno,
                 payload: await jettonWallet.createBurnBody({
                     jettonAmount: TonWeb.utils.toNano('400'),
