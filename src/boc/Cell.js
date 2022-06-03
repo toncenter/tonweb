@@ -262,9 +262,7 @@ class Cell {
             const refHash = await i.hash();
             const refIndexInt = cellsIndex[refHash];
             let refIndexHex = refIndexInt.toString(16);
-            if (refIndexHex.length % 2) {
-                refIndexHex = "0" + refIndexHex;
-            }
+            refIndexHex = "0".repeat(refSize*2 - refIndexHex.length) + refIndexHex; 
             const reference = hexToBytes(refIndexHex);
             reprArray.push(reference);
         }
