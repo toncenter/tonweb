@@ -3,11 +3,11 @@ export declare function sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
 /**
  * Converts the specified amount from coins to nanocoins.
  */
-export declare function toNano(amount: (number | BN | string)): BN;
+export declare function toNano(amount: (BN | string)): BN;
 /**
  * Converts the specified amount from nanocoins to coins.
  */
-export declare function fromNano(amount: (number | BN | string)): string;
+export declare function fromNano(amount: (BN | string)): string;
 /**
  * Converts the specified bytes array to hex string
  * using lookup table.
