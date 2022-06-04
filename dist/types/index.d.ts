@@ -112,8 +112,8 @@ export default class TonWeb {
         formatTransferUrl: typeof formatTransferUrl;
         parseTransferUrl: typeof parseTransferUrl;
         sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
-        toNano(amount: string | number | BN): BN;
-        fromNano(amount: string | number | BN): string;
+        toNano(amount: string | BN): BN;
+        fromNano(amount: string | BN): string;
         bytesToHex(buffer: Uint8Array): string;
         hexToBytes(hex: string): Uint8Array;
         stringToBytes(str: string, size?: number): Uint8Array;
