@@ -68,6 +68,69 @@ export declare class BitString {
      * cursor.
      */
     writeBit(value: (boolean | number)): void;
+
+    /**
+     * Returns bit value at the specified position.
+     */
+    readBit(): boolean;
+
+    /**
+     * Creates a new bit-string with the specified number
+     * of bits read from this bit-string.
+     *
+     * @param bitLength - Number of bits to read.
+     */
+    readBits(bitLength: number): BitString;
+
+    /**
+     * Reads an unsigned integer of the specified bit length.
+     *
+     * @param bitLength - Size of the unsigned integer in bits.
+     */
+    readUint(bitLength: number): BN;
+
+    /**
+     * Reads a signed integer of the specified length.
+     *
+     * @param Size of the integer in bits.
+     */
+    readInt(bitLength: number): BN;
+
+    /**
+     * Reads an unsigned 8-bit integer.
+     */
+    readUint8(): number;
+
+    /**
+     * Reads an unsigned 16-bit integer.
+     */
+    readUint16(): number;
+
+    /**
+     * Reads unsigned 32-bit integer.
+     */
+    readUint32(): number;
+
+    /**
+     * Reads unsigned 64-bit integer.
+     */
+    readUint64(): BN;
+
+    /**
+     * Reads 8-bit signed integer.
+     */
+    readInt8(): number;
+
+    /**
+     * Reads 16-bit signed integer.
+     */
+    readInt16(): number;
+
+    /**
+     * Reads 32-bit signed integer.
+     */
+    readInt32(): number;
+
     /**
      * Writes the specified array of bit values to the
      * bit-string, starting at the current index and advances
