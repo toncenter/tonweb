@@ -96,7 +96,7 @@ class WalletV4ContractR2 extends WalletContract {
         signingMessage.bits.writeUint(isInstall ? 2 : 3, 8); // op
         signingMessage.bits.writeInt(pluginAddress.wc, 8);
         signingMessage.bits.writeBytes(pluginAddress.hashPart);
-        signingMessage.bits.writeGrams(amount || toNano(0.1));
+        signingMessage.bits.writeGrams(amount || toNano('0.1'));
         signingMessage.bits.writeUint(queryId || 0, 64);
 
         return this.createExternalMessage(signingMessage, secretKey, seqno, false);

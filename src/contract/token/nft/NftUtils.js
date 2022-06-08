@@ -86,6 +86,21 @@ const parseAddress = cell => {
     return new Address(s);
 };
 
+/**
+ * @param provider {HttpProvider}
+ * @param address {string}
+ * @return {Promise<{royalty: number, royaltyFactor: number, royaltyBase: number, royaltyAddress: Address}>}
+ */
+const getRoyaltyParams = async (provider, address) => {
+    const result = await provider.call2(address, 'royalty_params');
+
+    const royaltyFactor = result[0].toNumber();
+    const royaltyBase = result[1].toNumber();
+    const royalty = royaltyFactor / royaltyBase;
+    const royaltyAddress = parseAddress(result[2]);
+
+    return {royalty, royaltyBase, royaltyFactor, royaltyAddress};
+}
 
 module.exports = {
     SNAKE_DATA_PREFIX,
@@ -96,5 +111,6 @@ module.exports = {
     serializeUri,
     parseUri,
     createOffchainUriCell,
-    parseOffchainUriCell
+    parseOffchainUriCell,
+    getRoyaltyParams
 };

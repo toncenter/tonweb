@@ -1,10 +1,7 @@
 const HttpProviderUtils = require('./HttpProviderUtils').default;
 
-let XMLHttpRequest;
-if (typeof window === 'undefined') {
-    XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-} else {
-    XMLHttpRequest = window.XMLHttpRequest;
+if (typeof fetch === 'undefined') {
+    fetch = require('node-fetch');
 }
 
 const SHARD_ID_ALL = '-9223372036854775808'; // 0x8000000000000000
@@ -26,33 +23,20 @@ class HttpProvider {
      * @return {Promise<any>}
      */
     sendImpl(apiUrl, request) {
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", apiUrl, true);
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        if (this.options.apiKey) {
+            headers['X-API-Key'] = this.options.apiKey;
+        }
 
-            xhr.onload = () => {
-                if (xhr.status == 200) {
-                    const r = JSON.parse(xhr.responseText);
-                    if ("error" in r) {
-                        reject(r["error"]);
-                    }
-                    resolve(r["result"]);
-                } else {
-                    const error = new Error(xhr.statusText);
-                    error.code = xhr.status;
-                    reject(error);
-                }
-            };
-
-            xhr.onerror = () => {
-                reject(new Error("Network Error"));
-            };
-            xhr.setRequestHeader("Content-Type", "application/json");
-            if (this.options.apiKey) {
-                xhr.setRequestHeader("X-API-Key", this.options.apiKey);
-            }
-            xhr.send(JSON.stringify(request));
-        });
+        return fetch(apiUrl, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(request)
+        })
+            .then((response) => response.json())
+            .then(({ result, error }) => result || Promise.reject(error))
     }
 
     /**

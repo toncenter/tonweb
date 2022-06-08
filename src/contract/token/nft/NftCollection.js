@@ -2,19 +2,17 @@ const {Contract} = require("../../index.js");
 const {Cell} = require("../../../boc");
 const {Address, bytesToBase64} = require("../../../utils");
 const {parseAddress} = require('./NftUtils.js');
-const {createOffchainUriCell, serializeUri, parseOffchainUriCell} = require("./NftUtils");
+const {createOffchainUriCell, serializeUri, parseOffchainUriCell, getRoyaltyParams} = require("./NftUtils");
 
-/**
- * NFT Release Candidate - may still change slightly
- */
 class NftCollection extends Contract {
     /**
      * @param provider
-     * @param options   {{ownerAddress: Address, collectionContentUri: string, nftItemContentBaseUri: string, nftItemCodeHex: string, royalty: number, royaltyAddress: Address, address?: Address | string, cell?: Cell}}
+     * @param options   {{ownerAddress: Address, collectionContentUri: string, nftItemContentBaseUri: string, nftItemCodeHex: string, royalty: number, royaltyAddress: Address, address?: Address | string, code?: Cell}}
      */
     constructor(provider, options) {
         options.wc = 0;
-        options.code = options.code || Cell.oneFromBoc('B5EE9C72410213010001FE000114FF00F4A413F4BCF2C80B0102016202030202CD04050201200D0E02012006070201480B0C03ED420C700915BE001D0D3030171B0915BE0FA4030ED44D0FA40D33FD4D4D43006D31FD33F8210693D39505230BA8E29165F0602D0128210A8CB00AD708010C8CB055005CF1624FA0214CB6A13CB1FCB3F01CF16C98040FB00E0315165C705F2E19120C001E30220C002E3023403C003E3025F05840FF2F0808090A002D501C8CB3FF828CF16C97020C8CB0113F400F400CB00C9800623004D33F5313BBF2E1925313BA01FA00D43027103459F0058E1301A4443302C85005CF1613CB3FCCCCCCC9ED54925F05E200A2307005D4308E378040F4966FA5208E2908A4208100FABE93F2C18FDE81019321A05327BBF2F402FA00D43022544630F00525BA9304A404DE06926C21E2B3E630344034C85005CF1613CB3FCCCCCCC9ED54002803FA40304334C85005CF1613CB3FCCCCCCC9ED54001B3E401D3232C084B281F2FFF27420003D16BC00DC087C011DE0063232C15633C594013E8084F2DAC4B333325C7EC0200201200F100025BC82DF6A2687D20699FEA6A6A182DE86A182C40043B8B5D31ED44D0FA40D33FD4D4D43010245F04D0D431D430D071C8CB0701CF16CCC980201201112002FB5DAFDA89A1F481A67FA9A9A860D883A1A61FA61FF480610002DB4F47DA89A1F481A67FA9A9A86028BE09E006E003E00901654EE64');
+        // https://github.com/ton-blockchain/token-contract/blob/1ad314a98d20b41241d5329e1786fc894ad811de/nft/nft-collection-editable.fc
+        options.code = options.code || Cell.oneFromBoc('B5EE9C724102140100021F000114FF00F4A413F4BCF2C80B0102016202030202CD04050201200E0F04E7D10638048ADF000E8698180B8D848ADF07D201800E98FE99FF6A2687D20699FEA6A6A184108349E9CA829405D47141BAF8280E8410854658056B84008646582A802E78B127D010A65B509E58FE59F80E78B64C0207D80701B28B9E382F970C892E000F18112E001718112E001F181181981E0024060708090201200A0B00603502D33F5313BBF2E1925313BA01FA00D43028103459F0068E1201A44343C85005CF1613CB3FCCCCCCC9ED54925F05E200A6357003D4308E378040F4966FA5208E2906A4208100FABE93F2C18FDE81019321A05325BBF2F402FA00D43022544B30F00623BA9302A402DE04926C21E2B3E6303250444313C85005CF1613CB3FCCCCCCC9ED54002C323401FA40304144C85005CF1613CB3FCCCCCCC9ED54003C8E15D4D43010344130C85005CF1613CB3FCCCCCCC9ED54E05F04840FF2F00201200C0D003D45AF0047021F005778018C8CB0558CF165004FA0213CB6B12CCCCC971FB008002D007232CFFE0A33C5B25C083232C044FD003D0032C03260001B3E401D3232C084B281F2FFF2742002012010110025BC82DF6A2687D20699FEA6A6A182DE86A182C40043B8B5D31ED44D0FA40D33FD4D4D43010245F04D0D431D430D071C8CB0701CF16CCC980201201213002FB5DAFDA89A1F481A67FA9A9A860D883A1A61FA61FF480610002DB4F47DA89A1F481A67FA9A9A86028BE09E008E003E00B01A500C6E');
         if (options.royalty > 1) throw new Error('royalty > 1');
         options.royaltyBase = 1000;
         options.royaltyFactor = Math.floor(options.royalty * options.royaltyBase);
@@ -27,6 +25,37 @@ class NftCollection extends Contract {
     }
 
     /**
+     * @private
+     * @param params {{collectionContentUri: string, nftItemContentBaseUri: string}}
+     * @return {Cell}
+     */
+    createContentCell(params) {
+        const collectionContentCell = createOffchainUriCell(params.collectionContentUri);
+
+        const commonContentCell = new Cell();
+        commonContentCell.bits.writeBytes(serializeUri(params.nftItemContentBaseUri));
+
+        const contentCell = new Cell();
+        contentCell.refs[0] = collectionContentCell;
+        contentCell.refs[1] = commonContentCell;
+
+        return contentCell;
+    }
+
+    /**
+     * @private
+     * @param params    {{royaltyFactor: number, royaltyBase: number, royaltyAddress: Address}}
+     * @return {Cell}
+     */
+    createRoyaltyCell(params) {
+        const royaltyCell = new Cell();
+        royaltyCell.bits.writeUint(params.royaltyFactor, 16);
+        royaltyCell.bits.writeUint(params.royaltyBase, 16);
+        royaltyCell.bits.writeAddress(params.royaltyAddress);
+        return royaltyCell;
+    }
+
+    /**
      * @override
      * @private
      * @return {Cell} cell contains nft collection data
@@ -35,25 +64,9 @@ class NftCollection extends Contract {
         const cell = new Cell();
         cell.bits.writeAddress(this.options.ownerAddress);
         cell.bits.writeUint(0, 64); // next_item_index
-
-        const collectionContentCell = createOffchainUriCell(this.options.collectionContentUri);
-
-        const commonContentCell = new Cell();
-        commonContentCell.bits.writeBytes(serializeUri(this.options.nftItemContentBaseUri));
-
-        const contentCell = new Cell();
-        contentCell.refs[0] = collectionContentCell;
-        contentCell.refs[1] = commonContentCell;
-        cell.refs[0] = contentCell;
-
+        cell.refs[0] = this.createContentCell(this.options);
         cell.refs[1] = Cell.oneFromBoc(this.options.nftItemCodeHex);
-
-        const royaltyCell = new Cell();
-        royaltyCell.bits.writeUint(this.options.royaltyFactor, 16);
-        royaltyCell.bits.writeUint(this.options.royaltyBase, 16);
-        royaltyCell.bits.writeAddress(this.options.royaltyAddress);
-        cell.refs[2] = royaltyCell;
-
+        cell.refs[2] = this.createRoyaltyCell(this.options);
         return cell;
     }
 
@@ -103,6 +116,23 @@ class NftCollection extends Contract {
     }
 
     /**
+     * @param params    {{collectionContentUri: string, nftItemContentBaseUri: string, royalty: number, royaltyAddress: Address, queryId?: number}}
+     * @return {Cell}
+     */
+    createEditContentBody(params) {
+        if (params.royalty > 1) throw new Error('royalty > 1');
+        params.royaltyBase = 1000;
+        params.royaltyFactor = Math.floor(params.royalty * params.royaltyBase);
+
+        const body = new Cell();
+        body.bits.writeUint(4, 32); // OP
+        body.bits.writeUint(params.queryId || 0, 64); // query_id
+        body.refs[0] = this.createContentCell(params);
+        body.refs[1] = this.createRoyaltyCell(params);
+        return body;
+    }
+
+    /**
      * @return {Promise<{nextItemIndex: number, ownerAddress: Address, collectionContentUri: string}>}
      */
     async getCollectionData() {
@@ -147,14 +177,7 @@ class NftCollection extends Contract {
      */
     async getRoyaltyParams() {
         const myAddress = await this.getAddress();
-        const result = await this.provider.call2(myAddress.toString(), 'royalty_params');
-
-        const royaltyFactor = result[0].toNumber();
-        const royaltyBase = result[1].toNumber();
-        const royalty = royaltyFactor / royaltyBase;
-        const royaltyAddress = parseAddress(result[2]);
-
-        return {royalty, royaltyBase, royaltyFactor, royaltyAddress};
+        return getRoyaltyParams(this.provider, myAddress.toString());
     }
 }
 
