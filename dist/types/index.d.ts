@@ -14,6 +14,29 @@ import { formatTransferUrl, parseTransferUrl } from './utils/transfer-url';
 export { ParsedTransferUrl } from './utils/transfer-url';
 import { BitString } from './boc/bit-string';
 import { Cell } from './boc/cell';
+
+import { CellParser } from './boc/cell-parser';
+
+import {
+    HashMap,
+    ValueConverter,
+    HashMapElement,
+    BinaryTree,
+    BinaryTreeItem,
+    FlatTree,
+
+} from './boc/hash-map';
+
+export {
+    ValueConverter,
+    HashMapElement,
+    BinaryTree,
+    BinaryTreeItem,
+    FlatTree,
+};
+
+import { PfxHashMap } from './boc/pfx-hash-map';
+
 import { Contract } from './contract/contract';
 export { ContractMethods, ContractOptions, Method, Query, StateInit, } from './contract/contract';
 import { Wallets } from './contract/wallet/wallets';
@@ -68,6 +91,9 @@ export default class TonWeb {
     static boc: {
         BitString: typeof BitString;
         Cell: typeof Cell;
+        CellParser: typeof CellParser;
+        HashMap: typeof HashMap;
+        PfxHashMap: typeof PfxHashMap;
     };
     static HttpProvider: typeof HttpProvider;
     static Contract: typeof Contract;
@@ -131,6 +157,9 @@ export default class TonWeb {
     boc: {
         BitString: typeof BitString;
         Cell: typeof Cell;
+        CellParser: typeof CellParser;
+        HashMap: typeof HashMap;
+        PfxHashMap: typeof PfxHashMap;
     };
     Contract: typeof Contract;
     BlockSubscription: typeof BlockSubscription;
@@ -165,11 +194,11 @@ export default class TonWeb {
     /**
      * Contract address.
      */
-    address: AddressType, 
+    address: AddressType,
     /**
      * Method name or method ID.
      */
-    method: (string | number), 
+    method: (string | number),
     /**
      * Array of stack elements.
      */
