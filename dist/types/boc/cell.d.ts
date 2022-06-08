@@ -14,10 +14,22 @@ export declare class Cell {
      * error if BOC contains multiple root cells.
      */
     static oneFromBoc(serializedBoc: (string | Uint8Array)): Cell;
+
+    /**
+     * Clones the cell and returns its exact copy.
+     */
+    clone(): Cell;
+
     /**
      * Writes the specified cell to this cell.
      */
     writeCell(cell: Cell): void;
+
+    /**
+     * Reads next referenced cell from this cell.
+     */
+    readRef(): Cell;
+
     /**
      * Returns cell max level.
      */
