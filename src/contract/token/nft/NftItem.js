@@ -1,13 +1,12 @@
 const {Contract} = require("../../index");
 const {Cell} = require("../../../boc");
 const {Address, BN} = require("../../../utils");
-const {parseAddress} = require('./NftUtils.js');
+const {parseAddress, getRoyaltyParams} = require('./NftUtils.js');
+const {parseOffchainUriCell} = require("./NftUtils");
 
-const NFT_ITEM_CODE_HEX = 'B5EE9C7241020B0100019C000114FF00F4A413F4BCF2C80B0102016202030202CE04050009A11F9FE0030201200607001D403C8CB3F58CF1601CF16CCC9ED54802A30C8871C02497C0F83434C0C05C6C2497C0F83E900C3C00412CE3844C0C8D1480B1C17CB865407E90350C3C00B80174C7F4CFE08417F30F45148C2EB8C08C0D0D4D60840BF2C9A8852EB8C097C12103FCBC200809003B3B513434CFFE900835D27080269FC07E90350C04090408F80C1C165B5B6001FC3210365E22015124C705F2E19101FA40FA40D20031FA00820AFAF0801AA121A120C200F2E192218E3E821005138D91C85008CF16500ACF1671244814544690708010C8CB055007CF165005FA0215CB6A12CB1FCB3F226EB39458CF17019132E201C901FB001036941029365BE226D70B01C3009410266C31E30D5502F0020A00767082108B77173504C8CBFF5005CF16102410238040708010C8CB055007CF165005FA0215CB6A12CB1FCB3F226EB39458CF17019132E201C901FB0000648210D53276DB103744046D71708010C8CB055007CF165005FA0215CB6A12CB1FCB3F226EB39458CF17019132E201C901FB00D5B62154';
+// https://github.com/ton-blockchain/token-contract/blob/1ad314a98d20b41241d5329e1786fc894ad811de/nft/nft-item.fc
+const NFT_ITEM_CODE_HEX = 'B5EE9C7241020D010001D0000114FF00F4A413F4BCF2C80B0102016202030202CE04050009A11F9FE00502012006070201200B0C02D70C8871C02497C0F83434C0C05C6C2497C0F83E903E900C7E800C5C75C87E800C7E800C3C00812CE3850C1B088D148CB1C17CB865407E90350C0408FC00F801B4C7F4CFE08417F30F45148C2EA3A1CC840DD78C9004F80C0D0D0D4D60840BF2C9A884AEB8C097C12103FCBC20080900113E910C1C2EBCB8536001F65135C705F2E191FA4021F001FA40D20031FA00820AFAF0801BA121945315A0A1DE22D70B01C300209206A19136E220C2FFF2E192218E3E821005138D91C85009CF16500BCF16712449145446A0708010C8CB055007CF165005FA0215CB6A12CB1FCB3F226EB39458CF17019132E201C901FB00104794102A375BE20A00727082108B77173505C8CBFF5004CF1610248040708010C8CB055007CF165005FA0215CB6A12CB1FCB3F226EB39458CF17019132E201C901FB000082028E3526F0018210D53276DB103744006D71708010C8CB055007CF165005FA0215CB6A12CB1FCB3F226EB39458CF17019132E201C901FB0093303234E25502F003003B3B513434CFFE900835D27080269FC07E90350C04090408F80C1C165B5B60001D00F232CFD633C58073C5B3327B5520BF75041B';
 
-/**
- * NFT Release Candidate - may still change slightly
- */
 class NftItem extends Contract {
     /**
      * @param provider
@@ -34,7 +33,7 @@ class NftItem extends Contract {
     }
 
     /**
-     * @return {Promise<{isInitialized: boolean, index: number, collectionAddress: Address, ownerAddress: Address|null, contentCell: Cell}>}
+     * @return {Promise<{isInitialized: boolean, index: number, collectionAddress: Address|null, ownerAddress: Address|null, contentCell: Cell, contentUri: string|null}>}
      */
     async getData() {
         const myAddress = await this.getAddress();
@@ -44,10 +43,11 @@ class NftItem extends Contract {
         const index = result[1].toNumber();
         const collectionAddress =  parseAddress(result[2]);
         const ownerAddress = isInitialized ? parseAddress(result[3]) : null;
-
         const contentCell = result[4];
 
-        return {isInitialized, index, collectionAddress, ownerAddress, contentCell};
+        const contentUri = (isInitialized && collectionAddress === null) ? parseOffchainUriCell(contentCell) : null; // single NFT without collection
+
+        return {isInitialized, index, collectionAddress, ownerAddress, contentCell, contentUri};
     }
 
     /**
@@ -78,6 +78,15 @@ class NftItem extends Contract {
         body.bits.writeUint(0x2fcb26a2, 32); // OP
         body.bits.writeUint(params.queryId || 0, 64); // query_id
         return body;
+    }
+
+    /**
+     * for single nft without collection
+     * @return {Promise<{royalty: number, royaltyFactor: number, royaltyBase: number, royaltyAddress: Address}>}
+     */
+    async getRoyaltyParams() {
+        const myAddress = await this.getAddress();
+        return getRoyaltyParams(this.provider, myAddress.toString());
     }
 
 }
