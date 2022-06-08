@@ -1,8 +1,9 @@
 {
   "name": "tonweb",
-  "version": "0.0.29",
+  "version": "0.0.38",
   "description": "TonWeb - JavaScript API for TON blockchain",
   "main": "src/index.js",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx webpack --mode=none"
@@ -27,21 +28,22 @@
   "homepage": "https://github.com/toncenter/tonweb#readme",
   "repository": "https://github.com/toncenter/tonweb",
   "dependencies": {
-    "bn.js": "5.1.1",
-    "tweetnacl": "1.0.3",
-    "ethjs-unit": "0.1.6",
-    "xmlhttprequest": "1.8.0",
-    "isomorphic-webcrypto": "2.3.8",
-    "@ledgerhq/hw-transport-webusb": "5.48.0",
+    "@ledgerhq/hw-transport-web-ble": "5.48.0",
     "@ledgerhq/hw-transport-webhid": "5.48.0",
-    "@ledgerhq/hw-transport-web-ble": "5.48.0"
+    "@ledgerhq/hw-transport-webusb": "5.48.0",
+    "@ton.js/ethjs-unit": "^0.1.7-beta.2",
+    "bn.js": "5.1.1",
+    "isomorphic-webcrypto": "2.3.8",
+    "node-fetch": "2.6.7",
+    "tweetnacl": "1.0.3"
   },
   "devDependencies": {
-    "webpack": "4.42.1",
+    "@sinonjs/fake-timers": "^9.1.1",
+    "buffer": "6.0.3",
+    "webpack": "5.70.0",
     "webpack-cli": "3.3.12"
   },
   "browser": {
-    "isomorphic-webcrypto": false,
-    "xmlhttprequest": false
+    "node-fetch": false
   }
 }
