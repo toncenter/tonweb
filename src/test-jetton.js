@@ -1,4 +1,6 @@
 const TonWeb = require("./index");
+const {Cell} = require("./boc");
+const {BN} = require("./utils");
 const {JettonMinter, JettonWallet} = TonWeb.token.jetton;
 
 const init = async () => {
@@ -18,7 +20,7 @@ const init = async () => {
 
     const minter = new JettonMinter(tonweb.provider, {
         adminAddress: walletAddress,
-        jettonContentUri: 'http://localhost/nft-marketplace/my_collection.json',
+        jettonContentUri: 'https://ton.org/jetton.json',
         jettonWalletCodeHex: JettonWallet.codeHex
     });
     const minterAddress = await minter.getAddress();
@@ -32,7 +34,7 @@ const init = async () => {
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
                 toAddress: minterAddress.toString(true, true, true),
-                amount: TonWeb.utils.toNano('0.5'),
+                amount: TonWeb.utils.toNano('0.05'),
                 seqno: seqno,
                 payload: null, // body
                 sendMode: 3,
@@ -71,8 +73,44 @@ const init = async () => {
         );
     }
 
-    const JETTON_WALLET_ADDRESS = 'EQBREXwQn9ZCVae_b_jdked2c4Z14uAAD-1Vq0sZ0pCXWw0S';
-    // const JETTON_WALLET_ADDRESS = 'EQAFeJKruIRXk25m_jfCGSYu2v7wJHvJx12N0r3D9dnp_1Gq';
+    const editContent = async () => {
+        const seqno = (await wallet.methods.seqno().call()) || 0;
+        console.log({seqno})
+
+        console.log(
+            await wallet.methods.transfer({
+                secretKey: keyPair.secretKey,
+                toAddress: minterAddress.toString(true, true, true),
+                amount: TonWeb.utils.toNano('0.05'),
+                seqno: seqno,
+                payload: await minter.createEditContentBody({
+                    jettonContentUri: 'http://localhost/nft-marketplace/my_collection.123',
+                }),
+                sendMode: 3,
+            }).send()
+        );
+    }
+
+    const changeAdmin = async () => {
+        const seqno = (await wallet.methods.seqno().call()) || 0;
+        console.log({seqno})
+
+        console.log(
+            await wallet.methods.transfer({
+                secretKey: keyPair.secretKey,
+                toAddress: minterAddress.toString(true, true, true),
+                amount: TonWeb.utils.toNano('0.05'),
+                seqno: seqno,
+                payload: await minter.createChangeAdminBody({
+                    newAdminAddress: new TonWeb.Address(WALLET2_ADDRESS)
+                }),
+                sendMode: 3,
+            }).send()
+        );
+    }
+
+    const JETTON_WALLET_ADDRESS = 'EQBGpCSFJpAb1guZHVWIO8b_8g0e8yxp2ZfZWcTXvTjvvyFd';
+    // const JETTON_WALLET_ADDRESS = 'EQAG6NvUCTxgQfcuUJVypQxN4rCm6krVH6T-mngXhSQwY0Ae';
     console.log('jettonWalletAddress=', JETTON_WALLET_ADDRESS);
 
     const jettonWallet = new JettonWallet(tonweb.provider, {
@@ -95,12 +133,12 @@ const init = async () => {
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
                 toAddress: JETTON_WALLET_ADDRESS,
-                amount: TonWeb.utils.toNano('0.4'),
+                amount: TonWeb.utils.toNano('0.05'),
                 seqno: seqno,
                 payload: await jettonWallet.createTransferBody({
                     jettonAmount: TonWeb.utils.toNano('500'),
                     toAddress: new TonWeb.utils.Address(WALLET2_ADDRESS),
-                    forwardAmount: TonWeb.utils.toNano('0.1'),
+                    forwardAmount: TonWeb.utils.toNano('0.01'),
                     forwardPayload: new TextEncoder().encode('gift'),
                     responseAddress: walletAddress
                 }),
@@ -108,6 +146,8 @@ const init = async () => {
             }).send()
         );
     }
+
+
 
 
     const burn = async () => {
@@ -118,7 +158,7 @@ const init = async () => {
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
                 toAddress: JETTON_WALLET_ADDRESS,
-                amount: TonWeb.utils.toNano('0.4'),
+                amount: TonWeb.utils.toNano('0.05'),
                 seqno: seqno,
                 payload: await jettonWallet.createBurnBody({
                     jettonAmount: TonWeb.utils.toNano('400'),
@@ -133,6 +173,8 @@ const init = async () => {
     // await getMinterInfo();
     // await mint();
     // await getJettonWalletInfo();
+    // await editContent();
+    // await changeAdmin();
     // await transfer();
     // await burn();
 }

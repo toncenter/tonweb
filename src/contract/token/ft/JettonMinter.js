@@ -3,9 +3,6 @@ const {Cell} = require("../../../boc");
 const {createOffchainUriCell, parseOffchainUriCell, parseAddress} = require("../nft/NftUtils");
 const {Address, BN, bytesToBase64} = require("../../../utils");
 
-/**
- * ATTENTION: this is DRAFT, there will be changes
- */
 class JettonMinter extends Contract {
 
     /**
@@ -14,7 +11,7 @@ class JettonMinter extends Contract {
      */
     constructor(provider, options) {
         options.wc = 0;
-        options.code = options.code || Cell.oneFromBoc('B5EE9C72410209010001AA000114FF00F4A413F4BCF2C80B0102016202030202CC040502037A60070801D5D9910E38048ADF068698180B8D848ADF07D201800E98FE99FF6A2687D007D206A6A18400AA9385D47181A9AA8AAE382F9702480FD207D006A18106840306B90FD001812881A28217804502A906428027D012C678B666664F6AA7041083DEECBEF0BDD71812F83C207F9784060093DFC142201B82A1009AA0A01E428027D012C678B00E78B666491646580897A007A00658064907C80383A6465816503E5FFE4E83BC00C646582AC678B28027D0109E5B589666664B8FD80400FC03FA00FA40F82854120870542013541403C85004FA0258CF1601CF16CCC922C8CB0112F400F400CB00C9F9007074C8CB02CA07CBFFC9D05008C705F2E04A12A1035024C85004FA0258CF16CCCCC9ED5401FA403020D70B01C3008E1F8210D53276DB708010C8CB055003CF1622FA0212CB6ACB1FCB3FC98042FB00915BE2007DADBCF6A2687D007D206A6A183618FC1400B82A1009AA0A01E428027D012C678B00E78B666491646580897A007A00658064FC80383A6465816503E5FFE4E840001FAF16F6A2687D007D206A6A183FAA9040F6B06B3C');
+        options.code = options.code || Cell.oneFromBoc('B5EE9C7241020B010001ED000114FF00F4A413F4BCF2C80B0102016202030202CC040502037A60090A03EFD9910E38048ADF068698180B8D848ADF07D201800E98FE99FF6A2687D007D206A6A18400AA9385D47181A9AA8AAE382F9702480FD207D006A18106840306B90FD001812881A28217804502A906428027D012C678B666664F6AA7041083DEECBEF29385D71811A92E001F1811802600271812F82C207F97840607080093DFC142201B82A1009AA0A01E428027D012C678B00E78B666491646580897A007A00658064907C80383A6465816503E5FFE4E83BC00C646582AC678B28027D0109E5B589666664B8FD80400FE3603FA00FA40F82854120870542013541403C85004FA0258CF1601CF16CCC922C8CB0112F400F400CB00C9F9007074C8CB02CA07CBFFC9D05008C705F2E04A12A1035024C85004FA0258CF16CCCCC9ED5401FA403020D70B01C3008E1F8210D53276DB708010C8CB055003CF1622FA0212CB6ACB1FCB3FC98042FB00915BE200303515C705F2E049FA403059C85004FA0258CF16CCCCC9ED54002E5143C705F2E049D43001C85004FA0258CF16CCCCC9ED54007DADBCF6A2687D007D206A6A183618FC1400B82A1009AA0A01E428027D012C678B00E78B666491646580897A007A00658064FC80383A6465816503E5FFE4E840001FAF16F6A2687D007D206A6A183FAA904051007F09');
         super(provider, options);
     }
 
@@ -57,7 +54,33 @@ class JettonMinter extends Contract {
     }
 
     /**
-     * @return {Promise<{ totalSupply: BN, isMutable: boolean, adminAddress: Address|null, jettonContentUri: string, tokenWalletCode: Cell }>}
+     * params   {{queryId?: number, newAdminAddress: Address}}
+     * @return {Cell}
+     */
+    createChangeAdminBody(params) {
+        if (params.newAdminAddress === undefined) throw new Error('Specify newAdminAddress');
+
+        const body = new Cell();
+        body.bits.writeUint(3, 32); // OP
+        body.bits.writeUint(params.queryId || 0, 64); // query_id
+        body.bits.writeAddress(params.newAdminAddress);
+        return body;
+    }
+
+    /**
+     * params   {{jettonContentUri: string, queryId?: number}}
+     * @return {Cell}
+     */
+    createEditContentBody(params) {
+        const body = new Cell();
+        body.bits.writeUint(4, 32); // OP
+        body.bits.writeUint(params.queryId || 0, 64); // query_id
+        body.refs[0] = createOffchainUriCell(params.jettonContentUri);
+        return body;
+    }
+
+    /**
+     * @return {Promise<{ totalSupply: BN, isMutable: boolean, adminAddress: Address|null, jettonContentUri: string, jettonWalletCode: Cell }>}
      */
     async getJettonData() {
         const myAddress = await this.getAddress();
@@ -67,9 +90,9 @@ class JettonMinter extends Contract {
         const isMutable = result[1].toNumber() === -1;
         const adminAddress = parseAddress(result[2]);
         const jettonContentUri = parseOffchainUriCell(result[3]);
-        const tokenWalletCode = result[4];
+        const jettonWalletCode = result[4];
 
-        return {totalSupply, isMutable, adminAddress, jettonContentUri, tokenWalletCode};
+        return {totalSupply, isMutable, adminAddress, jettonContentUri, jettonWalletCode};
     }
 
     /**

@@ -108,6 +108,8 @@ class NftCollection extends Contract {
      * @return {Cell}
      */
     createChangeOwnerBody(params) {
+        if (params.newOwnerAddress === undefined) throw new Error('Specify newOwnerAddress');
+
         const body = new Cell();
         body.bits.writeUint(3, 32); // OP
         body.bits.writeUint(params.queryId || 0, 64); // query_id
