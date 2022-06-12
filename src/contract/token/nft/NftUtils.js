@@ -1,4 +1,4 @@
-const {base64ToBytes, Address} = require("../../../utils");
+const {base64ToBytes, Address, BN} = require("../../../utils");
 const {Cell} = require("../../../boc");
 
 const SNAKE_DATA_PREFIX = 0x00;
@@ -60,13 +60,13 @@ const parseOffchainUriCell = (cell) => {
  * @param bs    {BitString}
  * @param cursor    {number}
  * @param bits  {number}
- * @return {BigInt}
+ * @return {BN}
  */
 const readIntFromBitString = (bs, cursor, bits) => {
-    let n = BigInt(0);
+    let n = new BN('0');
     for (let i = 0; i < bits; i++) {
-        n *= BigInt(2);
-        n += BigInt(bs.get(cursor + i));
+        n = n.mul(new BN('2'));
+        n = n.add(new BN(bs.get(cursor + i) ? '1' : '0'));
     }
     return n;
 }
@@ -77,8 +77,8 @@ const readIntFromBitString = (bs, cursor, bits) => {
  */
 const parseAddress = cell => {
     let n = readIntFromBitString(cell.bits, 3, 8);
-    if (n > BigInt(127)) {
-        n = n - BigInt(256);
+    if (n.gt(new BN('127'))) {
+        n = n.sub(new BN('256'));
     }
     const hashPart = readIntFromBitString(cell.bits, 3 + 8, 256);
     if (n.toString(10) + ":" + hashPart.toString(16) === '0:0') return null;
