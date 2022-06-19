@@ -13,7 +13,8 @@ const {SubscriptionContract} = require("./contract/subscription/index");
 const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
 const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
 const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
-const version = '0.0.43';
+const {Dns, DnsCollection, DnsItem} = require("./contract/dns").default;
+const version = '0.0.44';
 
 class TonWeb {
     constructor(provider) {
@@ -26,6 +27,7 @@ class TonWeb {
         this.InMemoryBlockStorage = InMemoryBlockStorage;
 
         this.provider = provider || new HttpProvider();
+        this.dns = new Dns(this.provider);
         this.wallet = new Wallets(this.provider);
         this.lockupWallet = LockupWallets;
     }
@@ -92,5 +94,8 @@ TonWeb.token = {
     ft: JETTON,
     jetton: JETTON,
 }
+TonWeb.dns = Dns;
+TonWeb.dns.DnsCollection = DnsCollection;
+TonWeb.dns.DnsItem = DnsItem;
 
 module.exports = TonWeb;
