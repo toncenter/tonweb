@@ -25,7 +25,7 @@ class TonWeb {
         this.BlockSubscription = BlockSubscription;
         this.InMemoryBlockStorage = InMemoryBlockStorage;
 
-        this.provider = provider || new HttpProvider();
+        this.provider = new HttpProvider("https://toncenter.com/api/v2/jsonRPC", provider);
         this.wallet = new Wallets(this.provider);
         this.lockupWallet = LockupWallets;
     }

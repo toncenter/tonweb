@@ -12,7 +12,7 @@ class HttpProvider {
      * @param options? {{apiKey: string}}
      */
     constructor(host, options) {
-        this.host = host || "https://toncenter.com/api/v2/jsonRPC";
+        this.host = host;
         this.options = options || {};
     }
 
