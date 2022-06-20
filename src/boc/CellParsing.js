@@ -65,7 +65,7 @@ function loadInt(slice, n) {
  * @returns {BN}
  */
 function loadUintLEQ(slice, n) {
-  var result = loadUint(slice, ((new BN(n)).add(new BN(1))).toString(2).length);
+  var result = loadUint(slice, (new BN(n)).toString(2).length);
   if(result > n) {
     throw Error("cannot load {<= x}: encoded number is too high");
   }
@@ -97,7 +97,7 @@ function loadUintLess(slice, n) {
  */
 function loadVarUInteger(slice, n) {
     
-    len = loadUint(slice, (new BN(n)).toString(2).length);
+    len = loadUintLess(slice, n);
     if (len == 0) {
         return new BN(0);
     } else {
