@@ -3,20 +3,43 @@ const {DnsCollection} = require("./contract/dns/DnsCollection");
 const {DnsItem} = require("./contract/dns/DnsItem");
 const {createOffchainUriCell} = require("./contract/token/nft/NftUtils");
 const {BN} = require("./utils");
+const {Cell} = require("./boc");
+const {Contract} = require("./contract");
+
+class DnsRoot extends Contract {
+    constructor(provider) {
+        const options = {};
+        options.wc = -1;
+        options.code = options.code || Cell.oneFromBoc('B5EE9C72410106010091000114FF00F4A413F4BCF2C80B0102016202030202CF040500ADA1C6186041AE92F152118001E5C09A41AE140F800043AE938010A4216126B6F0DBC0412A03A60E6203BC43E00225AE3061166E8DEDD041AE92B38E0B6726B6E0DBC10401752791961FDA89A19E2D920522F122E1C54003000517C0E000331C27C074C1C07000082CE500A98200B784B98C4830003CB432608134AFD3');
+        super(provider, options);
+    }
+
+    /**
+     * @override
+     * @private
+     * @return {Cell}
+     */
+    createDataCell() {
+        const cell = new Cell();
+        cell.bits.writeAddress(new TonWeb.Address('EQApIyoGvPbclNZlBDQf9xYDF80CoH6851BkisKoUvNz43Xf'));
+        return cell;
+    }
+}
 
 async function init() {
     const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {apiKey: ''}));
 
     const dnsResolve = async () => {
-        console.log(TonWeb.dns.DNS_CATEGORY_ALL);
-        console.log(TonWeb.dns.DNS_CATEGORY_ADNL_ADDRESS);
-        console.log(TonWeb.dns.DNS_CATEGORY_WALLET_ADDRESS);
-
         const rootAddress = await tonweb.dns.getRootDnsAddress();
-        console.log(rootAddress.toString(true, true, true));
+        console.log('rootAddress=', rootAddress.toString(true, true, true));
 
-        const address = await tonweb.dns.resolve('alice.temp.ton', TonWeb.dns.DNS_CATEGORY_ALL);
-        console.log(address);
+        const s = 'apple.ton';
+
+        // const cell = await tonweb.dns.resolve(s, null, true);
+        // console.log(cell);
+
+        const result = await tonweb.dns.resolve(s, TonWeb.dns.DNS_CATEGORY_WALLET);
+        console.log(result);
     }
 
     const seed = TonWeb.utils.base64ToBytes('vt58J2v6FaSuXFGcyGtqT5elpVxcZ+I1zgu/GUfA5uY=');
@@ -31,63 +54,113 @@ async function init() {
     const walletAddress = await wallet.getAddress();
     console.log('wallet address=', walletAddress.toString(true, true, true));
 
-    const nftCollection = new DnsCollection(tonweb.provider, {
-        collectionContent: createOffchainUriCell('http://localhost:63342/nft-marketplace/my_collection.json'),
+    const dnsRoot = new DnsRoot(tonweb.provider, {});
+    const dnsRootAddress = await dnsRoot.getAddress();
+    console.log('root address=', dnsRootAddress.toString(true, true, true));
+
+
+    const dnsCollection = new DnsCollection(tonweb.provider, {
+        collectionContent: createOffchainUriCell('https://dns.ton.org/collection.json'),
         dnsItemCodeHex: DnsItem.codeHex
     });
-    const nftCollectionAddress = await nftCollection.getAddress();
-    console.log('collection address=', nftCollectionAddress.toString(true, true, true));
+    const dnsCollectionAddress = await dnsCollection.getAddress();
+    console.log('collection address=', dnsCollectionAddress.toString(true, true, true));
 
-    const deployNftCollection = async () => {
+    const deployRootDns = async () => {
         const seqno = (await wallet.methods.seqno().call()) || 0;
         console.log({seqno})
 
         console.log(
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
-                toAddress: nftCollectionAddress.toString(true, true, true),
-                amount: TonWeb.utils.toNano('1'),
+                toAddress: dnsRootAddress.toString(true, true, true),
+                amount: TonWeb.utils.toNano('0.1'),
                 seqno: seqno,
                 payload: null, // body
                 sendMode: 3,
-                stateInit: (await nftCollection.createStateInit()).stateInit
+                stateInit: (await dnsRoot.createStateInit()).stateInit
             }).send()
         );
     }
 
-    const getNftCollectionInfo = async () => {
-        const data = await nftCollection.getCollectionData();
-        console.log(data);
-        console.log('addressByIndex=', (await nftCollection.getNftItemAddressByIndex(new BN('6f0d5e27c981d01ba43aaf3d346a84beb1e8757b988465a325b3217ec3257af6', 16))).toString(true, true, true));
-        // console.log((await nftCollection.getNftItemAddressByIndex(new BN(1))).toString(true, true, true));
-        console.log((await nftCollection.dnsResolve('apple', -1)).toString(true, true, true));
+    const deployDnsCollection = async () => {
+        const seqno = (await wallet.methods.seqno().call()) || 0;
+        console.log({seqno})
+
+        const payload = new Cell();
+        payload.bits.writeUint(7, 32);
+        payload.bits.writeUint(0, 64);
+
+        console.log(
+            await wallet.methods.transfer({
+                secretKey: keyPair.secretKey,
+                toAddress: dnsCollectionAddress.toString(true, true, true),
+                amount: TonWeb.utils.toNano('0.5'),
+                seqno: seqno,
+                payload: payload, // body
+                sendMode: 3,
+                stateInit: (await dnsCollection.createStateInit()).stateInit
+            }).send()
+        );
     }
 
-    const nftItemAddress = new TonWeb.utils.Address('EQAQ3qitiEcX4UC3WTCqnC0GRBS-BdWi8sssbrrumdGh4yrz');
-    console.log('nft item address=', nftItemAddress.toString(true, true, true));
-    const nftItem = new DnsItem(tonweb.provider, {address: nftItemAddress});
+    const getDnsCollectionInfo = async () => {
+        const data = await dnsCollection.getCollectionData();
+        console.log(data);
+        console.log('addressByIndex=', (await dnsCollection.getNftItemAddressByIndex(new BN('6f0d5e27c981d01ba43aaf3d346a84beb1e8757b988465a325b3217ec3257af6', 16))).toString(true, true, true)); // "apple"
+        // console.log((await nftCollection.getNftItemAddressByIndex(new BN(1))).toString(true, true, true));
+        console.log((await dnsCollection.resolve('apple', TonWeb.dns.DNS_CATEGORY_NEXT_RESOLVER, true))[TonWeb.dns.DNS_CATEGORY_NEXT_RESOLVER].toString(true, true, true));
+        console.log((await dnsCollection.resolve('apple')));
+    }
 
-    const getNftItemInfo = async () => {
-        const data = await nftCollection.methods.getNftItemContent(nftItem);
+    const dnsItemAddress = new TonWeb.utils.Address('EQBqppiNyudN7JWE7J12PaijZFapHPxYcuaGdc-WnLzf0F0L');
+    console.log('dns item address=', dnsItemAddress.toString(true, true, true));
+    const dnsItem = new DnsItem(tonweb.provider, {address: dnsItemAddress});
+
+    const getDnsItemInfo = async () => {
+        const data = await dnsCollection.methods.getNftItemContent(dnsItem);
         data.collectionAddress = data.collectionAddress.toString(true, true, true);
         data.ownerAddress = data.ownerAddress?.toString(true, true, true);
         console.log(data);
 
-        const auctionInfo = await nftItem.methods.getAuctionInfo();
+        const auctionInfo = await dnsItem.methods.getAuctionInfo();
         auctionInfo.maxBidAddress = auctionInfo.maxBidAddress.toString(true, true, true);
         auctionInfo.maxBidAmount = auctionInfo.maxBidAmount.toString();
         console.log(auctionInfo);
 
-        const domain = await nftItem.methods.getDomain();
+        const domain = await dnsItem.methods.getDomain();
         console.log({domain});
 
-        const lastFillUpTime = await nftItem.methods.getLastFillUpTime();
+        const lastFillUpTime = await dnsItem.methods.getLastFillUpTime();
         console.log({lastFillUpTime});
+
+        console.log((await dnsItem.resolve('.')));
+        console.log((await dnsItem.resolve('apple')));
     }
 
-    // await deployNftCollection();
-    // await getNftCollectionInfo();
-    // await getNftItemInfo();
+
+    const setWalletRecord = async () => {
+        const seqno = (await wallet.methods.seqno().call()) || 0;
+        console.log({seqno})
+
+        console.log(
+            await wallet.methods.transfer({
+                secretKey: keyPair.secretKey,
+                toAddress: dnsItemAddress.toString(true, true, true),
+                amount: TonWeb.utils.toNano('0.1'),
+                seqno: seqno,
+                payload: await TonWeb.dns.DnsItem.createChangeContentEntryBody({category: TonWeb.dns.DNS_CATEGORY_WALLET, value: TonWeb.dns.createSmartContractAddressRecord(new TonWeb.Address('EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG'))}), // body
+                sendMode: 3,
+            }).send()
+        );
+    }
+
+    // await deployRootDns();
+    // await dnsResolve();
+    // await deployDnsCollection();
+    // await getDnsCollectionInfo();
+    // await getDnsItemInfo();
+    // await setWalletRecord();
 }
 
 init();
