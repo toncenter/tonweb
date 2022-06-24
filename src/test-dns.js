@@ -21,7 +21,7 @@ class DnsRoot extends Contract {
      */
     createDataCell() {
         const cell = new Cell();
-        cell.bits.writeAddress(new TonWeb.Address('EQApIyoGvPbclNZlBDQf9xYDF80CoH6851BkisKoUvNz43Xf'));
+        cell.bits.writeAddress(new TonWeb.Address('EQAdZcyp4H1kCb8bAOuiAdCfngiwINivQ15w_vNQ784DcCl4'));
         return cell;
     }
 }
@@ -113,7 +113,7 @@ async function init() {
         console.log((await dnsCollection.resolve('apple')));
     }
 
-    const dnsItemAddress = new TonWeb.utils.Address('EQBqppiNyudN7JWE7J12PaijZFapHPxYcuaGdc-WnLzf0F0L');
+    const dnsItemAddress = new TonWeb.utils.Address('EQDwPSkZi8Mli5j_E7d2g5HXgKM4f-q5TQnKr4QKv1C7L6oP');
     console.log('dns item address=', dnsItemAddress.toString(true, true, true));
     const dnsItem = new DnsItem(tonweb.provider, {address: dnsItemAddress});
 
@@ -136,6 +136,7 @@ async function init() {
 
         console.log((await dnsItem.resolve('.')));
         console.log((await dnsItem.resolve('apple')));
+        console.log((await dnsItem.resolve('.', TonWeb.dns.DNS_CATEGORY_WALLET)));
     }
 
 
