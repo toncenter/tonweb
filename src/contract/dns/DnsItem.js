@@ -117,7 +117,7 @@ class DnsItem extends Contract {
      * @param domain    {string} e.g "sub.alice.ton"
      * @param category?  {string} category of requested DNS record, null for all categories
      * @param oneStep? {boolean} non-recursive
-     * @returns {Promise<Map<String, Cell | Address | BN> | Cell | null>}
+     * @returns {Promise<Cell | Address | BN | null>}
      */
     async resolve(domain, category, oneStep) {
         const myAddress = await this.getAddress();

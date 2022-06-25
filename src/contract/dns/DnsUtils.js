@@ -86,7 +86,7 @@ const parseNextResolverRecord = (cell) => {
  * @param rawDomainBytes {Uint8Array}
  * @param category  {string | undefined} category of requested DNS record
  * @param oneStep {boolean | undefined} non-recursive
- * @returns {Promise<Map<String, Cell | Address | BN> | Cell | null>}
+ * @returns {Promise<Cell | Address | BN | null>}
  */
 const dnsResolveImpl = async (provider, dnsAddress, rawDomainBytes, category, oneStep) => {
     const len = rawDomainBytes.length * 8;
@@ -124,25 +124,13 @@ const dnsResolveImpl = async (provider, dnsAddress, rawDomainBytes, category, on
         throw new Error('invalid response ' + resultLen + '/' + len);
     } else if (resultLen === len) {
         if (category === DNS_CATEGORY_NEXT_RESOLVER) {
-            return {
-                [category]: cell ? parseNextResolverRecord(cell) : null
-            };
+            return cell ? parseNextResolverRecord(cell) : null;
         } else if (category === DNS_CATEGORY_WALLET) {
-            return {
-                [category]: cell ? parseSmartContractAddressRecord(cell) : null
-            };
+            return cell ? parseSmartContractAddressRecord(cell) : null;
         } else if (category === DNS_CATEGORY_SITE) {
-            return {
-                [category]: cell ? cell : null // todo: convert to BN
-            };
+            return cell ? cell : null // todo: convert to BN;
         } else {
-            if (!category) { // all categories
-                return cell;
-            } else {
-                return {
-                    [category]: cell
-                }
-            }
+            return cell;
         }
     } else {
         if (!cell) {
@@ -150,9 +138,11 @@ const dnsResolveImpl = async (provider, dnsAddress, rawDomainBytes, category, on
         } else {
             const nextAddress = parseNextResolverRecord(cell);
             if (oneStep) {
-                return {
-                    [DNS_CATEGORY_NEXT_RESOLVER]: nextAddress
-                };
+                if (category === DNS_CATEGORY_NEXT_RESOLVER) {
+                    return nextAddress;
+                } else {
+                    return null;
+                }
             } else {
                 return await dnsResolveImpl(provider, nextAddress.toString(), rawDomainBytes.slice(resultLen / 8), category, false);
             }
@@ -208,7 +198,7 @@ const domainToBytes = (domain) => {
  * @param domain    {string} e.g "sub.alice.ton"
  * @param category  {string | undefined} category of requested DNS record
  * @param oneStep {boolean | undefined} non-recursive
- * @returns {Promise<Map<String, Cell | Address | BN> | Cell | null>}
+ * @returns {Promise<Cell | Address | BN | null>}
  */
 const dnsResolve = async (provider, rootDnsAddress, domain, category, oneStep) => {
     const rawDomainBytes = domainToBytes(domain);

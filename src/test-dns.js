@@ -35,11 +35,11 @@ async function init() {
 
         const s = 'apple.ton';
 
-        // const cell = await tonweb.dns.resolve(s, null, true);
-        // console.log(cell);
+        const cell = await tonweb.dns.resolve(s, null, true);
+        console.log(cell);
 
-        const result = await tonweb.dns.resolve(s, TonWeb.dns.DNS_CATEGORY_WALLET);
-        console.log(result);
+        const result = await tonweb.dns.getWalletAddress(s);
+        console.log(result?.toString(true, true, true));
     }
 
     const seed = TonWeb.utils.base64ToBytes('vt58J2v6FaSuXFGcyGtqT5elpVxcZ+I1zgu/GUfA5uY=');
@@ -109,7 +109,7 @@ async function init() {
         console.log(data);
         console.log('addressByIndex=', (await dnsCollection.getNftItemAddressByIndex(new BN('6f0d5e27c981d01ba43aaf3d346a84beb1e8757b988465a325b3217ec3257af6', 16))).toString(true, true, true)); // "apple"
         // console.log((await nftCollection.getNftItemAddressByIndex(new BN(1))).toString(true, true, true));
-        console.log((await dnsCollection.resolve('apple', TonWeb.dns.DNS_CATEGORY_NEXT_RESOLVER, true))[TonWeb.dns.DNS_CATEGORY_NEXT_RESOLVER].toString(true, true, true));
+        console.log((await dnsCollection.resolve('apple', TonWeb.dns.DNS_CATEGORY_NEXT_RESOLVER, true))?.toString(true, true, true));
         console.log((await dnsCollection.resolve('apple')));
     }
 
@@ -123,10 +123,12 @@ async function init() {
         data.ownerAddress = data.ownerAddress?.toString(true, true, true);
         console.log(data);
 
-        const auctionInfo = await dnsItem.methods.getAuctionInfo();
-        auctionInfo.maxBidAddress = auctionInfo.maxBidAddress.toString(true, true, true);
-        auctionInfo.maxBidAmount = auctionInfo.maxBidAmount.toString();
-        console.log(auctionInfo);
+        if (!data.ownerAddress) {
+            const auctionInfo = await dnsItem.methods.getAuctionInfo();
+            auctionInfo.maxBidAddress = auctionInfo.maxBidAddress.toString(true, true, true);
+            auctionInfo.maxBidAmount = auctionInfo.maxBidAmount.toString();
+            console.log(auctionInfo);
+        }
 
         const domain = await dnsItem.methods.getDomain();
         console.log({domain});
@@ -136,7 +138,7 @@ async function init() {
 
         console.log((await dnsItem.resolve('.')));
         console.log((await dnsItem.resolve('apple')));
-        console.log((await dnsItem.resolve('.', TonWeb.dns.DNS_CATEGORY_WALLET)));
+        console.log((await dnsItem.resolve('.', TonWeb.dns.DNS_CATEGORY_WALLET))?.toString(true, true, true));
     }
 
 
