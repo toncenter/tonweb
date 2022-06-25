@@ -15,7 +15,7 @@ const {
 // ATTENTION: This is BETA, will be changed
 
 // Need to get this address from network Config #4
-const rootDnsAddress = 'Ef8aJ6U2hDw3d7jo02ALzIcLj20bO-0qy4wvmEtrfchn3aUi';
+const rootDnsAddress = 'Ef_BimcWrQ5pmAWfRqfeVHUCNV8XgsLqeAMBivKryXrghFW3';
 
 class Dns {
     /**
