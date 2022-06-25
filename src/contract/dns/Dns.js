@@ -12,7 +12,7 @@ const {
     dnsResolve
 } = require("./DnsUtils");
 
-// ATTENTION: This is BETA, will be changed
+// ATTENTION: Release Candidate, interface may change
 
 // Need to get this address from network Config #4
 const rootDnsAddress = 'Ef_BimcWrQ5pmAWfRqfeVHUCNV8XgsLqeAMBivKryXrghFW3';

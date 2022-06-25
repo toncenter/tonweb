@@ -5,7 +5,7 @@ const {parseAddress} = require('../token/nft/NftUtils.js');
 const {dnsResolve} = require("./DnsUtils.js")
 const {parseOffchainUriCell} = require("../token/nft/NftUtils");
 
-// ATTENTION: This is BETA, will be changed
+// ATTENTION: Release Candidate, interface may change
 
 class DnsCollection extends Contract {
     /**
