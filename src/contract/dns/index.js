@@ -1,4 +1,4 @@
-const Dns = require("./DNS").default;
+const Dns = require("./Dns").default;
 const {DnsCollection} = require("./DnsCollection");
 const {DnsItem} = require("./DnsItem");
 
