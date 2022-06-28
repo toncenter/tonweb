@@ -25,6 +25,7 @@ const createSmartContractAddressRecord = (smartContractAddress) => {
     const cell = new Cell();
     cell.bits.writeUint(0x9fd3, 16); // https://github.com/ton-blockchain/ton/blob/7e3df93ca2ab336716a230fceb1726d81bac0a06/crypto/block/block.tlb#L827
     cell.bits.writeAddress(smartContractAddress);
+    cell.bits.writeUint(0, 8); // flags
     return cell;
 }
 
@@ -36,6 +37,7 @@ const createAdnlAddressRecord = (adnlAddress) => {
     const cell = new Cell();
     cell.bits.writeUint(0xad01, 16); // https://github.com/ton-blockchain/ton/blob/7e3df93ca2ab336716a230fceb1726d81bac0a06/crypto/block/block.tlb#L821
     cell.bits.writeUint(adnlAddress, 256);
+    cell.bits.writeUint(0, 8); // flags
     return cell;
 }
 
