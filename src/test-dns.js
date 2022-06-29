@@ -10,7 +10,7 @@ class DnsRoot extends Contract {
     constructor(provider) {
         const options = {};
         options.wc = -1;
-        options.code = options.code || Cell.oneFromBoc('B5EE9C72410106010091000114FF00F4A413F4BCF2C80B0102016202030202CF040500ADA1C6186041AE92F152118001E5C09A41AE140F800043AE938010A4216126B6F0DBC0412A03A60E6203BC43E00225AE3061166E8DEDD041AE92B38E0B6726B6E0DBC10401752791961FDA89A19E2D920522F122E1C54003000517C0E000331C27C074C1C07000082CE500A98200B784B98C4830003CB432608134AFD3');
+        options.code = options.code || Cell.oneFromBoc('B5EE9C72410106010091000114FF00F4A413F4BCF2C80B0102016202030202CF040500ADA1C6186041AE92F152118001E5C08C41AE140F800043AE938010A4216126B6F0DBC0412A03A60E6203BC43E00225AE3061166E8DEDD041AE92B38E0B6726B6E0DBC10401752791961FDA89A19E2D920522F122E1C54003000517C0E000331C27C074C1C07000082CE500A98200B784B98C4830003CB43260840B855D');
         super(provider, options);
     }
 
@@ -21,7 +21,7 @@ class DnsRoot extends Contract {
      */
     createDataCell() {
         const cell = new Cell();
-        cell.bits.writeAddress(new TonWeb.Address('EQBqeczRqjicXNS6JGY0T6wf6CVFjyuSZWaO2gHguqskRUrZ'));
+        cell.bits.writeAddress(new TonWeb.Address('EQACdaC5xNWn_Fe0x-SjoXdNnBqGfpuV8xxK40yZOyLujlrQ'));
         return cell;
     }
 }
@@ -35,7 +35,7 @@ async function init() {
 
         const s = 'apple.ton';
 
-        const cell = await tonweb.dns.resolve(s, null, true);
+        const cell = await tonweb.dns.resolve(s, TonWeb.dns.DNS_CATEGORY_NEXT_RESOLVER, true);
         console.log(cell);
 
         const result = await tonweb.dns.getWalletAddress(s);
@@ -113,7 +113,7 @@ async function init() {
         console.log((await dnsCollection.resolve('apple')));
     }
 
-    const dnsItemAddress = new TonWeb.utils.Address('EQA__yTPsPhutL1FTSvgOGoQNF_EzaeOXuu0cr09Gho30ErM');
+    const dnsItemAddress = new TonWeb.utils.Address('EQB8YJA10OhYUQ0BIooTdve_1VZ7NUytYLeljKziPUVOzEcf');
     console.log('dns item address=', dnsItemAddress.toString(true, true, true));
     const dnsItem = new DnsItem(tonweb.provider, {address: dnsItemAddress});
 

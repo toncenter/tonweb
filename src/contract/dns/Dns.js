@@ -12,8 +12,6 @@ const {
     dnsResolve
 } = require("./DnsUtils");
 
-// ATTENTION: Release Candidate, interface may change
-
 // Need to get this address from network Config #4
 const rootDnsAddress = 'Ef_BimcWrQ5pmAWfRqfeVHUCNV8XgsLqeAMBivKryXrghFW3';
 
@@ -29,6 +27,9 @@ class Dns {
      * @returns {Promise<Address>}
      */
     async getRootDnsAddress() {
+        if (this.provider.host.indexOf('testnet') === -1) { // mainnet
+            return null;
+        }
         return new Address(rootDnsAddress);
     }
 
@@ -39,6 +40,9 @@ class Dns {
      * @returns {Promise<Cell | Address | BN | null>}
      */
     resolve(domain, category, oneStep) {
+        if (this.provider.host.indexOf('testnet') === -1) { // mainnet
+            return null;
+        }
         return dnsResolve(this.provider, rootDnsAddress, domain, category, oneStep)
     }
 
@@ -47,6 +51,9 @@ class Dns {
      * @returns {Promise<Address | null>}
      */
     getWalletAddress(domain) {
+        if (this.provider.host.indexOf('testnet') === -1) { // mainnet
+            return null;
+        }
        return this.resolve(domain, DNS_CATEGORY_WALLET);
     }
 }
