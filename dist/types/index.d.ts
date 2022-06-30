@@ -38,6 +38,7 @@ export { CreateGetStaticDataBodyParams, CreateTransferBodyParams, NftItemMethods
 import { NftMarketplace } from './contract/token/nft/nft-marketplace';
 export { NftMarketplaceMethods, NftMarketplaceOptions, } from './contract/token/nft/nft-marketplace';
 import { NftSale } from './contract/token/nft/nft-sale';
+import { ShardId } from './utils/shard-id';
 export { CreateCancelBodyParams, NftSaleMethods, NftSaleOptions, NftSaleData, } from './contract/token/nft/nft-sale';
 export default class TonWeb {
     provider: HttpProvider;
@@ -46,6 +47,7 @@ export default class TonWeb {
         BN: typeof BN;
         nacl: nacl;
         Address: typeof Address;
+        ShardId: typeof ShardId;
         formatTransferUrl: typeof formatTransferUrl;
         parseTransferUrl: typeof parseTransferUrl;
         sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
@@ -63,6 +65,8 @@ export default class TonWeb {
         stringToBase64(str: string): string;
         base64ToBytes(base64: string): Uint8Array;
         readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
+        bitsNegate(x: BN): BN;
+        lowerBit(x: BN): BN;
     };
     static Address: typeof Address;
     static boc: {
@@ -165,11 +169,11 @@ export default class TonWeb {
     /**
      * Contract address.
      */
-    address: AddressType, 
+    address: AddressType,
     /**
      * Method name or method ID.
      */
-    method: (string | number), 
+    method: (string | number),
     /**
      * Array of stack elements.
      */

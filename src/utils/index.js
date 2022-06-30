@@ -15,10 +15,13 @@ const {
     base64toString,
     stringToBase64,
     compareBytes,
-    readNBytesUIntFromArray
+    readNBytesUIntFromArray,
+    lowerBit,
+    bitsNegate,
 } = require("./Utils");
 
 const Address = require("./Address").default;
+const { ShardId } = require('./ShardId');
 
 // ton://transfer/EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG
 // ton://transfer/EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG?amount=1000000000
@@ -105,6 +108,7 @@ function formatTransferUrl(address, amount, text) {
 
 module.exports = {
     Address,
+    ShardId,
     BN,
     nacl,
     sha256,
@@ -122,6 +126,8 @@ module.exports = {
     stringToBase64,
     compareBytes,
     readNBytesUIntFromArray,
+    lowerBit,
+    bitsNegate,
     parseTransferUrl,
     formatTransferUrl
 };
