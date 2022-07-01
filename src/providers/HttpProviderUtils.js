@@ -9,6 +9,10 @@ class HttpProviderUtils {
             case 'tvm.list':
             case 'tvm.tuple':
                 return x.elements.map(HttpProviderUtils.parseObject);
+            case 'tvm.cell':
+                return Cell.oneFromBoc(base64ToBytes(x.bytes));
+            case 'tvm.stackEntryCell':
+                return HttpProviderUtils.parseObject(x.cell);
             case 'tvm.stackEntryTuple':
                 return HttpProviderUtils.parseObject(x.tuple);
             case 'tvm.stackEntryNumber':

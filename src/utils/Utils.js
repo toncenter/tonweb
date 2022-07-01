@@ -304,6 +304,28 @@ function readNBytesUIntFromArray(n, ui8array) {
     return res;
 }
 
+/**
+ * @param seed  {Uint8Array}
+ * @returns {nacl.SignKeyPair}
+ */
+function keyPairFromSeed(seed) {
+    return nacl.sign.keyPair.fromSeed(seed);
+}
+
+/**
+ * @returns {nacl.SignKeyPair}
+ */
+function newKeyPair() {
+    return nacl.sign.keyPair();
+}
+
+/**
+ * @returns {Uint8Array}
+ */
+function newSeed() {
+    return nacl.sign.keyPair().secretKey.slice(0, 32);
+}
+
 module.exports = {
     BN,
     nacl,
@@ -321,5 +343,8 @@ module.exports = {
     base64toString,
     stringToBase64,
     compareBytes,
-    readNBytesUIntFromArray
+    readNBytesUIntFromArray,
+    keyPairFromSeed,
+    newKeyPair,
+    newSeed
 };

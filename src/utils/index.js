@@ -15,7 +15,10 @@ const {
     base64toString,
     stringToBase64,
     compareBytes,
-    readNBytesUIntFromArray
+    readNBytesUIntFromArray,
+    keyPairFromSeed,
+    newKeyPair,
+    newSeed
 } = require("./Utils");
 
 const Address = require("./Address").default;
@@ -123,5 +126,8 @@ module.exports = {
     compareBytes,
     readNBytesUIntFromArray,
     parseTransferUrl,
-    formatTransferUrl
+    formatTransferUrl,
+    keyPairFromSeed,
+    newKeyPair,
+    newSeed
 };
