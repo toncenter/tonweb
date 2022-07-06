@@ -209,8 +209,8 @@ class Cell {
         let sizeIndex = [];
         for (let cell_info of topologicalOrder) {
             //TODO it should be async map or async for
-            sizeIndex.push(full_size);
             full_size = full_size + await cell_info[1].bocSerializationSize(cellsIndex, s_bytes);
+            sizeIndex.push(full_size);
         }
         const offset_bits = full_size.toString(2).length; // Minimal number of bits to offset/len (unused?)
         const offset_bytes = Math.max(Math.ceil(offset_bits / 8), 1);
