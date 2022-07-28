@@ -12,7 +12,7 @@ export interface JettonMinterOptions extends ContractOptions {
 export interface JettonMinterMethods extends ContractMethods {
 }
 export interface MintBodyParams {
-    tokenAmount: BN;
+    jettonAmount: BN;
     destination: Address;
     amount: BN;
     queryId?: number;
