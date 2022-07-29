@@ -190,7 +190,11 @@ const domainToBytes = (domain) => {
         }
     });
 
-    const rawDomain = '\0' + arr.reverse().join('\0') + '\0';
+    let rawDomain = arr.reverse().join('\0') + '\0';
+    if (rawDomain.length < 126) {
+        rawDomain = '\0' + rawDomain;
+    }
+
     return new TextEncoder().encode(rawDomain);
 }
 

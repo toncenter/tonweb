@@ -13,7 +13,8 @@ const {
 } = require("./DnsUtils");
 
 // Need to get this address from network Config #4
-const rootDnsAddress = 'Ef_BimcWrQ5pmAWfRqfeVHUCNV8XgsLqeAMBivKryXrghFW3';
+const testnetRootDnsAddress = 'Ef-HFfj4yDgk71cegsSLlcuXpHtxcT0yPp33gh-VZLT5UQpX';
+const mainnetRootDnsAddress = '-1:5555555555555555555555555555555555555555555555555555555555555555';
 
 class Dns {
     /**
@@ -27,10 +28,10 @@ class Dns {
      * @returns {Promise<Address>}
      */
     async getRootDnsAddress() {
-        if (this.provider.host.indexOf('testnet') === -1) { // mainnet
-            return null;
+        if (this.provider.host.indexOf('testnet') > -1) {
+            return new Address(testnetRootDnsAddress);
         }
-        return new Address(rootDnsAddress);
+        return new Address(mainnetRootDnsAddress);
     }
 
     /**
@@ -39,11 +40,9 @@ class Dns {
      * @param oneStep {boolean | undefined}  non-recursive
      * @returns {Promise<Cell | Address | BN | null>}
      */
-    resolve(domain, category, oneStep) {
-        if (this.provider.host.indexOf('testnet') === -1) { // mainnet
-            return null;
-        }
-        return dnsResolve(this.provider, rootDnsAddress, domain, category, oneStep)
+    async resolve(domain, category, oneStep) {
+        const rootDnsAddress = await this.getRootDnsAddress();
+        return dnsResolve(this.provider, rootDnsAddress.toString(), domain, category, oneStep)
     }
 
     /**
@@ -51,9 +50,6 @@ class Dns {
      * @returns {Promise<Address | null>}
      */
     getWalletAddress(domain) {
-        if (this.provider.host.indexOf('testnet') === -1) { // mainnet
-            return null;
-        }
        return this.resolve(domain, DNS_CATEGORY_WALLET);
     }
 }
