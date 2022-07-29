@@ -13,8 +13,8 @@ const {
 } = require("./DnsUtils");
 
 // Need to get this address from network Config #4
-const testnetRootDnsAddress = 'Ef-HFfj4yDgk71cegsSLlcuXpHtxcT0yPp33gh-VZLT5UQpX';
-const mainnetRootDnsAddress = '-1:5555555555555555555555555555555555555555555555555555555555555555';
+const testnetRootDnsAddress = 'Ef_v5x0Thgr6pq6ur2NvkWhIf4DxAxsL-Nk5rknT6n99oPKX';
+const mainnetRootDnsAddress = 'Ef-OJd0IF0yc0xkhgaAirq12WawqnUoSuE9RYO3S7McG6lDh';
 
 class Dns {
     /**
