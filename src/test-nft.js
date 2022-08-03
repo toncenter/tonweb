@@ -4,6 +4,8 @@ const {NftCollection} = require("./contract/token/nft/NftCollection");
 const {NftMarketplace} = require("./contract/token/nft/NftMarketplace");
 const {NftSale} = require("./contract/token/nft/NftSale");
 
+const BN = TonWeb.utils.BN;
+
 async function init() {
     const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC'));
 
@@ -49,13 +51,14 @@ async function init() {
 
     const getNftCollectionInfo = async () => {
         const data = await nftCollection.getCollectionData();
-        data.ownerAddress = data.ownerAddress.toString(true, true, true);
+        data.itemsCount = data.itemsCount.toString();
+        data.ownerAddress = data.ownerAddress?.toString(true, true, true);
         console.log(data);
         const royaltyParams = await nftCollection.getRoyaltyParams();
         royaltyParams.royaltyAddress = royaltyParams.royaltyAddress.toString(true, true, true);
         console.log(royaltyParams);
         console.log((await nftCollection.getNftItemAddressByIndex(0)).toString(true, true, true));
-        console.log((await nftCollection.getNftItemAddressByIndex(1)).toString(true, true, true));
+        console.log((await nftCollection.getNftItemAddressByIndex(new BN('1'))).toString(true, true, true));
     }
 
     const deployNftItem = async () => {
@@ -150,6 +153,7 @@ async function init() {
 
     const getNftItemInfo = async () => {
         const data = await nftCollection.methods.getNftItemContent(nftItem);
+        data.itemIndex = data.itemIndex.toString();
         data.collectionAddress = data.collectionAddress.toString(true, true, true);
         data.ownerAddress = data.ownerAddress?.toString(true, true, true);
         console.log(data);

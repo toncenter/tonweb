@@ -1,6 +1,6 @@
 const {Contract} = require("../../index.js");
 const {Cell} = require("../../../boc");
-const {Address, bytesToBase64} = require("../../../utils");
+const {Address, bytesToBase64, BN} = require("../../../utils");
 const {parseAddress} = require('./NftUtils.js');
 const {createOffchainUriCell, serializeUri, parseOffchainUriCell, getRoyaltyParams} = require("./NftUtils");
 
@@ -71,7 +71,7 @@ class NftCollection extends Contract {
     }
 
     /**
-     * params   {{itemIndex: number, amount: BN, itemOwnerAddress: Address, itemContentUri: string, queryId?: number}}
+     * params   {{itemIndex: BN|number, amount: BN, itemOwnerAddress: Address, itemContentUri: string, queryId?: number}}
      * @return {Cell}
      */
     createMintBody(params) {
@@ -135,41 +135,55 @@ class NftCollection extends Contract {
     }
 
     /**
-     * @return {Promise<{nextItemIndex: number, ownerAddress: Address, collectionContentUri: string}>}
+     * @return {Promise<{nextItemIndex: number, itemsCount: BN, ownerAddress: Address, collectionContentCell: Cell, collectionContentUri: string|null}>}
      */
     async getCollectionData() {
         const myAddress = await this.getAddress();
         const result = await this.provider.call2(myAddress.toString(), 'get_collection_data');
 
-        const nextItemIndex = result[0].toNumber();
-        const collectionContentUri = parseOffchainUriCell(result[1]);
+        const itemsCount = result[0];
+        let nextItemIndex = NaN;
+        try {
+            nextItemIndex = itemsCount.toNumber();
+        } catch (e) {
+        }
+        const collectionContentCell = result[1];
+        let collectionContentUri = null;
+        try {
+            collectionContentUri = parseOffchainUriCell(collectionContentCell);
+        } catch (e) {
+        }
         const ownerAddress = parseAddress(result[2]);
 
-        return {nextItemIndex, ownerAddress, collectionContentUri};
+        return {nextItemIndex, itemsCount, ownerAddress, collectionContentCell, collectionContentUri};
     }
 
     /**
-     * @param nftItem   {NFTItem}
-     * @return {Promise<{isInitialized: boolean, index: number, collectionAddress: Address, ownerAddress: Address|null, contentUri: string}>}
+     * @param nftItem   {NftItem}
+     * @return {Promise<{isInitialized: boolean, index: number, itemIndex: BN, collectionAddress: Address, ownerAddress: Address|null, contentCell: Cell, contentUri: string|null}>}
      */
     async getNftItemContent(nftItem) {
         const myAddress = await this.getAddress();
         const nftData = await nftItem.getData();
         if (nftData.isInitialized) {
-            const result = await this.provider.call2(myAddress.toString(), 'get_nft_content', [['num', nftData.index], ['tvm.Cell', bytesToBase64(await nftData.contentCell.toBoc(false))]]);
-            nftData.contentUri = parseOffchainUriCell(result);
-            delete nftData.contentCell;
+            const result = await this.provider.call2(myAddress.toString(), 'get_nft_content', [['num', nftData.itemIndex.toString(10)], ['tvm.Cell', bytesToBase64(await nftData.contentCell.toBoc(false))]]);
+            nftData.contentUri = null;
+            try {
+                nftData.contentUri = parseOffchainUriCell(result);
+            } catch (e) {
+            }
         }
         return nftData;
     }
 
     /**
-     * @param index {number}
+     * @param index {BN|number}
      * @return {Promise<Address>}
      */
     async getNftItemAddressByIndex(index) {
+        index = new BN(index);
         const myAddress = await this.getAddress();
-        const result = await this.provider.call2(myAddress.toString(), 'get_nft_address_by_index', [['num', index]]);
+        const result = await this.provider.call2(myAddress.toString(), 'get_nft_address_by_index', [['num', index.toString(10)]]);
 
         return parseAddress(result);
     }

@@ -1,4 +1,4 @@
-const {base64ToBytes, Address} = require("../../../utils");
+const {Address} = require("../../../utils");
 const {Cell} = require("../../../boc");
 
 const SNAKE_DATA_PREFIX = 0x00;
@@ -38,6 +38,10 @@ const createOffchainUriCell = (uri) => {
  * @returns {string}
  */
 const parseOffchainUriCell = (cell) => {
+    if (cell.bits.array[0] !== OFFCHAIN_CONTENT_PREFIX) {
+        throw new Error('no OFFCHAIN_CONTENT_PREFIX');
+    }
+
     let length = 0;
     let c = cell;
     while (c) {
