@@ -80,7 +80,7 @@ class JettonMinter extends Contract {
     }
 
     /**
-     * @return {Promise<{ totalSupply: BN, isMutable: boolean, adminAddress: Address|null, jettonContentUri: string, jettonWalletCode: Cell }>}
+     * @return {Promise<{ totalSupply: BN, isMutable: boolean, adminAddress: Address|null, jettonContentCell: Cell, jettonContentUri: string|null, jettonWalletCode: Cell }>}
      */
     async getJettonData() {
         const myAddress = await this.getAddress();
@@ -89,10 +89,15 @@ class JettonMinter extends Contract {
         const totalSupply = result[0];
         const isMutable = result[1].toNumber() === -1;
         const adminAddress = parseAddress(result[2]);
-        const jettonContentUri = parseOffchainUriCell(result[3]);
+        const jettonContentCell = result[3];
+        let jettonContentUri = null;
+        try {
+            jettonContentUri = parseOffchainUriCell(jettonContentCell);
+        } catch (e) {
+        }
         const jettonWalletCode = result[4];
 
-        return {totalSupply, isMutable, adminAddress, jettonContentUri, jettonWalletCode};
+        return {totalSupply, isMutable, adminAddress, jettonContentCell, jettonContentUri, jettonWalletCode};
     }
 
     /**
