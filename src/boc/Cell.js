@@ -19,6 +19,16 @@ class Cell {
         this.bits = new BitString(1023);
         this.refs = [];
         this.isExotic = false;
+        this.readRefCursor = 0;
+    }
+    
+    clone() {
+        var cl = new Cell();
+        cl.bits = this.bits.clone();
+        cl.refs = this.refs;
+        cl.isExotic = this.isExotic;
+        cl.readRefCursor = this.readRefCursor;
+        return cl;
     }
 
     /**
@@ -49,6 +59,17 @@ class Cell {
         this.refs = this.refs.concat(anotherCell.refs);
     }
 
+    /**
+     * Read reference from this cell
+     * @return {Cell}
+     */
+    readRef() {
+        if(this.refs.length <= this.readRefCursor) {
+          throw new Error("Parsing error: not enough refs in slice");
+        }
+        this.readRefCursor ++;
+        return this.refs[this.readRefCursor - 1].clone();
+    }
     /**
      * @return {number}
      */
@@ -114,7 +135,7 @@ class Cell {
      */
     getBitsDescriptor() {
         const d2 = Uint8Array.from({length: 1}, () => 0);
-        d2[0] = Math.ceil(this.bits.cursor / 8) + Math.floor(this.bits.cursor / 8);
+        d2[0] = Math.ceil(this.bits.writeCursor / 8) + Math.floor(this.bits.writeCursor / 8);
         return d2;
     }
 
