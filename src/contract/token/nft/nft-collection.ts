@@ -11,8 +11,10 @@ import { NftItem } from './nft-item';
 
 import {
     createOffchainUriCell,
+    getRoyaltyParams,
     parseAddress,
     parseOffchainUriCell,
+    RoyaltyParams,
     serializeUri,
 
 } from './utils';
@@ -70,13 +72,6 @@ export interface NftItemContent {
     collectionAddress: Address;
     ownerAddress?: Address;
     contentUri?: string;
-}
-
-export interface RoyaltyParams {
-    royalty: number;
-    royaltyFactor: number;
-    royaltyBase: number;
-    royaltyAddress: Address;
 }
 
 
@@ -278,22 +273,12 @@ export class NftCollection extends Contract<
     public async getRoyaltyParams(): Promise<RoyaltyParams> {
 
         const myAddress = await this.getAddress();
-        const result = await this.provider.call2(
-            myAddress.toString(),
-            'royalty_params'
+
+        return getRoyaltyParams(
+            this.provider,
+            myAddress.toString()
         );
 
-        const royaltyFactor = result[0].toNumber();
-        const royaltyBase = result[1].toNumber();
-        const royalty = royaltyFactor / royaltyBase;
-        const royaltyAddress = parseAddress(result[2]);
-
-        return {
-            royalty,
-            royaltyBase,
-            royaltyFactor,
-            royaltyAddress,
-        };
     }
 
 

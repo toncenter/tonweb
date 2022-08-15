@@ -583,10 +583,11 @@ export {
     NftCollectionMethods,
     NftCollectionOptions,
     NftItemContent,
-    RoyaltyParams,
     CollectionData,
 
 } from './contract/token/nft/nft-collection';
+
+export { RoyaltyParams } from './contract/token/nft/utils';
 
 
 //===========//

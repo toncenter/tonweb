@@ -1,8 +1,17 @@
 
 import { BitString } from '../../../boc/bit-string';
 import { Cell } from '../../../boc/cell/cell';
+import { HttpProvider } from '../../../http-provider/http-provider';
 import { textEncoder } from '../../../utils/text-encoding';
 import { Address } from '../../../utils/address';
+
+
+export interface RoyaltyParams {
+    royalty: number;
+    royaltyFactor: number;
+    royaltyBase: number;
+    royaltyAddress: Address;
+}
 
 
 export const SNAKE_DATA_PREFIX = 0x00;
@@ -45,17 +54,40 @@ export function parseOffchainUriCell(cell: Cell): string {
     return parseUri(bytes.slice(1)); // slice OFFCHAIN_CONTENT_PREFIX
 }
 
-export function parseAddress(cell: Cell): (Address | undefined) {
+export function parseAddress(cell: Cell): (Address | null) {
     let n = readIntFromBitString(cell.bits, 3, 8);
     if (n > BigInt(127)) {
         n -= BigInt(256);
     }
     const hashPart = readIntFromBitString(cell.bits, 3 + 8, 256);
-    if (n.toString(10) + ":" + hashPart.toString(16) === '0:0') {
-        return undefined;
+    if (n.toString(10) + ':' + hashPart.toString(16) === '0:0') {
+        return null;
     }
-    const address = n.toString(10) + ":" + hashPart.toString(16).padStart(64, '0');
+    const address = n.toString(10) + ':' + hashPart.toString(16).padStart(64, '0');
     return new Address(address);
+}
+
+export async function getRoyaltyParams(
+    provider: HttpProvider,
+    address: string
+
+): Promise<RoyaltyParams> {
+
+    const result = await provider.call2(
+        address,
+        'royalty_params'
+    );
+
+    const royaltyFactor = result[0].toNumber();
+    const royaltyBase = result[1].toNumber();
+
+    return {
+        royalty: (royaltyFactor / royaltyBase),
+        royaltyBase,
+        royaltyFactor,
+        royaltyAddress: parseAddress(result[2]),
+    };
+
 }
 
 

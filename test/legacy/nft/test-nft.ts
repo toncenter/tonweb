@@ -173,6 +173,26 @@ const NftMarketplace = TonWeb.token.nft.NftMarketplace;
         });
     }
 
+    const getSingleNftItemInfo = async () => {
+        const nftItem = new NftItem(tonweb.provider, {
+            address: 'EQC4FOmjcQAw2U-e00I-7Fs-NLiEF7lNQUxVpqOJ-ZKh-dGt',
+        });
+
+        const data = await nftItem.methods.getData();
+        console.log({
+            ...data,
+            ownerAddress: data.ownerAddress?.toString(true, true, true),
+        });
+
+        const royaltyParams = await nftItem.getRoyaltyParams();
+        console.log('nft item royalty params', {
+            ...royaltyParams,
+            royaltyAddress: royaltyParams.royaltyAddress?.toString(true, true, true),
+        });
+
+    }
+
+
     const marketplace = new NftMarketplace(tonweb.provider, {ownerAddress: walletAddress});
     const marketplaceAddress = await marketplace.getAddress();
     console.log('marketplace address=', marketplaceAddress.toString(true, true, true));
@@ -309,6 +329,7 @@ const NftMarketplace = TonWeb.token.nft.NftMarketplace;
     // await getNftCollectionInfo();
     // await deployNftItem();
     // await getNftItemInfo();
+    // await getSingleNftItemInfo();
     // await deployMarketplace();
     // await deploySale();
     // await getSaleInfo();

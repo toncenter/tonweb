@@ -5,7 +5,7 @@ import { Cell } from '../../../boc/cell/cell';
 import { HttpProvider } from '../../../http-provider/http-provider';
 import { Address } from '../../../utils/address';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
-import { parseAddress } from './utils';
+import { getRoyaltyParams, parseAddress, parseOffchainUriCell, RoyaltyParams } from './utils';
 
 
 export interface NftItemOptions extends ContractOptions {
@@ -23,6 +23,7 @@ export interface NftItemData {
     collectionAddress: Address;
     contentCell: Cell;
     ownerAddress?: Address;
+    contentUri: (string | null);
 }
 
 export interface CreateTransferBodyParams {
@@ -75,12 +76,19 @@ export class NftItem extends Contract<
 
         const contentCell = result[4];
 
+        // Single NFT without a collection
+        const contentUri = (isInitialized && !collectionAddress) ?
+            parseOffchainUriCell(contentCell) :
+            null
+        ;
+
         return {
             isInitialized,
             index,
             collectionAddress,
             ownerAddress,
             contentCell,
+            contentUri,
         };
 
     }
@@ -114,6 +122,18 @@ export class NftItem extends Contract<
         body.bits.writeUint(0x2fcb26a2, 32); // OP
         body.bits.writeUint(params.queryId || 0, 64); // query_id
         return body;
+    }
+
+    /**
+     * Returns royalty params for a single NFT without
+     * a collection.
+     */
+    public async getRoyaltyParams(): Promise<RoyaltyParams> {
+        const myAddress = await this.getAddress();
+        return getRoyaltyParams(
+            this.provider,
+            myAddress.toString()
+        );
     }
 
 

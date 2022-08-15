@@ -1293,6 +1293,11 @@ declare class NftItem_2 extends Contract_2<NftItemOptions, NftItemMethods> {
     createTransferBody(params: CreateTransferBodyParams): Promise<Cell_3>;
     createGetStaticDataBody(params: CreateGetStaticDataBodyParams): Cell_3;
     /**
+     * Returns royalty params for a single NFT without
+     * a collection.
+     */
+    getRoyaltyParams(): Promise<RoyaltyParams>;
+    /**
      * Returns cell that contains NFT data.
      */
     protected createDataCell(): Cell_3;
@@ -1312,6 +1317,7 @@ export declare interface NftItemData {
     collectionAddress: Address_2;
     contentCell: Cell_3;
     ownerAddress?: Address_2;
+    contentUri: (string | null);
 }
 
 export declare interface NftItemMethods extends ContractMethods {
