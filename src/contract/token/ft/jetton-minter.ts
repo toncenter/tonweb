@@ -112,7 +112,7 @@ export class JettonMinter extends Contract<
 
     }
 
-    public async getWalletAddress(
+    public async getJettonWalletAddress(
         ownerAddress: Address
 
     ): Promise<Address> {
