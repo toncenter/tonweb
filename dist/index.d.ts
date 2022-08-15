@@ -1104,6 +1104,7 @@ declare class JettonMinter_2 extends Contract_2<JettonMinterOptions, JettonMinte
     constructor(provider: HttpProvider_2, options: JettonMinterOptions);
     createMintBody(params: MintBodyParams_2): Cell_3;
     getJettonData(): Promise<JettonData>;
+    getWalletAddress(ownerAddress: Address_2): Promise<Address_2>;
     /**
      * Returns cell that contains jetton minter data.
      */

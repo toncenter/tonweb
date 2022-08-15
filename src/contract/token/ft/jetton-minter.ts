@@ -4,8 +4,15 @@ import BN from 'bn.js';
 import { Cell } from '../../../boc/cell/cell';
 import { HttpProvider } from '../../../http-provider/http-provider';
 import { Address } from '../../../utils/address';
+import { bytesToBase64 } from '../../../utils/base64';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
-import { createOffchainUriCell, parseAddress, parseOffchainUriCell } from '../nft/utils';
+
+import {
+    createOffchainUriCell,
+    parseAddress,
+    parseOffchainUriCell,
+
+} from '../nft/utils';
 
 
 export interface JettonMinterOptions extends ContractOptions {
@@ -102,6 +109,35 @@ export class JettonMinter extends Contract<
             jettonContentUri: parseOffchainUriCell(result[3]),
             tokenWalletCode: result[4],
         };
+
+    }
+
+    public async getWalletAddress(
+        ownerAddress: Address
+
+    ): Promise<Address> {
+
+        const myAddress = await this.getAddress();
+
+        // Serializing owner's address to a cell
+        const cell = new Cell();
+        cell.bits.writeAddress(ownerAddress);
+        const bytes = await cell.toBoc(false);
+
+        const result = await this.provider.call2(
+            myAddress.toString(),
+            'get_wallet_address',
+            [['tvm.Slice', bytesToBase64(bytes)]],
+        );
+
+        if (!(result instanceof Cell)) {
+            throw new Error(
+                `Unexpected API response: ` +
+                `"get_wallet_address" should return a cell`
+            );
+        }
+
+        return parseAddress(result);
 
     }
 
