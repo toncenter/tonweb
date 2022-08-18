@@ -8,32 +8,36 @@ import { Contract, ContractMethods, ContractOptions } from '../../contract';
 import { parseAddress } from './utils';
 
 
-export interface NftSaleOptions extends ContractOptions {
-    marketplaceAddress?: Address;
-    nftAddress?: Address;
-    fullPrice?: BN;
-    marketplaceFee?: BN;
-    royaltyAddress?: Address;
-    royaltyAmount?: BN;
-}
+export namespace NftSale {
 
-export interface NftSaleMethods extends ContractMethods {
-    getData: () => Promise<NftSaleData>;
-}
+    export interface Options extends ContractOptions {
+        marketplaceAddress?: Address;
+        nftAddress?: Address;
+        fullPrice?: BN;
+        marketplaceFee?: BN;
+        royaltyAddress?: Address;
+        royaltyAmount?: BN;
+    }
 
-// @todo type these anys
-export interface NftSaleData {
-    marketplaceAddress?: Address;
-    nftAddress?: Address;
-    nftOwnerAddress?: Address;
-    fullPrice: any;
-    marketplaceFee: any;
-    royaltyAddress?: Address;
-    royaltyAmount: any;
-}
+    export interface Methods extends ContractMethods {
+        getData: () => Promise<SaleData>;
+    }
 
-export interface CreateCancelBodyParams {
-    queryId?: number;
+    // @todo type these anys
+    export interface SaleData {
+        marketplaceAddress?: Address;
+        nftAddress?: Address;
+        nftOwnerAddress?: Address;
+        fullPrice: any;
+        marketplaceFee: any;
+        royaltyAddress?: Address;
+        royaltyAmount: any;
+    }
+
+    export interface CancelBodyParams {
+        queryId?: number;
+    }
+
 }
 
 
@@ -45,12 +49,18 @@ const NFT_SALE_HEX_CODE = (
 /**
  * Work in progress, will be changed.
  */
-export class NftSale extends Contract<NftSaleOptions, NftSaleMethods> {
+export class NftSale extends Contract<
+    NftSale.Options,
+    NftSale.Methods
+> {
 
     public static codeHex = NFT_SALE_HEX_CODE;
 
 
-    constructor(provider: HttpProvider, options: NftSaleOptions) {
+    constructor(
+        provider: HttpProvider,
+        options: NftSale.Options
+    ) {
         options.wc = 0;
         options.code = (options.code || Cell.oneFromBoc(NFT_SALE_HEX_CODE));
         super(provider, options);
@@ -59,7 +69,7 @@ export class NftSale extends Contract<NftSaleOptions, NftSaleMethods> {
     }
 
 
-    public async getData(): Promise<NftSaleData> {
+    public async getData(): Promise<NftSale.SaleData> {
 
         const myAddress = await this.getAddress();
         const result = await this.provider.call2(
@@ -88,14 +98,19 @@ export class NftSale extends Contract<NftSaleOptions, NftSaleMethods> {
     }
 
     public async createCancelBody(
-        params: CreateCancelBodyParams
+        params: NftSale.CancelBodyParams
 
     ): Promise<Cell> {
 
+        const { queryId = 0 } = params;
+
         const cell = new Cell();
+
         cell.bits.writeUint(3, 32); // cancel op
-        cell.bits.writeUint(params.queryId || 0, 64);
+        cell.bits.writeUint(queryId, 64);
+
         return cell;
+
     }
 
 
@@ -103,6 +118,7 @@ export class NftSale extends Contract<NftSaleOptions, NftSaleMethods> {
      * Returns cell that contains NFT sale data.
      */
     protected createDataCell(): Cell {
+
         const cell = new Cell();
         cell.bits.writeAddress(this.options.marketplaceAddress);
         cell.bits.writeAddress(this.options.nftAddress);
@@ -116,6 +132,7 @@ export class NftSale extends Contract<NftSaleOptions, NftSaleMethods> {
         cell.refs[0] = feesCell;
 
         return cell;
+
     }
 
 }

@@ -526,66 +526,38 @@ export {
 } from './ledger/app-ton';
 
 
+//================//
+// JETTON: WALLET //
+//================//
+
+import { JettonWallet } from './contract/token/ft/jetton-wallet';
+export type { JettonWallet } from './contract/token/ft/jetton-wallet';
+
+
+//================//
+// JETTON: MINTER //
+//================//
+
+import { JettonMinter } from './contract/token/ft/jetton-minter';
+export type { JettonMinter } from './contract/token/ft/jetton-minter';
+
+
 //========//
 // JETTON //
 //========//
 
-import {
-    JettonWallet as $JettonWallet,
-
-} from './contract/token/ft/jetton-wallet';
-
-export type JettonWallet = $JettonWallet;
-
-import {
-    JettonMinter as $JettonMinter,
-
-} from './contract/token/ft/jetton-minter';
-
-export type JettonMinter = $JettonMinter;
-
 const JETTON = {
-    JettonWallet: $JettonWallet,
-    JettonMinter: $JettonMinter,
+    JettonWallet,
+    JettonMinter,
 };
-
-export {
-    // JettonWallet,
-    JettonWalletMethods,
-    JettonWalletOptions,
-
-} from './contract/token/ft/jetton-wallet';
-
-export {
-    // JettonMinter,
-    JettonMinterMethods,
-    JettonMinterOptions,
-
-} from './contract/token/ft/jetton-minter';
 
 
 //=================//
 // NFT: COLLECTION //
 //=================//
 
-import {
-    NftCollection as $NftCollection,
-
-} from './contract/token/nft/nft-collection';
-
-export type NftCollection = $NftCollection;
-
-export {
-    // NftCollection,
-    CreateChangeOwnerBodyParams,
-    CreateGetRoyaltyParamsBodyParams,
-    MintBodyParams,
-    NftCollectionMethods,
-    NftCollectionOptions,
-    NftItemContent,
-    CollectionData,
-
-} from './contract/token/nft/nft-collection';
+import { NftCollection } from './contract/token/nft/nft-collection';
+export type { NftCollection } from './contract/token/nft/nft-collection';
 
 export { RoyaltyParams } from './contract/token/nft/utils';
 
@@ -594,62 +566,24 @@ export { RoyaltyParams } from './contract/token/nft/utils';
 // NFT: ITEM //
 //===========//
 
-import {
-    NftItem as $NftItem,
-
-} from './contract/token/nft/nft-item';
-
-export type NftItem = $NftItem;
-
-export {
-    // NftItem,
-    CreateGetStaticDataBodyParams,
-    CreateTransferBodyParams,
-    NftItemMethods,
-    NftItemOptions,
-    NftItemData,
-
-} from './contract/token/nft/nft-item';
+import { NftItem } from './contract/token/nft/nft-item';
+export type { NftItem } from './contract/token/nft/nft-item';
 
 
 //==================//
 // NFT: MARKETPLACE //
 //==================//
 
-import {
-    NftMarketplace as $NftMarketplace,
-
-} from './contract/token/nft/nft-marketplace';
-
-export type NftMarketplace = $NftMarketplace;
-
-export {
-    // NftMarketplace,
-    NftMarketplaceMethods,
-    NftMarketplaceOptions,
-
-} from './contract/token/nft/nft-marketplace';
+import { NftMarketplace } from './contract/token/nft/nft-marketplace';
+export type { NftMarketplace } from './contract/token/nft/nft-marketplace';
 
 
 //===========//
 // NFT: SALE //
 //===========//
 
-import {
-    NftSale as $NftSale,
-
-} from './contract/token/nft/nft-sale';
-
-export type NftSale = $NftSale;
-
-export {
-    // NftSale,
-    CreateCancelBodyParams,
-    NftSaleMethods,
-    NftSaleOptions,
-    NftSaleData,
-
-} from './contract/token/nft/nft-sale';
+import { NftSale } from './contract/token/nft/nft-sale';
+export type { NftSale } from './contract/token/nft/nft-sale';
 
 
 //=====//
@@ -657,10 +591,10 @@ export {
 //=====//
 
 const NFT = {
-    NftCollection: $NftCollection,
-    NftItem: $NftItem,
-    NftMarketplace: $NftMarketplace,
-    NftSale: $NftSale,
+    NftCollection,
+    NftItem,
+    NftMarketplace,
+    NftSale,
 };
 
 // -----

@@ -8,34 +8,38 @@ import { Contract, ContractMethods, ContractOptions } from '../../contract';
 import { getRoyaltyParams, parseAddress, parseOffchainUriCell, RoyaltyParams } from './utils';
 
 
-export interface NftItemOptions extends ContractOptions {
-    index?: number;
-    collectionAddress?: Address;
-}
+export namespace NftItem {
 
-export interface NftItemMethods extends ContractMethods {
-    getData: () => Promise<NftItemData>;
-}
+    export interface Options extends ContractOptions {
+        index?: number;
+        collectionAddress?: Address;
+    }
 
-export interface NftItemData {
-    isInitialized: boolean;
-    index: number;
-    collectionAddress: Address;
-    contentCell: Cell;
-    ownerAddress?: Address;
-    contentUri: (string | null);
-}
+    export interface Methods extends ContractMethods {
+        getData: () => Promise<NftItemData>;
+    }
 
-export interface CreateTransferBodyParams {
-    newOwnerAddress: Address;
-    responseAddress: Address;
-    queryId?: number;
-    forwardAmount?: BN;
-    forwardPayload?: Uint8Array;
-}
+    export interface NftItemData {
+        isInitialized: boolean;
+        index: number;
+        collectionAddress: Address;
+        contentCell: Cell;
+        ownerAddress?: Address;
+        contentUri: (string | null);
+    }
 
-export interface CreateGetStaticDataBodyParams {
-    queryId?: number;
+    export interface TransferBodyParams {
+        newOwnerAddress: Address;
+        responseAddress: Address;
+        queryId?: number;
+        forwardAmount?: BN;
+        forwardPayload?: Uint8Array;
+    }
+
+    export interface GetStaticDataBodyParams {
+        queryId?: number;
+    }
+
 }
 
 
@@ -49,38 +53,52 @@ const NFT_ITEM_CODE_HEX = (
 
 
 export class NftItem extends Contract<
-    NftItemOptions,
-    NftItemMethods
+    NftItem.Options,
+    NftItem.Methods
 > {
 
     public static codeHex = NFT_ITEM_CODE_HEX;
 
 
-    constructor(provider: HttpProvider, options: NftItemOptions) {
+    constructor(
+        provider: HttpProvider,
+        options: NftItem.Options
+    ) {
         options.wc = 0;
         options.code = options.code || Cell.oneFromBoc(NFT_ITEM_CODE_HEX);
+
         super(provider, options);
 
         this.methods.getData = () => this.getData();
+
     }
 
 
-    public async getData(): Promise<NftItemData> {
+    public async getData(): Promise<NftItem.NftItemData> {
+
         const myAddress = await this.getAddress();
-        const result = await this.provider.call2(myAddress.toString(), 'get_nft_data');
+
+        const result = await this.provider.call2(
+            myAddress.toString(),
+            'get_nft_data'
+        );
 
         const isInitialized = result[0].toNumber() === -1;
         const index = result[1].toNumber();
         const collectionAddress = parseAddress(result[2]);
-        const ownerAddress = isInitialized ? parseAddress(result[3]) : null;
+
+        const ownerAddress = (isInitialized
+            ? parseAddress(result[3])
+            : null
+        );
 
         const contentCell = result[4];
 
         // Single NFT without a collection
-        const contentUri = (isInitialized && !collectionAddress) ?
+        const contentUri = ((isInitialized && !collectionAddress) ?
             parseOffchainUriCell(contentCell) :
             null
-        ;
+        );
 
         return {
             isInitialized,
@@ -94,7 +112,7 @@ export class NftItem extends Contract<
     }
 
     public async createTransferBody(
-        params: CreateTransferBodyParams
+        params: NftItem.TransferBodyParams
 
     ): Promise<Cell> {
 
@@ -114,13 +132,17 @@ export class NftItem extends Contract<
     }
 
     public createGetStaticDataBody(
-        params: CreateGetStaticDataBodyParams
+        params: NftItem.GetStaticDataBodyParams
 
     ): Cell {
 
+        const { queryId = 0 } = params;
+
         const body = new Cell();
+
         body.bits.writeUint(0x2fcb26a2, 32); // OP
-        body.bits.writeUint(params.queryId || 0, 64); // query_id
+        body.bits.writeUint(queryId, 64); // query_id
+
         return body;
     }
 

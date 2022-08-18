@@ -206,7 +206,7 @@ const NftMarketplace = TonWeb.token.nft.NftMarketplace;
             await wallet.methods.transfer({
                 secretKey: keyPair.secretKey,
                 toAddress: marketplaceAddress.toString(true, true, false), // non-bounceable
-                amount: TonWeb.utils.toNano(1),
+                amount: TonWeb.utils.toNano('1'),
                 seqno: seqno,
                 payload: null, // body
                 sendMode: 3,

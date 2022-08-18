@@ -20,58 +20,62 @@ import {
 } from './utils';
 
 
-export interface NftCollectionOptions extends ContractOptions {
-    ownerAddress?: Address;
-    collectionContentUri?: string;
-    nftItemContentBaseUri?: string;
-    nftItemCodeHex?: string;
-    royalty?: number;
-    royaltyFactor: number;
-    royaltyBase: number;
-    royaltyAddress?: Address;
-}
+export namespace NftCollection {
 
-export interface NftCollectionMethods extends ContractMethods {
+    export interface Options extends ContractOptions {
+        ownerAddress?: Address;
+        collectionContentUri?: string;
+        nftItemContentBaseUri?: string;
+        nftItemCodeHex?: string;
+        royalty?: number;
+        royaltyFactor: number;
+        royaltyBase: number;
+        royaltyAddress?: Address;
+    }
 
-    getCollectionData: () => Promise<CollectionData>;
+    export interface Methods extends ContractMethods {
 
-    getNftItemAddressByIndex: (index: number) => Promise<Address>;
+        getCollectionData: () => Promise<NftCollectionData>;
 
-    getNftItemContent: (nftItem: NftItem) => Promise<NftItemContent>;
+        getNftItemAddressByIndex: (index: number) => Promise<Address>;
 
-    getRoyaltyParams: () => Promise<RoyaltyParams>;
+        getNftItemContent: (nftItem: NftItem) => Promise<NftItemContent>;
 
-}
+        getRoyaltyParams: () => Promise<RoyaltyParams>;
 
-export interface MintBodyParams {
-    itemIndex: number;
-    amount: BN;
-    itemOwnerAddress: Address;
-    itemContentUri: string;
-    queryId?: number;
-}
+    }
 
-export interface CreateGetRoyaltyParamsBodyParams {
-    queryId?: number;
-}
+    export interface MintBodyParams {
+        itemIndex: number;
+        amount: BN;
+        itemOwnerAddress: Address;
+        itemContentUri: string;
+        queryId?: number;
+    }
 
-export interface CreateChangeOwnerBodyParams {
-    queryId?: number;
-    newOwnerAddress: Address;
-}
+    export interface GetRoyaltyParamsBodyParams {
+        queryId?: number;
+    }
 
-export interface CollectionData {
-    nextItemIndex: number;
-    ownerAddress: Address;
-    collectionContentUri: string;
-}
+    export interface ChangeOwnerBodyParams {
+        queryId?: number;
+        newOwnerAddress: Address;
+    }
 
-export interface NftItemContent {
-    isInitialized: boolean;
-    index: number;
-    collectionAddress: Address;
-    ownerAddress?: Address;
-    contentUri?: string;
+    export interface NftCollectionData {
+        nextItemIndex: number;
+        ownerAddress: Address;
+        collectionContentUri: string;
+    }
+
+    export interface NftItemContent {
+        isInitialized: boolean;
+        index: number;
+        collectionAddress: Address;
+        ownerAddress?: Address;
+        contentUri?: string;
+    }
+
 }
 
 
@@ -85,11 +89,14 @@ const CODE_HEX = (
 
 
 export class NftCollection extends Contract<
-    NftCollectionOptions,
-    NftCollectionMethods
+    NftCollection.Options,
+    NftCollection.Methods
 > {
 
-    constructor(provider: HttpProvider, options: NftCollectionOptions) {
+    constructor(
+        provider: HttpProvider,
+        options: NftCollection.Options
+    ) {
         options.wc = 0;
 
         options.code = (options.code || Cell.oneFromBoc(CODE_HEX));
@@ -118,7 +125,10 @@ export class NftCollection extends Contract<
     }
 
 
-    public createMintBody(params: MintBodyParams): Cell {
+    public createMintBody(
+        params: NftCollection.MintBodyParams
+
+    ): Cell {
 
         const body = new Cell();
         body.bits.writeUint(1, 32); // OP deploy new nft
@@ -138,7 +148,7 @@ export class NftCollection extends Contract<
     }
 
     public createGetRoyaltyParamsBody(
-        params: CreateGetRoyaltyParamsBodyParams
+        params: NftCollection.GetRoyaltyParamsBodyParams
 
     ): Cell {
 
@@ -149,15 +159,24 @@ export class NftCollection extends Contract<
     }
 
     public createChangeOwnerBody(
-        params: CreateChangeOwnerBodyParams
+        params: NftCollection.ChangeOwnerBodyParams
 
     ): Cell {
 
+        if (!params.newOwnerAddress) {
+            throw new Error(
+                `Missing required option: "newOwnerAddress"`
+            );
+        }
+
         const body = new Cell();
+
         body.bits.writeUint(3, 32); // OP
-        body.bits.writeUint(params.queryId || 0, 64); // query_id
+        body.bits.writeUint((params.queryId || 0), 64); // query_id
         body.bits.writeAddress(params.newOwnerAddress);
+
         return body;
+
     }
 
     public createEditContentBody(params: {
@@ -204,7 +223,9 @@ export class NftCollection extends Contract<
 
     }
 
-    public async getCollectionData(): Promise<CollectionData> {
+    public async getCollectionData(): (
+        Promise<NftCollection.NftCollectionData>
+    ) {
         const myAddress = await this.getAddress();
         const result = await this.provider.call2(
             myAddress.toString(),
@@ -212,7 +233,11 @@ export class NftCollection extends Contract<
         );
 
         const nextItemIndex = result[0].toNumber();
-        const collectionContentUri = parseOffchainUriCell(result[1]);
+
+        const collectionContentUri = parseOffchainUriCell(
+            result[1]
+        );
+
         const ownerAddress = parseAddress(result[2]);
 
         return {
@@ -225,11 +250,11 @@ export class NftCollection extends Contract<
     public async getNftItemContent(
         nftItem: NftItem
 
-    ): Promise<NftItemContent> {
+    ): Promise<NftCollection.NftItemContent> {
 
         const myAddress = await this.getAddress();
         const itemData = await nftItem.getData();
-        const itemContent: NftItemContent = {
+        const itemContent: NftCollection.NftItemContent = {
             isInitialized: itemData.isInitialized,
             index: itemData.index,
             collectionAddress: itemData.collectionAddress,

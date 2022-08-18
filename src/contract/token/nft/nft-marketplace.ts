@@ -5,12 +5,16 @@ import { Address } from '../../../utils/address';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
 
 
-export interface NftMarketplaceOptions extends ContractOptions {
-    ownerAddress?: Address;
-    cell?: Cell;
-}
+export namespace NftMarketplace {
 
-export interface NftMarketplaceMethods extends ContractMethods {
+    export interface Options extends ContractOptions {
+        ownerAddress?: Address;
+        cell?: Cell;
+    }
+
+    export interface Methods extends ContractMethods {
+    }
+
 }
 
 
@@ -23,13 +27,13 @@ const HEX_CODE = (
  * Work in progress, will be changed.
  */
 export class NftMarketplace extends Contract<
-    NftMarketplaceOptions,
-    NftMarketplaceMethods
+    NftMarketplace.Options,
+    NftMarketplace.Methods
 > {
 
     constructor(
         provider: HttpProvider,
-        options: NftMarketplaceOptions
+        options: NftMarketplace.Options
     ) {
         options.wc = 0;
 

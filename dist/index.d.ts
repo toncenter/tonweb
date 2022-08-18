@@ -484,12 +484,6 @@ export declare interface BlockSubscriptionOptions {
 
 export declare type BN = $BN;
 
-declare interface BurnBodyParams {
-    queryId?: number;
-    jettonAmount: BN_2;
-    responseAddress: Address_2;
-}
-
 declare function bytesToBase64(bytes: Uint8Array): string;
 
 export declare type Cell = Cell_3;
@@ -602,12 +596,6 @@ declare interface CellSerialized {
     refs: CellSerialized[];
 }
 
-export declare interface CollectionData {
-    nextItemIndex: number;
-    ownerAddress: Address_2;
-    collectionContentUri: string;
-}
-
 export declare type Contract = Contract_2;
 
 declare class Contract_2<OptionsType extends ContractOptions = ContractOptions, MethodsType extends ContractMethods = ContractMethods> {
@@ -644,31 +632,6 @@ export declare interface ContractOptions {
     code?: Cell_3;
     address?: AddressType;
     wc?: number;
-}
-
-export declare interface CreateCancelBodyParams {
-    queryId?: number;
-}
-
-export declare interface CreateChangeOwnerBodyParams {
-    queryId?: number;
-    newOwnerAddress: Address_2;
-}
-
-export declare interface CreateGetRoyaltyParamsBodyParams {
-    queryId?: number;
-}
-
-export declare interface CreateGetStaticDataBodyParams {
-    queryId?: number;
-}
-
-export declare interface CreateTransferBodyParams {
-    newOwnerAddress: Address_2;
-    responseAddress: Address_2;
-    queryId?: number;
-    forwardAmount?: BN_2;
-    forwardPayload?: Uint8Array;
 }
 
 export declare interface DeployAndInstallPluginParams {
@@ -1087,23 +1050,44 @@ declare class InMemoryBlockStorage_2 implements BlockStorage {
     private parseShardBlockKey;
 }
 
-declare interface JettonData {
-    totalSupply: BN_2;
-    isMutable: boolean;
-    jettonContentUri: string;
-    tokenWalletCode: Cell_3;
-    adminAddress?: Address_2;
+export declare namespace JettonMinter {
+    export interface Options extends ContractOptions {
+        wc?: 0;
+        adminAddress: Address_2;
+        jettonContentUri: string;
+        jettonWalletCodeHex: string;
+    }
+    export interface Methods extends ContractMethods {
+    }
+    export interface MintBodyParams {
+        jettonAmount: BN_2;
+        destination: Address_2;
+        amount: BN_2;
+        queryId?: number;
+    }
+    export interface JettonData {
+        totalSupply: BN_2;
+        isMutable: boolean;
+        jettonContentUri: string;
+        jettonWalletCode: Cell_3;
+        adminAddress?: Address_2;
+    }
+    export interface ChangeAdminBodyParams {
+        newAdminAddress: Address_2;
+        queryId?: number;
+    }
+    export interface EditContentBodyParams {
+        jettonContentUri: string;
+        queryId?: number;
+    }
 }
 
-export declare type JettonMinter = JettonMinter_2;
-
-/**
- * ATTENTION: this is a DRAFT, there will be changes.
- */
-declare class JettonMinter_2 extends Contract_2<JettonMinterOptions, JettonMinterMethods> {
-    constructor(provider: HttpProvider_2, options: JettonMinterOptions);
-    createMintBody(params: MintBodyParams_2): Cell_3;
-    getJettonData(): Promise<JettonData>;
+export declare class JettonMinter extends Contract_2<JettonMinter.Options, JettonMinter.Methods> {
+    constructor(provider: HttpProvider_2, options: JettonMinter.Options);
+    createMintBody(params: JettonMinter.MintBodyParams): Cell_3;
+    createChangeAdminBody(params: JettonMinter.ChangeAdminBodyParams): Cell_3;
+    createEditContentBody(params: JettonMinter.EditContentBodyParams): Cell_3;
+    getJettonData(): (Promise<JettonMinter.JettonData>);
     getJettonWalletAddress(ownerAddress: Address_2): Promise<Address_2>;
     /**
      * Returns cell that contains jetton minter data.
@@ -1111,40 +1095,45 @@ declare class JettonMinter_2 extends Contract_2<JettonMinterOptions, JettonMinte
     protected createDataCell(): Cell_3;
 }
 
-export declare interface JettonMinterMethods extends ContractMethods {
+export declare namespace JettonWallet {
+    export interface Options extends ContractOptions {
+        wc?: 0;
+    }
+    export interface Methods extends ContractMethods {
+    }
+    export interface WalletData {
+        balance: BN_2;
+        ownerAddress: Address_2;
+        jettonMinterAddress: Address_2;
+        jettonWalletCode: Cell_3;
+    }
+    export interface TransferBodyParams {
+        queryId?: number;
+        jettonAmount: BN_2;
+        toAddress: Address_2;
+        responseAddress: Address_2;
+        forwardAmount: BN_2;
+        forwardPayload: Uint8Array;
+    }
+    export interface BurnBodyParams {
+        queryId?: number;
+        jettonAmount: BN_2;
+        responseAddress: Address_2;
+    }
 }
 
-export declare interface JettonMinterOptions extends ContractOptions {
-    wc?: 0;
-    adminAddress: Address_2;
-    jettonContentUri: string;
-    jettonWalletCodeHex: string;
-}
-
-export declare type JettonWallet = JettonWallet_2;
-
-/**
- * ATTENTION: this is a DRAFT, there will be changes.
- */
-declare class JettonWallet_2 extends Contract_2<JettonWalletOptions, JettonWalletMethods> {
+export declare class JettonWallet extends Contract_2<JettonWallet.Options, JettonWallet.Methods> {
     static codeHex: string;
-    constructor(provider: HttpProvider_2, options: JettonWalletOptions);
-    getData(): Promise<WalletData>;
+    constructor(provider: HttpProvider_2, options: JettonWallet.Options);
+    getData(): Promise<JettonWallet.WalletData>;
     /**
      * @todo should it be async?
      */
-    createTransferBody(params: TransferBodyParams): Promise<Cell_3>;
+    createTransferBody(params: JettonWallet.TransferBodyParams): Promise<Cell_3>;
     /**
      * @todo should it be async?
      */
-    createBurnBody(params: BurnBodyParams): Promise<Cell_3>;
-}
-
-export declare interface JettonWalletMethods extends ContractMethods {
-}
-
-export declare interface JettonWalletOptions extends ContractOptions {
-    wc?: 0;
+    createBurnBody(params: JettonWallet.BurnBodyParams): Promise<Cell_3>;
 }
 
 export declare type LedgerAppTon = AppTon;
@@ -1225,28 +1214,56 @@ declare interface MethodMeta<ParamsType, ResponseType> {
     response: ResponseType;
 }
 
-export declare interface MintBodyParams {
-    itemIndex: number;
-    amount: BN_2;
-    itemOwnerAddress: Address_2;
-    itemContentUri: string;
-    queryId?: number;
+export declare namespace NftCollection {
+    export interface Options extends ContractOptions {
+        ownerAddress?: Address_2;
+        collectionContentUri?: string;
+        nftItemContentBaseUri?: string;
+        nftItemCodeHex?: string;
+        royalty?: number;
+        royaltyFactor: number;
+        royaltyBase: number;
+        royaltyAddress?: Address_2;
+    }
+    export interface Methods extends ContractMethods {
+        getCollectionData: () => Promise<NftCollectionData>;
+        getNftItemAddressByIndex: (index: number) => Promise<Address_2>;
+        getNftItemContent: (nftItem: NftItem) => Promise<NftItemContent>;
+        getRoyaltyParams: () => Promise<RoyaltyParams>;
+    }
+    export interface MintBodyParams {
+        itemIndex: number;
+        amount: BN_2;
+        itemOwnerAddress: Address_2;
+        itemContentUri: string;
+        queryId?: number;
+    }
+    export interface GetRoyaltyParamsBodyParams {
+        queryId?: number;
+    }
+    export interface ChangeOwnerBodyParams {
+        queryId?: number;
+        newOwnerAddress: Address_2;
+    }
+    export interface NftCollectionData {
+        nextItemIndex: number;
+        ownerAddress: Address_2;
+        collectionContentUri: string;
+    }
+    export interface NftItemContent {
+        isInitialized: boolean;
+        index: number;
+        collectionAddress: Address_2;
+        ownerAddress?: Address_2;
+        contentUri?: string;
+    }
 }
 
-declare interface MintBodyParams_2 {
-    jettonAmount: BN_2;
-    destination: Address_2;
-    amount: BN_2;
-    queryId?: number;
-}
-
-export declare type NftCollection = NftCollection_2;
-
-declare class NftCollection_2 extends Contract_2<NftCollectionOptions, NftCollectionMethods> {
-    constructor(provider: HttpProvider_2, options: NftCollectionOptions);
-    createMintBody(params: MintBodyParams): Cell_3;
-    createGetRoyaltyParamsBody(params: CreateGetRoyaltyParamsBodyParams): Cell_3;
-    createChangeOwnerBody(params: CreateChangeOwnerBodyParams): Cell_3;
+export declare class NftCollection extends Contract_2<NftCollection.Options, NftCollection.Methods> {
+    constructor(provider: HttpProvider_2, options: NftCollection.Options);
+    createMintBody(params: NftCollection.MintBodyParams): Cell_3;
+    createGetRoyaltyParamsBody(params: NftCollection.GetRoyaltyParamsBodyParams): Cell_3;
+    createChangeOwnerBody(params: NftCollection.ChangeOwnerBodyParams): Cell_3;
     createEditContentBody(params: {
         collectionContentUri: string;
         nftItemContentBaseUri: string;
@@ -1254,8 +1271,8 @@ declare class NftCollection_2 extends Contract_2<NftCollectionOptions, NftCollec
         royaltyAddress: Address_2;
         queryId?: number;
     }): Cell_3;
-    getCollectionData(): Promise<CollectionData>;
-    getNftItemContent(nftItem: NftItem_2): Promise<NftItemContent>;
+    getCollectionData(): (Promise<NftCollection.NftCollectionData>);
+    getNftItemContent(nftItem: NftItem): Promise<NftCollection.NftItemContent>;
     getNftItemAddressByIndex(index: number): Promise<Address_2>;
     getRoyaltyParams(): Promise<RoyaltyParams>;
     /**
@@ -1266,32 +1283,40 @@ declare class NftCollection_2 extends Contract_2<NftCollectionOptions, NftCollec
     private createRoyaltyCell;
 }
 
-export declare interface NftCollectionMethods extends ContractMethods {
-    getCollectionData: () => Promise<CollectionData>;
-    getNftItemAddressByIndex: (index: number) => Promise<Address_2>;
-    getNftItemContent: (nftItem: NftItem_2) => Promise<NftItemContent>;
-    getRoyaltyParams: () => Promise<RoyaltyParams>;
+export declare namespace NftItem {
+    export interface Options extends ContractOptions {
+        index?: number;
+        collectionAddress?: Address_2;
+    }
+    export interface Methods extends ContractMethods {
+        getData: () => Promise<NftItemData>;
+    }
+    export interface NftItemData {
+        isInitialized: boolean;
+        index: number;
+        collectionAddress: Address_2;
+        contentCell: Cell_3;
+        ownerAddress?: Address_2;
+        contentUri: (string | null);
+    }
+    export interface TransferBodyParams {
+        newOwnerAddress: Address_2;
+        responseAddress: Address_2;
+        queryId?: number;
+        forwardAmount?: BN_2;
+        forwardPayload?: Uint8Array;
+    }
+    export interface GetStaticDataBodyParams {
+        queryId?: number;
+    }
 }
 
-export declare interface NftCollectionOptions extends ContractOptions {
-    ownerAddress?: Address_2;
-    collectionContentUri?: string;
-    nftItemContentBaseUri?: string;
-    nftItemCodeHex?: string;
-    royalty?: number;
-    royaltyFactor: number;
-    royaltyBase: number;
-    royaltyAddress?: Address_2;
-}
-
-export declare type NftItem = NftItem_2;
-
-declare class NftItem_2 extends Contract_2<NftItemOptions, NftItemMethods> {
+export declare class NftItem extends Contract_2<NftItem.Options, NftItem.Methods> {
     static codeHex: string;
-    constructor(provider: HttpProvider_2, options: NftItemOptions);
-    getData(): Promise<NftItemData>;
-    createTransferBody(params: CreateTransferBodyParams): Promise<Cell_3>;
-    createGetStaticDataBody(params: CreateGetStaticDataBodyParams): Cell_3;
+    constructor(provider: HttpProvider_2, options: NftItem.Options);
+    getData(): Promise<NftItem.NftItemData>;
+    createTransferBody(params: NftItem.TransferBodyParams): Promise<Cell_3>;
+    createGetStaticDataBody(params: NftItem.GetStaticDataBodyParams): Cell_3;
     /**
      * Returns royalty params for a single NFT without
      * a collection.
@@ -1303,90 +1328,64 @@ declare class NftItem_2 extends Contract_2<NftItemOptions, NftItemMethods> {
     protected createDataCell(): Cell_3;
 }
 
-export declare interface NftItemContent {
-    isInitialized: boolean;
-    index: number;
-    collectionAddress: Address_2;
-    ownerAddress?: Address_2;
-    contentUri?: string;
+export declare namespace NftMarketplace {
+    export interface Options extends ContractOptions {
+        ownerAddress?: Address_2;
+        cell?: Cell_3;
+    }
+    export interface Methods extends ContractMethods {
+    }
 }
-
-export declare interface NftItemData {
-    isInitialized: boolean;
-    index: number;
-    collectionAddress: Address_2;
-    contentCell: Cell_3;
-    ownerAddress?: Address_2;
-    contentUri: (string | null);
-}
-
-export declare interface NftItemMethods extends ContractMethods {
-    getData: () => Promise<NftItemData>;
-}
-
-export declare interface NftItemOptions extends ContractOptions {
-    index?: number;
-    collectionAddress?: Address_2;
-}
-
-export declare type NftMarketplace = NftMarketplace_2;
 
 /**
  * Work in progress, will be changed.
  */
-declare class NftMarketplace_2 extends Contract_2<NftMarketplaceOptions, NftMarketplaceMethods> {
-    constructor(provider: HttpProvider_2, options: NftMarketplaceOptions);
+export declare class NftMarketplace extends Contract_2<NftMarketplace.Options, NftMarketplace.Methods> {
+    constructor(provider: HttpProvider_2, options: NftMarketplace.Options);
     /**
      * Returns cell that contains NFT marketplace data.
      */
     protected createDataCell(): Cell_3;
 }
 
-export declare interface NftMarketplaceMethods extends ContractMethods {
+export declare namespace NftSale {
+    export interface Options extends ContractOptions {
+        marketplaceAddress?: Address_2;
+        nftAddress?: Address_2;
+        fullPrice?: BN_2;
+        marketplaceFee?: BN_2;
+        royaltyAddress?: Address_2;
+        royaltyAmount?: BN_2;
+    }
+    export interface Methods extends ContractMethods {
+        getData: () => Promise<SaleData>;
+    }
+    export interface SaleData {
+        marketplaceAddress?: Address_2;
+        nftAddress?: Address_2;
+        nftOwnerAddress?: Address_2;
+        fullPrice: any;
+        marketplaceFee: any;
+        royaltyAddress?: Address_2;
+        royaltyAmount: any;
+    }
+    export interface CancelBodyParams {
+        queryId?: number;
+    }
 }
-
-export declare interface NftMarketplaceOptions extends ContractOptions {
-    ownerAddress?: Address_2;
-    cell?: Cell_3;
-}
-
-export declare type NftSale = NftSale_2;
 
 /**
  * Work in progress, will be changed.
  */
-declare class NftSale_2 extends Contract_2<NftSaleOptions, NftSaleMethods> {
+export declare class NftSale extends Contract_2<NftSale.Options, NftSale.Methods> {
     static codeHex: string;
-    constructor(provider: HttpProvider_2, options: NftSaleOptions);
-    getData(): Promise<NftSaleData>;
-    createCancelBody(params: CreateCancelBodyParams): Promise<Cell_3>;
+    constructor(provider: HttpProvider_2, options: NftSale.Options);
+    getData(): Promise<NftSale.SaleData>;
+    createCancelBody(params: NftSale.CancelBodyParams): Promise<Cell_3>;
     /**
      * Returns cell that contains NFT sale data.
      */
     protected createDataCell(): Cell_3;
-}
-
-export declare interface NftSaleData {
-    marketplaceAddress?: Address_2;
-    nftAddress?: Address_2;
-    nftOwnerAddress?: Address_2;
-    fullPrice: any;
-    marketplaceFee: any;
-    royaltyAddress?: Address_2;
-    royaltyAmount: any;
-}
-
-export declare interface NftSaleMethods extends ContractMethods {
-    getData: () => Promise<NftSaleData>;
-}
-
-export declare interface NftSaleOptions extends ContractOptions {
-    marketplaceAddress?: Address_2;
-    nftAddress?: Address_2;
-    fullPrice?: BN_2;
-    marketplaceFee?: BN_2;
-    royaltyAddress?: Address_2;
-    royaltyAmount?: BN_2;
 }
 
 export declare type ParsedJson = (null | string | number | boolean | ParsedJson[] | {
@@ -1655,18 +1654,18 @@ declare class TonWeb {
     };
     static token: {
         nft: {
-            NftCollection: typeof NftCollection_2;
-            NftItem: typeof NftItem_2;
-            NftMarketplace: typeof NftMarketplace_2;
-            NftSale: typeof NftSale_2;
+            NftCollection: typeof NftCollection;
+            NftItem: typeof NftItem;
+            NftMarketplace: typeof NftMarketplace;
+            NftSale: typeof NftSale;
         };
         ft: {
-            JettonWallet: typeof JettonWallet_2;
-            JettonMinter: typeof JettonMinter_2;
+            JettonWallet: typeof JettonWallet;
+            JettonMinter: typeof JettonMinter;
         };
         jetton: {
-            JettonWallet: typeof JettonWallet_2;
-            JettonMinter: typeof JettonMinter_2;
+            JettonWallet: typeof JettonWallet;
+            JettonMinter: typeof JettonMinter;
         };
     };
     version: string;
@@ -1742,15 +1741,6 @@ declare class TonWeb {
 }
 export default TonWeb;
 
-declare interface TransferBodyParams {
-    queryId?: number;
-    jettonAmount: BN_2;
-    toAddress: Address_2;
-    responseAddress: Address_2;
-    forwardAmount: BN_2;
-    forwardPayload: Uint8Array;
-}
-
 export declare type TransferMethod = ((params: TransferMethodParams) => Method);
 
 export declare interface TransferMethodParams {
@@ -1806,13 +1796,6 @@ export declare interface WalletContractMethods extends ContractMethods {
 
 export declare interface WalletContractOptions extends ContractOptions {
     publicKey?: Uint8Array;
-}
-
-declare interface WalletData {
-    balance: BN_2;
-    ownerAddress: Address_2;
-    jettonMinterAddress: Address_2;
-    jettonWalletCode: Cell_3;
 }
 
 export declare type Wallets = Wallets_2;
