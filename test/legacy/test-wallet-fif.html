@@ -16,7 +16,7 @@
         const secretKey = TonWeb.utils.hexToBytes('F182111193F30D79D517F2339A1BA7C25FDF6C52142F0F2C1D960A1F1D65E1E4');
         const keyPair = TonWeb.utils.nacl.sign.keyPair.fromSeed(secretKey);
         const wallet = tonweb.wallet.create({publicKey: publicKey, wc: 0});
-        const msg = await wallet.createTransferMessage(keyPair.secretKey, '0:2cf55953e92efbeadab7ba725c3f93a0b23f842cbba72d7b8e6f510a70e422e3', TonWeb.utils.toNano(1), 0);
+        const msg = await wallet.createTransferMessage(keyPair.secretKey, '0:2cf55953e92efbeadab7ba725c3f93a0b23f842cbba72d7b8e6f510a70e422e3', TonWeb.utils.toNano('1'), 0);
         const address = msg.address;
 
         const my = `

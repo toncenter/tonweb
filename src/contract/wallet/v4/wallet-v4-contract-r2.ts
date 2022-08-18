@@ -202,7 +202,7 @@ export class WalletV4ContractR2 extends WalletV4ContractBase<
         signingMessage.bits.writeUint(isInstall ? 2 : 3, 8); // op
         signingMessage.bits.writeInt(pluginAddress.wc, 8);
         signingMessage.bits.writeBytes(pluginAddress.hashPart);
-        signingMessage.bits.writeGrams(params.amount || toNano(0.1));
+        signingMessage.bits.writeGrams(params.amount || toNano('0.1'));
         signingMessage.bits.writeUint(params.queryId || 0, 64);
 
         return this.createExternalMessage(

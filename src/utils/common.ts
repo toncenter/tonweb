@@ -28,15 +28,29 @@ export function sha256(bytes: Uint8Array): Promise<ArrayBuffer> {
 /**
  * Converts the specified amount from coins to nanocoins.
  */
-export function toNano(amount: (number | BN | string)): BN {
-    return ethUnit.toWei(amount, 'gwei');
+export function toNano(amount: (BN | string)): BN {
+    if (BN.isBN(amount) || typeof amount === 'string') {
+        return ethUnit.toWei(amount, 'gwei');
+    } else {
+        throw new Error(
+            `Please pass numbers as strings or BN objects ` +
+            `to avoid precision errors`
+        );
+    }
 }
 
 /**
  * Converts the specified amount from nanocoins to coins.
  */
-export function fromNano(amount: (number | BN | string)): string {
-    return ethUnit.fromWei(amount, 'gwei');
+export function fromNano(amount: (BN | string)): string {
+    if (BN.isBN(amount) || typeof amount === 'string') {
+        return ethUnit.fromWei(amount, 'gwei');
+    } else {
+        throw new Error(
+            `Please pass numbers as strings or BN objects ` +
+            `to avoid precision errors`
+        );
+    }
 }
 
 // look up tables

@@ -33,7 +33,7 @@ const cases = [
     [.123456789, 123456789],
 ];
 
-const inputTypes = ['number', 'BN', 'string'];
+const inputTypes = ['BN', 'string'];
 
 
 describe('toNano()', () => {
@@ -45,12 +45,8 @@ describe('toNano()', () => {
                     continue;
                 }
                 it(`should convert TONs to nano-TONs (${from} → ${to})`, () => {
-                    let value: (number | BN | string);
+                    let value: (BN | string);
                     switch (inputType) {
-                        case 'number': {
-                            value = from;
-                            break;
-                        }
                         case 'BN': {
                             value = new BN(from);
                             break;
@@ -70,6 +66,12 @@ describe('toNano()', () => {
         });
     }
 
+    it('should throw when number is passed', () => {
+        expect(() => toNano(100500 as any)).toThrow(
+            'pass numbers as strings or BN objects'
+        );
+    });
+
 });
 
 describe('fromNano()', () => {
@@ -79,12 +81,8 @@ describe('fromNano()', () => {
             for (const [to, from] of cases) {
                 const toStr = numberToString(to);
                 it(`should convert nano-TONs to TONs (${from} → ${toStr})`, () => {
-                    let value: (number | BN | string);
+                    let value: (BN | string);
                     switch (inputType) {
-                        case 'number': {
-                            value = from;
-                            break;
-                        }
                         case 'BN': {
                             value = new BN(from);
                             break;
@@ -103,6 +101,12 @@ describe('fromNano()', () => {
             }
         });
     }
+
+    it('should throw when number is passed', () => {
+        expect(() => fromNano(100500 as any)).toThrow(
+            'pass numbers as strings or BN objects'
+        );
+    });
 
 });
 

@@ -28,21 +28,21 @@ address.toString(isUserFriendly?: boolean, isUrlSafe?: boolean, isBounceable?: b
 
 TonWeb.utils.
 
-* BN - "bn.js" library 
+* BN - "bn.js" library
 
 * nacl - "tweetnacl" library
 
 * Address - Address class
 
-* toNano(amount: number | BN | string): BN
+* toNano(amount: BN | string): BN
 
-* fromNano(amount: number | BN | string): string
+* fromNano(amount: BN | string): string
 
 * bytesToHex(bytes: Uint8Array): string
 
 * hexToBytes(s: string): Uint8Array
 
-* stringToBytes(s: string, size?: number): Uint8Array 
+* stringToBytes(s: string, size?: number): Uint8Array
 
 * crc32c(bytes: Uint8Array): Uint8Array
 

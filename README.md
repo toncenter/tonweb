@@ -48,7 +48,7 @@ await wallet.deploy(secretKey).send(); // deploy wallet to blockchain
 const fee = await wallet.methods.transfer({
     secretKey,
     toAddress: 'EQDjVXa_oltdBP64Nc__p397xLCvGm2IcZ1ba7anSW0NAkeP',
-    amount: TonWeb.utils.toNano(0.01), // 0.01 TON
+    amount: TonWeb.utils.toNano('0.01'), // 0.01 TON
     seqno: seqno,
     payload: 'Hello',
     sendMode: 3,
@@ -114,7 +114,7 @@ Each part is documented separately:
 ## Build
 
 ```bash
-npm install 
+npm install
 
 npx webpack --mode=none
 ```
