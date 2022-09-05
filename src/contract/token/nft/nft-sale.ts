@@ -4,8 +4,8 @@ import BN from 'bn.js';
 import { Cell } from '../../../boc/cell/cell';
 import { HttpProvider } from '../../../http-provider/http-provider';
 import { Address } from '../../../utils/address';
+import { parseAddressFromCell } from '../../../utils/parsing';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
-import { parseAddress } from './utils';
 
 
 export namespace NftSale {
@@ -77,12 +77,14 @@ export class NftSale extends Contract<
             'get_sale_data'
         );
 
-        const marketplaceAddress = parseAddress(result[0]);
-        const nftAddress = parseAddress(result[1]);
-        const nftOwnerAddress = parseAddress(result[2]);
+        // @todo type and validate the response
+
+        const marketplaceAddress = parseAddressFromCell(result[0]);
+        const nftAddress = parseAddressFromCell(result[1]);
+        const nftOwnerAddress = parseAddressFromCell(result[2]);
         const fullPrice = result[3];
         const marketplaceFee = result[4];
-        const royaltyAddress = parseAddress(result[5]);
+        const royaltyAddress = parseAddressFromCell(result[5]);
         const royaltyAmount = result[6];
 
         return {

@@ -25,16 +25,13 @@
 
 export * from '@ton.js/types';
 
-import $BN from 'bn.js';
 import nacl from 'tweetnacl';
 import BluetoothTransport from '@ledgerhq/hw-transport-web-ble';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
-
-// Exporting BN as type-only, we have had
-// to rename the original import for this to work
-export type BN = $BN;
+import BN from 'bn.js';
+export type { BN };
 
 
 //=============//
@@ -176,8 +173,6 @@ export {
 
 } from './utils/address';
 
-import * as commonUtilsExports from './utils/common';
-
 import {
     base64ToBytes,
     bytesToBase64,
@@ -185,6 +180,13 @@ import {
     stringToBase64,
 
 } from './utils/base64';
+
+
+import {
+    bytesToHex,
+    hexToBytes,
+
+} from './utils/hex';
 
 import {
     formatTransferUrl,
@@ -194,17 +196,40 @@ import {
 
 export { ParsedTransferUrl } from './utils/transfer-url';
 
+import {
+    compareBytes,
+    concatBytes,
+    crc16,
+    crc32c,
+    fromNano,
+    readNBytesUIntFromArray,
+    sha256,
+    stringToBytes,
+    toNano,
+
+} from './utils/common';
+
 const utils = {
-    ...commonUtilsExports,
-    base64ToBytes,
-    bytesToBase64,
-    base64toString,
-    stringToBase64,
-    BN: $BN,
-    nacl,
     Address: $Address,
+    BN,
+    base64ToBytes,
+    base64toString,
+    bytesToBase64,
+    bytesToHex,
+    compareBytes,
+    concatBytes,
+    crc16,
+    crc32c,
     formatTransferUrl,
+    fromNano,
+    hexToBytes,
+    nacl,
     parseTransferUrl,
+    readNBytesUIntFromArray,
+    sha256,
+    stringToBase64,
+    stringToBytes,
+    toNano,
 };
 
 
@@ -212,7 +237,7 @@ const utils = {
 // BOC //
 //=====//
 
-import { BitString as $BitString } from './boc/bit-string';
+import { BitString as $BitString } from './boc/bit-string/bit-string';
 export type BitString = $BitString;
 
 import { Cell as $Cell } from './boc/cell/cell';
@@ -597,6 +622,16 @@ const NFT = {
     NftSale,
 };
 
+
+//=====//
+// DNS //
+//=====//
+
+import { Dns } from './contract/dns/dns';
+import { DnsCollection } from './contract/dns/dns-collection';
+import { DnsItem } from './contract/dns/dns-item';
+
+
 // -----
 
 import { version } from './version';
@@ -615,6 +650,11 @@ export default class TonWeb {
     public static BlockSubscription = $BlockSubscription;
     public static InMemoryBlockStorage = $InMemoryBlockStorage;
     public static FetchHttpClient = $FetchHttpClient;
+
+    public static dns = Object.assign({}, Dns, {
+        DnsCollection,
+        DnsItem,
+    });
 
     public static ledger = {
         TransportWebUSB,
@@ -639,6 +679,7 @@ export default class TonWeb {
     public InMemoryBlockStorage = $InMemoryBlockStorage;
     public wallet = new $Wallets(this.provider);
     public lockupWallet = LockupWallets;
+    public dns = new Dns(this.provider);
 
 
     constructor(public provider = new $HttpProvider()) {
@@ -719,3 +760,14 @@ export default class TonWeb {
 }
 
 // @todo set window.TonWeb = TonWeb via webpack
+
+
+//======//
+// NEXT //
+//======//
+
+/**
+ * These a new symbols added to the original vanilla TonWeb.
+ */
+
+export { CellSlice } from './boc/cell/cell-slice';

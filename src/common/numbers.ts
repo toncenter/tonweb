@@ -99,3 +99,24 @@ export function expectBit(
     }
 
 }
+
+/**
+ * Checks if the specified bit length is valid for
+ * unsigned integer in TVM.
+ *
+ * @throws {@link Error}
+ * Throws error if specified bit-length is incorrect.
+ */
+export function checkUintBitLengthOrThrow(bitLength: number): void {
+
+    // Chapter 1.5 of the "Telegram Open Network Virtual Machine".
+    // {@link https://ton-blockchain.github.io/docs/tvm.pdf}
+
+    if (bitLength <= 0 || bitLength > 256) {
+        throw new Error(
+            `Bit length must be greater than zero ` +
+            `and less or equal to 256`
+        );
+    }
+
+}

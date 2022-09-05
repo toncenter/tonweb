@@ -4,8 +4,9 @@ import BN from 'bn.js';
 import { Cell } from '../../../boc/cell/cell';
 import { HttpProvider } from '../../../http-provider/http-provider';
 import { Address } from '../../../utils/address';
+import { parseAddressFromCell } from '../../../utils/parsing';
+import { expectBN, expectCell } from '../../../utils/type-guards';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
-import { parseAddress } from '../nft/utils';
 
 
 export namespace JettonWallet {
@@ -73,17 +74,19 @@ export class JettonWallet extends Contract<
 
 
     public async getData(): Promise<JettonWallet.WalletData> {
+
         const myAddress = await this.getAddress();
+
         const result = await this.provider.call2(
             myAddress.toString(),
             'get_wallet_data'
         );
 
         return {
-            balance: result[0],
-            ownerAddress: parseAddress(result[1]),
-            jettonMinterAddress: parseAddress(result[2]),
-            jettonWalletCode: result[3],
+            balance: expectBN(result[0]),
+            ownerAddress: parseAddressFromCell(result[1]),
+            jettonMinterAddress: parseAddressFromCell(result[2]),
+            jettonWalletCode: expectCell(result[3]),
         };
 
     }

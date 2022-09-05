@@ -263,12 +263,15 @@ export class HttpProvider {
      * @param method - Method name or method ID
      * @param params - Array of stack elements
      */
-    public async call2(
+    public async call2<
+        ParamsType = RunGetMethodParamsStackItem[],
+        ResultType = ParseResponseResult
+    >(
         address: string,
         method: (string | number),
         params: RunGetMethodParamsStackItem[] = []
 
-    ): Promise<ParseResponseResult> {
+    ): Promise<ResultType> {
 
         const result = await this.send('runGetMethod', {
             address,
@@ -276,7 +279,9 @@ export class HttpProvider {
             stack: params,
         });
 
-        return HttpProviderUtils.parseResponse(result);
+        return HttpProviderUtils.parseResponse<ResultType>(
+            result
+        );
 
     }
 

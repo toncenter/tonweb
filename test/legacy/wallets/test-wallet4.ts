@@ -207,7 +207,7 @@ const { SubscriptionContract } = TonWeb;
         const body = new TonWeb.boc.Cell();
         body.bits.writeUint(0x706c7567, 32); // op
         body.bits.writeUint(123, 64); // query id
-        body.bits.writeGrams(TonWeb.utils.toNano('2.22'));
+        body.bits.writeCoins(TonWeb.utils.toNano('2.22'));
         body.bits.writeUint(0, 1); //  dict empty
 
         console.log(

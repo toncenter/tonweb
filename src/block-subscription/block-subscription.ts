@@ -27,8 +27,8 @@ export type BlockHandler = (
 );
 
 
-const defaultMcInterval = (10 * 1000) // 10 seconds;
-const defaultShardsInterval = (1 * 1000) // 1 second;
+const defaultMcInterval = 10_000; // 10 seconds
+const defaultShardsInterval = 1_000; // 1 second
 
 const parseShardBlockNumber: (
   (data: any) => ShardBlock
@@ -56,8 +56,8 @@ export class BlockSubscription {
     );
 
     private startLT?: any;
-    private mcIntervalId?: number;
-    private shardsIntervalId?: number;
+    private mcIntervalId?: any;
+    private shardsIntervalId?: any;
 
 
     constructor(

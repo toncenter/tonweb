@@ -4,11 +4,18 @@ import BN from 'bn.js';
 import { Cell } from '../../../boc/cell/cell';
 import { HttpProvider } from '../../../http-provider/http-provider';
 import { Address, AddressType } from '../../../utils/address';
-import { bytesToHex, toNano } from '../../../utils/common';
+import { toNano } from '../../../utils/common';
+import { bytesToHex } from '../../../utils/hex';
 import { expectArray, expectBN } from '../../../utils/type-guards';
 import { Contract, Method } from '../../contract';
 import { ExternalMessage } from '../wallet-contract';
-import { WalletV4ContractBase, WalletV4ContractMethods, WalletV4ContractOptions } from './wallet-v4-contract-base';
+
+import {
+    WalletV4ContractBase,
+    WalletV4ContractMethods,
+    WalletV4ContractOptions,
+
+} from './wallet-v4-contract-base';
 
 
 export interface WalletV4ContractR2Methods extends WalletV4ContractMethods {
@@ -98,7 +105,7 @@ export class WalletV4ContractR2 extends WalletV4ContractBase<
 
         signingMessage.bits.writeUint(1, 8); // op
         signingMessage.bits.writeInt(params.pluginWc, 8);
-        signingMessage.bits.writeGrams(params.amount);
+        signingMessage.bits.writeCoins(params.amount);
         signingMessage.refs.push(params.stateInit);
         signingMessage.refs.push(params.body);
 
@@ -202,7 +209,7 @@ export class WalletV4ContractR2 extends WalletV4ContractBase<
         signingMessage.bits.writeUint(isInstall ? 2 : 3, 8); // op
         signingMessage.bits.writeInt(pluginAddress.wc, 8);
         signingMessage.bits.writeBytes(pluginAddress.hashPart);
-        signingMessage.bits.writeGrams(params.amount || toNano('0.1'));
+        signingMessage.bits.writeCoins(params.amount || toNano('0.1'));
         signingMessage.bits.writeUint(params.queryId || 0, 64);
 
         return this.createExternalMessage(

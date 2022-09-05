@@ -1,8 +1,7 @@
 /// <reference types="ledgerhq__hw-transport" />
 /// <reference types="node" />
 
-import $BN from 'bn.js';
-import { default as BN_2 } from 'bn.js';
+import BN from 'bn.js';
 import { default as nacl_2 } from 'tweetnacl';
 import { TonLib } from '@ton.js/types';
 import Transport from '@ledgerhq/hw-transport';
@@ -92,7 +91,7 @@ declare class AppTon {
      * If `seqno` is zero, then it will be "deploy wallet + transfer coins" message.
      * `addressFormat` is a sum of `ADDRESS_FORMAT_*` instance property constants.
      */
-    transfer(accountNumber: number, wallet: WalletContract_2, toAddress: AddressType, nanograms: (BN_2 | number), seqno: number, addressFormat: number): Promise<Method>;
+    transfer(accountNumber: number, wallet: WalletContract_2, toAddress: AddressType, nanograms: (BN | number), seqno: number, addressFormat: number): Promise<Method>;
 }
 
 declare function base64ToBytes(base64: string): Uint8Array;
@@ -103,7 +102,7 @@ declare function base64ToBytes(base64: string): Uint8Array;
  */
 declare function base64toString(base64: string): string;
 
-declare type BigIntInput = (number | string | BN_2);
+declare type BigIntInput = (number | string | BN);
 
 declare type Bit = boolean;
 
@@ -118,35 +117,54 @@ export declare type BitString = BitString_2;
  * {@link Cell | Cells}.
  */
 declare class BitString_2 {
-    private bitLength;
     /**
-     * @deprecated - Don't access the underlying bytes directly,
-     *               use {@link BitString.getTopUppedArray | getTopUppedArray()}
-     *               instead.
-     *
-     * This getter is available only for backward-compatibility.
-     *
-     * @todo remove this getter
+     * Maximum number of bits that this bit-string should hold.
      */
-    get array(): Uint8Array;
+    private maxLength;
     /**
-     * @deprecated: don't use internal cursor directly,
-     *              use {@link BitString.getUsedBits | getUsedBits()}
-     *              instead.
-     *
-     * This getter is available only for backward-compatibility.
-     *
-     * @todo remove this getter
+     * Internal representation of the stored bit data.
+     * Special bit arithmetic is used to operate on individual
+     * bits inside of bytes.
      */
-    get cursor(): number;
-    get length(): number;
     private bytes;
-    private nextBitIndex;
     /**
-     * @param bitLength - A length of the bit-string in bits,
-     *                    can't be changed after creation.
+     * Internal counter to store the number of bits
+     * that are actually used.
      */
-    constructor(bitLength: number);
+    private usedBits;
+    /**
+     * Returns maximum available length of the bit-string.
+     */
+    get length(): number;
+    /**
+     * @param maxLength - A maximum length of the bit-string
+     *                    in bits, can't be changed after
+     *                    creation.
+     */
+    constructor(maxLength?: number);
+    /**
+     * Creates a bit-string using the specified array of
+     * bytes.
+     *
+     * @param bytes - An array of bytes to parse.
+     *
+     * @param hasCompletion - Flag indicating that the specified
+     *                        array of bytes doesn't have a
+     *                        completion bits.
+     */
+    constructor(bytes: Uint8Array, hasCompletion: boolean);
+    /**
+     * Creates a bit-string using the specified array of
+     * bytes and the bit length.
+     *
+     * @param bytes - An array of bytes to parse.
+     *
+     * @param bitLength - Length of the bit string in bits.
+     *
+     * @param maxLength - Maximum available length of the
+     *                    bit-string.
+     */
+    constructor(bytes: Uint8Array, bitLength: number, maxLength: number);
     /**
      * Returns number of unfilled bits in the bit-string.
      */
@@ -158,53 +176,8 @@ declare class BitString_2 {
     /**
      * Returns number of bytes actually used by the bit-string.
      * Rounds up to a whole byte.
-     *
-     * @todo rename to `getUsedBytesCount()`
-     * @todo implement `getUsedBytes(): Uint8Array`
      */
     getUsedBytes(): number;
-    /**
-     * Returns the bit value at the specified index
-     * in the bit-string.
-     *
-     * @param index - An index of the bit to read.
-     */
-    get(index: number): Bit;
-    /**
-     * Sets the bit at the specified index.
-     *
-     * @param index - An index of the bit to set.
-     *
-     * @todo should rename this method to `setBit()`
-     */
-    on(index: number): void;
-    /**
-     * Clears the bit at the specified index.
-     *
-     * @param index - An index of the bit to clear.
-     *
-     * @todo should rename this method to `clearBit()`
-     */
-    off(index: number): void;
-    /**
-     * Toggles the bit at the specified index.
-     *
-     * @param index - An index of the bit to toggle.
-     *
-     * @todo should rename this method to `toggleBit()`
-     */
-    toggle(index: number): void;
-    /**
-     * Iterates the bits of the bit-string and calls the
-     * specified user function for each bit, passing in
-     * the value.
-     *
-     * @param callback - A callback function to execute
-     *                   for each sequential bit.
-     *
-     * @todo implement iteration protocol
-     */
-    forEach(callback: (bit: Bit) => void): void;
     /**
      * Appends the specified bit value to the end
      * of the bit-string.
@@ -237,15 +210,6 @@ declare class BitString_2 {
      */
     writeUint(value: BigIntInput, bitLength: number): void;
     /**
-     * Appends the specified unsigned 8-bit integer to the
-     * bit-string.
-     *
-     * @param value - Unsigned integer value as `number`,
-     *                `BN` or `string`. Shouldn't occupy
-     *                more than 8 bits.
-     */
-    writeUint8(value: BigIntInput): void;
-    /**
      * Appends the specified signed integer of the specified
      * length in bits to the bit-string.
      *
@@ -277,36 +241,23 @@ declare class BitString_2 {
      */
     writeString(text: string): void;
     /**
-     * Appends the specified amount of nanograms to the
-     * bit-string.
-     *
-     * @param nanograms - Unsigned integer value as `number`,
-     *                    `BN` or `string`, representing the
-     *                    number of nanograms to append to the
-     *                    bit-string.
-     */
-    writeGrams(nanograms: BigIntInput): void;
-    /**
      * Writes the specified TON amount in nanotons to the
      * bit-string.
      *
-     * @param nanotons - Unsigned integer value as `number`,
-     *                   `BN` or `string`, representing the
-     *                   number of nanotons to append to the
-     *                   bit-string.
-     *
-     * @todo why do we have a duplicate method?
+     * @param coins - Unsigned integer value as `number`,
+     *                `BN` or `string`, representing the
+     *                number of coins to append to the
+     *                bit-string.
      */
-    writeCoins(nanotons: BigIntInput): void;
+    writeCoins(coins: BigIntInput): void;
     /**
-     * Appends the specified address to the bit-string.
+     * Appends the specified standard internal address
+     * to the bit-string.
      *
      * @param address - An instance of
      *                  {@link Address | Address} to append.
-     *
-     * @todo allow to specify address as a string
      */
-    writeAddress(address?: Address_2): void;
+    writeAddress(address?: AddressType): void;
     /**
      * Appends the specified bit-string to this bit-string.
      *
@@ -318,24 +269,133 @@ declare class BitString_2 {
     /**
      * Creates a cloned instance of the bit-string.
      *
-     * @returns Returns new {@link BitString | BitString}
-     *          with exactly the same content and length
-     *          as this one.
+     * @returns Returns a new {@link BitString | BitString}
+     *          that is exact copy of this one.
      */
     clone(): BitString_2;
-    /* Excluded from this release type: __cloneFrom */
     /**
      * Returns the bit-string represented as HEX-string.
      */
     toString(): string;
     /**
-     * Serializes bit-string into as a sequence of bytes (octets).
+     * Returns the bit-string represented as a HEX-string
+     * (like in Fift).
+     */
+    toHex(): string;
+    /**
+     * Serializes bit-string into a sequence of bytes (octets).
      * The completion bits are added if the number of used
      * bits is not divisible by eight.
-     *
-     * @todo rename this method to `getBytes()` for clarity
      */
     getTopUppedArray(): Uint8Array;
+    /* Excluded from this release type: getRawData */
+    /**
+     * @deprecated - Don't access the underlying bytes directly,
+     *               use the {@link CellSlice} instead to parse the
+     *               bit-string.
+     *
+     * This getter is available only for backward-compatibility.
+     *
+     * @todo remove this getter
+     */
+    get array(): Uint8Array;
+    /**
+     * @deprecated: don't use internal cursor directly,
+     *              use {@link BitString.getUsedBits | getUsedBits()}
+     *              instead.
+     *
+     * This getter is available only for backward-compatibility.
+     *
+     * @todo remove this getter
+     */
+    get cursor(): number;
+    /**
+     * Returns the bit value at the specified index
+     * in the bit-string.
+     *
+     * @param offset - An offset of the bit to read.
+     *
+     * @deprecated - Use the
+     *               {@link CellSlice.loadBit() | loadBit()}
+     *               instead.
+     *
+     * @todo: remove this method
+     */
+    get(offset: number): Bit;
+    /**
+     * Sets the bit at the specified offset.
+     *
+     * @param offset - A bit offset of the bit to set.
+     *
+     * @deprecated Don't manipulate the bits directly,
+     *             use `write*` methods instead.
+     *
+     * @todo: remove this method
+     */
+    on(offset: number): void;
+    /**
+     * Clears the bit at the specified index.
+     *
+     * @param offset - A bit offset of the bit to clear.
+     *
+     * @deprecated Don't manipulate the bits directly,
+     *             use `write*` methods instead.
+     *
+     * @todo: remove this method
+     */
+    off(offset: number): void;
+    /**
+     * Toggles the bit at the specified offset.
+     *
+     * @param offset - A bit offset of the bit to toggle.
+     *
+     * @deprecated Don't manipulate the bits directly,
+     *             use `write*` methods instead.
+     *
+     * @todo: remove this method
+     */
+    toggle(offset: number): void;
+    /**
+     * Iterates the bits of the bit-string and calls the
+     * specified user function for each bit, passing in
+     * the value.
+     *
+     * @param callback - A callback function to execute
+     *                   for each sequential bit.
+     *
+     * @deprecated Use the native Slice iterator
+     *             to iterate over bits instead.
+     *
+     * @todo: remove this method
+     */
+    forEach(callback: (bit: Bit) => void): void;
+    /**
+     * Appends the specified unsigned 8-bit integer to the
+     * bit-string.
+     *
+     * @param value - Unsigned integer value as `number`,
+     *                `BN` or `string`. Shouldn't occupy
+     *                more than 8 bits.
+     *
+     * @deprecated Use the
+     *             {@link BitString.writeUint() | writeUint(value, 8)}
+     *             instead.
+     */
+    writeUint8(value: BigIntInput): void;
+    /**
+     * Appends the specified amount of nanograms to the
+     * bit-string.
+     *
+     * @param nanograms - Unsigned integer value as `number`,
+     *                    `BN` or `string`, representing the
+     *                    number of nanograms to append to the
+     *                    bit-string.
+     *
+     * @deprecated: Use the
+     *              {@link BitString.writeCoins() | writeCoins()}
+     *              instead.
+     */
+    writeGrams(nanograms: BigIntInput): void;
     /**
      * Parses the specified array of bytes and replaces
      * bit-string data with it.
@@ -346,24 +406,66 @@ declare class BitString_2 {
      *                       array of bytes doesn't have a
      *                       completion bits.
      *
-     * @todo replace with `static createFromBytes()`
+     * @deprecated Use the constructor with bytes argument.
      */
     setTopUppedArray(bytes: Uint8Array, noCompletion?: boolean): void;
     /**
-     * Returns the bit-string represented as a HEX-string
-     * (like in Fift).
+     * Sets the bit at the specified offset
+     * in the used bounds of the bit-string.
+     *
+     * @param offset - An offset of the bit to set.
      */
-    toHex(): string;
+    private setBit;
     /**
-     * Checks if the specified index is allowed for
-     * the bit string, throws error in case of overflow.
+     * Clears the bit at the specified index
+     * in the used bounds of the bit-string.
+     *
+     * @param offset - A bit offset of the bit to clear.
      */
-    private checkIndexOrThrow;
+    private clearBit;
     /**
-     * Checks if the specified bit length is valid in TVM,
-     * throws error in case it's not.
+     * Toggles the bit at the specified offset
+     * in the used bounds of the bit-string.
+     *
+     * @param offset - A bit offset of the bit to toggle.
      */
-    private checkBitLengthOrThrow;
+    private toggleBit;
+    /**
+     * Returns value of the bit at the specified offset
+     * in the used bounds of the bit-string.
+     *
+     * @param offset - Offset in bits from which to start
+     *                 reading data.
+     */
+    private readBit;
+    private allocateBytes;
+    /**
+     * Increases used bits by the specified amount of bits.
+     *
+     * @throws Error
+     * Throws error when maximum BitString length is exceeded.
+     */
+    private allocateBits;
+    /**
+     * Checks if the specified offset is in used bounds
+     * of the bit-string.
+     *
+     * @throws Error
+     * Throws errors when offset is invalid
+     * or is out of used bounds.
+     */
+    private checkOffsetOrThrow;
+    /**
+     * Parses the specified array of bytes and replaces
+     * bit-string data with it.
+     *
+     * @param bytes - An array of bytes to parse.
+     *
+     * @param hasCompletion - Flag indicating that the specified
+     *                       array of bytes doesn't have a
+     *                       completion bits.
+     */
+    private setBytes;
 }
 
 export declare type BlockHandler = ((blockHeader: any, blockShards?: any) => (Promise<void> | void));
@@ -482,9 +584,15 @@ export declare interface BlockSubscriptionOptions {
     shardsInterval?: number;
 }
 
-export declare type BN = $BN;
+export { BN }
 
 declare function bytesToBase64(bytes: Uint8Array): string;
+
+/**
+ * Converts the specified bytes array to hex string
+ * using lookup table.
+ */
+declare function bytesToHex(buffer: Uint8Array): string;
 
 export declare type Cell = Cell_3;
 
@@ -495,8 +603,8 @@ declare type Cell_2 = {
 
 declare class Cell_3 {
     readonly bits: BitString_2;
-    isExotic: boolean;
     refs: Cell_3[];
+    isExotic: boolean;
     /**
      * Deserializes the BOC specified as HEX-string or
      * a byte-array and returns root cells.
@@ -577,6 +685,11 @@ declare class Cell_3 {
      * Converts cell with all it's content to Bag of Cells (BOC).
      */
     toBoc(hasIdx?: boolean, hashCrc32?: boolean, hasCacheBits?: boolean, flags?: number): Promise<Uint8Array>;
+    /**
+     * Returns a slice with this cell's data that
+     * allows you to parse it.
+     */
+    parse(): CellSlice;
     private getMaxDepthAsArray;
     private index;
     private serializeForBoc;
@@ -596,14 +709,23 @@ declare interface CellSerialized {
     refs: CellSerialized[];
 }
 
+/* Excluded from this release type: CellSlice */
+
+declare function compareBytes(a: Uint8Array, b: Uint8Array): boolean;
+
+/**
+ * Concatenates two byte arrays together.
+ */
+declare function concatBytes(bytes1: Uint8Array, bytes2: Uint8Array): Uint8Array;
+
 export declare type Contract = Contract_2;
 
 declare class Contract_2<OptionsType extends ContractOptions = ContractOptions, MethodsType extends ContractMethods = ContractMethods> {
     readonly provider: HttpProvider_2;
     readonly options: OptionsType;
     static createStateInit(code: Cell_3, data: Cell_3, library?: undefined, splitDepth?: undefined, ticktock?: undefined): Cell_3;
-    static createInternalMessageHeader(dest: AddressType, nanograms?: (number | BN_2), ihrDisabled?: boolean, bounce?: boolean, bounced?: boolean, src?: AddressType, currencyCollection?: undefined, ihrFees?: (number | BN_2), fwdFees?: (number | BN_2), createdLt?: (number | BN_2), createdAt?: (number | BN_2)): Cell_3;
-    static createExternalMessageHeader(dest: AddressType, src?: AddressType, importFee?: (number | BN_2)): Cell_3;
+    static createInternalMessageHeader(dest: AddressType, nanograms?: (number | BN), ihrDisabled?: boolean, bounce?: boolean, bounced?: boolean, src?: AddressType, currencyCollection?: undefined, ihrFees?: (number | BN), fwdFees?: (number | BN), createdLt?: (number | BN), createdAt?: (number | BN)): Cell_3;
+    static createExternalMessageHeader(dest: AddressType, src?: AddressType, importFee?: (number | BN)): Cell_3;
     /**
      * Creates CommonMsgInfo cell that contains specified
      * header, stateInit and body.
@@ -634,14 +756,244 @@ export declare interface ContractOptions {
     wc?: number;
 }
 
+declare function crc16(data: ArrayLike<number>): Uint8Array;
+
+declare function crc32c(bytes: Uint8Array): Uint8Array;
+
+declare function createAdnlAddressRecord(adnlAddress: BN): Cell_3;
+
+declare function createNextResolverRecord(address: Address_2): Cell_3;
+
+declare function createSmartContractAddressRecord(address: Address_2): Cell_3;
+
 export declare interface DeployAndInstallPluginParams {
     secretKey: Uint8Array;
     seqno: number;
     pluginWc: number;
-    amount: BN_2;
+    amount: BN;
     stateInit: Cell_3;
     body: Cell_3;
 }
+
+declare class Dns {
+    private readonly provider;
+    static resolve: typeof dnsResolve;
+    static createSmartContractAddressRecord: typeof createSmartContractAddressRecord;
+    static createAdnlAddressRecord: typeof createAdnlAddressRecord;
+    static createNextResolverRecord: typeof createNextResolverRecord;
+    static parseNextResolverRecord: typeof parseNextResolverRecord;
+    static parseSmartContractAddressRecord: typeof parseSmartContractAddressRecord;
+    static DNS_CATEGORY_NEXT_RESOLVER: "dns_next_resolver";
+    static DNS_CATEGORY_WALLET: "wallet";
+    static DNS_CATEGORY_SITE: "site";
+    constructor(provider: HttpProvider_2);
+    /**
+     * Returns address of the root DNS smart contract
+     * based on the network used.
+     */
+    getRootDnsAddress(): Promise<Address_2>;
+    /**
+     * Makes a call to "dnsresolve" get method of the root
+     * smart contract to resolve the specified domain name
+     * and category. Makes recursive calls if `oneStep`
+     * flag is not set.
+     *
+     * @param domain - e.g. "sub.alice.ton".
+     * @param category - category of requested DNS record,
+     *                   omit for all categories.
+     * @param oneStep - Whether to not resole recursively.
+     */
+    resolve(domain: string, category?: DnsCategory, oneStep?: boolean): Promise<DnsResolveResponse>;
+    /**
+     * Returns wallet address for the specified domain name.
+     *
+     * @param domain - e.g. "sub.alice.ton".
+     */
+    getWalletAddress(domain: string): Promise<Address_2 | null>;
+}
+
+declare const DnsCategories: {
+    readonly NextResolver: "dns_next_resolver";
+    readonly Wallet: "wallet";
+    readonly Site: "site";
+};
+
+declare type DnsCategory = Values<typeof DnsCategories>;
+
+/**
+ * Implementation of the DNS collection smart contract.
+ *
+ * Contract source code:
+ * {@link https://github.com/ton-blockchain/dns-contract/blob/main/func/nft-collection.fc | nft-collection.fc}
+ */
+declare namespace DnsCollection {
+    interface Options extends ContractOptions {
+        collectionContent: Cell_3;
+        dnsItemCodeHex: string;
+        address?: AddressType;
+        code?: Cell_3;
+    }
+    interface Methods extends ContractMethods {
+        getCollectionData(): Promise<CollectionData>;
+        getNftItemAddressByIndex(): Promise<Address_2>;
+        getNftItemContent(): Promise<DnsItem.Data>;
+        resolve(domain: string, category?: DnsCategory, oneStep?: boolean): Promise<DnsResolveResponse>;
+    }
+    interface CollectionData {
+        collectionContentUri: string;
+        collectionContent: Cell_3;
+        ownerAddress: null;
+        nextItemIndex: 0;
+    }
+}
+
+/**
+ * DNS collection contract that is based on NFT collection.
+ *
+ * @todo extend NftCollection?
+ */
+declare class DnsCollection extends Contract_2<DnsCollection.Options, DnsCollection.Methods> {
+    constructor(provider: HttpProvider_2, options: DnsCollection.Options);
+    /**
+     * Returns DNS collection's data.
+     */
+    getCollectionData(): (Promise<DnsCollection.CollectionData>);
+    getNftItemContent(nftItem: DnsItem): (Promise<DnsItem.Data>);
+    /**
+     * Returns DNS (NFT) item address by the specified index.
+     *
+     * @param index - Index of the DNS (NFT) item.
+     */
+    getNftItemAddressByIndex(index: BN): (Promise<Address_2>);
+    /**
+     * Makes a call to "dnsresolve" get method of this smart
+     * contract to resolve the specified domain name
+     * and category. Makes recursive calls if `oneStep` flag
+     * is not set.
+     *
+     * @param domain - Domain name.
+     * @param category - DNS resolution category.
+     * @param oneStep - Whether to not resolve recursively.
+     */
+    resolve(domain: string, category?: DnsCategory, oneStep?: boolean): Promise<DnsResolveResponse>;
+    /**
+     * @override
+     *
+     * @returns Cell containing DNS collection's data.
+     */
+    protected createDataCell(): Cell_3;
+}
+
+/**
+ * Implementation of the DNS item smart contract.
+ *
+ * Smart contract source code:
+ * {@link https://github.com/ton-blockchain/dns-contract/blob/main/func/nft-item.fc | nft-item.fc}
+ */
+declare namespace DnsItem {
+    interface Options extends ContractOptions {
+        index: BN;
+        collectionAddress: Address_2;
+        address?: MaybeAddressType;
+        code?: Cell_3;
+    }
+    interface Methods extends ContractMethods {
+        getData: () => Promise<Data>;
+        getDomain: () => Promise<string>;
+        getAuctionInfo: () => Promise<AuctionInfo>;
+        getLastFillUpTime: () => Promise<number>;
+        resolve(domain: string, category?: DnsCategory, oneStep?: boolean): Promise<DnsResolveResponse>;
+    }
+    interface AuctionInfo {
+        maxBidAddress: MaybeAddress;
+        maxBidAmount: BN;
+        auctionEndTime: number;
+    }
+    interface Data {
+        isInitialized: boolean;
+        index: BN;
+        collectionAddress: MaybeAddress;
+        ownerAddress: MaybeAddress;
+        contentCell: Cell_3;
+    }
+    interface TransferBodyParams {
+        queryId?: number;
+        newOwnerAddress: Address_2;
+        forwardAmount?: BN;
+        forwardPayload?: Uint8Array;
+        responseAddress: Address_2;
+    }
+}
+
+declare class DnsItem extends Contract_2<DnsItem.Options, DnsItem.Methods> {
+    /**
+     * BOC of the DNS item smart contract's source code
+     * in HEX format.
+     *
+     * Contract's source code:
+     * {@link https://github.com/ton-blockchain/dns-contract/blob/main/func/nft-item.fc | nft-item.fc}
+     */
+    static codeHex: string;
+    static createChangeContentEntryBody(params: {
+        category: DnsCategory;
+        value?: MaybeCell;
+        queryId?: number;
+    }): Promise<Cell_3>;
+    constructor(provider: HttpProvider_2, options: DnsItem.Options);
+    /**
+     * Gets data of the DNS (NFT) item.
+     */
+    getData(): Promise<DnsItem.Data>;
+    createTransferBody(params: DnsItem.TransferBodyParams): Promise<Cell_3>;
+    createGetStaticDataBody(params: {
+        queryId?: number;
+    }): Cell_3;
+    /**
+     * Returns domain name of this DNS item.
+     */
+    getDomain(): Promise<string>;
+    /**
+     * Returns auction information of this DNS item.
+     */
+    getAuctionInfo(): (Promise<DnsItem.AuctionInfo>);
+    /**
+     * Returns last fill-up time.
+     */
+    getLastFillUpTime(): Promise<number>;
+    /**
+     * Makes a call to "dnsresolve" get method of this smart
+     * contract to resolve the specified domain name
+     * and category. Makes recursive calls if `oneStep` flag
+     * is not set.
+     *
+     * @param domain - Domain name.
+     * @param category - DNS resolution category.
+     * @param oneStep - Whether to not resolve recursively.
+     */
+    resolve(domain: string, category?: DnsCategory, oneStep?: boolean): Promise<DnsResolveResponse>;
+    /**
+     * @override
+     *
+     * @returns Cell containing DNS (NFT) item's data.
+     */
+    protected createDataCell(): Cell_3;
+}
+
+/**
+ * Makes a call to "dnsresolve" get method of the specified
+ * root smart contract to resolve the specified domain name
+ * and category. Makes recursive calls if `oneStep` flag
+ * is not set.
+ *
+ * @param provider - An HTTP provider.
+ * @param dnsAddress - Address of the DNS smart contract.
+ * @param domain - Domain name.
+ * @param category - Resolution category.
+ * @param oneStep - Whether to not resolve recursively.
+ */
+declare function dnsResolve(provider: HttpProvider_2, dnsAddress: string, domain: string, category?: DnsCategory, oneStep?: boolean): Promise<DnsResolveResponse>;
+
+declare type DnsResolveResponse = (Cell_3 | Address_2 | null);
 
 declare type EstimateFeeMeta = MethodMeta<EstimateFeeParams, EstimateFeeResult>;
 
@@ -705,6 +1057,11 @@ export declare interface FetchHttpClientOptions {
  * @todo pass all the parts as a single argument of `ParsedTransferUrl` type
  */
 declare function formatTransferUrl(address: string, amount?: string, text?: string): string;
+
+/**
+ * Converts the specified amount from nanocoins to coins.
+ */
+declare function fromNano(amount: (BN | string)): string;
 
 declare type GetAddressBalanceMeta = MethodMeta<AddressParam, GetAddressBalanceResult>;
 
@@ -791,6 +1148,12 @@ export declare type GetWalletInformationResult = {
     wallet_id: number;
     seqno: number;
 });
+
+/**
+ * Converts the specified hex string to bytes array
+ * using lookup table.
+ */
+declare function hexToBytes(hex: string): Uint8Array;
 
 export declare interface HttpClient {
     sendRequest<ResponsePayloadType = ParsedJson>(request: HttpRequest): (Promise<HttpResponse<ResponsePayloadType>>);
@@ -887,7 +1250,7 @@ declare class HttpProvider_2 {
      * @param method - Method name or method ID
      * @param params - Array of stack elements
      */
-    call2(address: string, method: (string | number), params?: RunGetMethodParamsStackItem[]): Promise<ParseResponseResult>;
+    call2<ParamsType = RunGetMethodParamsStackItem[], ResultType = ParseResponseResult>(address: string, method: (string | number), params?: RunGetMethodParamsStackItem[]): Promise<ResultType>;
     /**
      * Returns ID's of last and init block of masterchain.
      *
@@ -1060,13 +1423,13 @@ export declare namespace JettonMinter {
     export interface Methods extends ContractMethods {
     }
     export interface MintBodyParams {
-        jettonAmount: BN_2;
+        jettonAmount: BN;
         destination: Address_2;
-        amount: BN_2;
+        amount: BN;
         queryId?: number;
     }
     export interface JettonData {
-        totalSupply: BN_2;
+        totalSupply: BN;
         isMutable: boolean;
         jettonContentUri: string;
         jettonWalletCode: Cell_3;
@@ -1102,22 +1465,22 @@ export declare namespace JettonWallet {
     export interface Methods extends ContractMethods {
     }
     export interface WalletData {
-        balance: BN_2;
+        balance: BN;
         ownerAddress: Address_2;
         jettonMinterAddress: Address_2;
         jettonWalletCode: Cell_3;
     }
     export interface TransferBodyParams {
         queryId?: number;
-        jettonAmount: BN_2;
+        jettonAmount: BN;
         toAddress: Address_2;
         responseAddress: Address_2;
-        forwardAmount: BN_2;
+        forwardAmount: BN;
         forwardPayload: Uint8Array;
     }
     export interface BurnBodyParams {
         queryId?: number;
-        jettonAmount: BN_2;
+        jettonAmount: BN;
         responseAddress: Address_2;
     }
 }
@@ -1143,27 +1506,27 @@ export declare type LockupWalletV1 = LockupWalletV1_2;
 declare class LockupWalletV1_2 extends WalletContract_2<LockupWalletV1Options, LockupWalletV1Methods> {
     constructor(provider: HttpProvider_2, options: any);
     getName(): string;
-    getPublicKey(): Promise<BN_2>;
+    getPublicKey(): Promise<BN>;
     getWalletId(): Promise<number>;
     /**
      * Returns amount of nanograms that can be spent immediately.
      */
-    getLiquidBalance(): Promise<BN_2>;
+    getLiquidBalance(): Promise<BN>;
     /**
      * Returns amount of nanograms that can be spent after
      * the timelock OR to the whitelisted addresses.
      */
-    getNominalRestrictedBalance(): Promise<BN_2>;
+    getNominalRestrictedBalance(): Promise<BN>;
     /**
      * Returns amount of nanograms that can be spent after
      * the timelock only (whitelisted addresses not used).
      */
-    getNominalLockedBalance(): Promise<BN_2>;
+    getNominalLockedBalance(): Promise<BN>;
     /**
      * Returns total amount of nanograms on the contract,
      * nominal restricted value and nominal locked value.
      */
-    getBalances(): Promise<[BN_2, BN_2, BN_2]>;
+    getBalances(): Promise<[BN, BN, BN]>;
     /**
      * Returns cell that contains wallet data.
      */
@@ -1186,11 +1549,11 @@ export declare interface LockupWalletV1Config {
 }
 
 export declare interface LockupWalletV1Methods extends WalletContractMethods {
-    getPublicKey: () => Promise<BN_2>;
+    getPublicKey: () => Promise<BN>;
     getWalletId: () => Promise<number>;
-    getLiquidBalance: () => Promise<BN_2>;
-    getNominalRestrictedBalance: () => Promise<BN_2>;
-    getNominalLockedBalance: () => Promise<BN_2>;
+    getLiquidBalance: () => Promise<BN>;
+    getNominalRestrictedBalance: () => Promise<BN>;
+    getNominalLockedBalance: () => Promise<BN>;
 }
 
 export declare interface LockupWalletV1Options extends WalletContractOptions {
@@ -1199,6 +1562,12 @@ export declare interface LockupWalletV1Options extends WalletContractOptions {
 }
 
 export declare type LogFunction = (message: string) => void;
+
+declare type MaybeAddress = (Address_2 | null);
+
+declare type MaybeAddressType = (AddressType | null);
+
+declare type MaybeCell = (Cell_3 | null);
 
 export declare interface Method {
     getQuery(): Promise<Cell_3>;
@@ -1233,7 +1602,7 @@ export declare namespace NftCollection {
     }
     export interface MintBodyParams {
         itemIndex: number;
-        amount: BN_2;
+        amount: BN;
         itemOwnerAddress: Address_2;
         itemContentUri: string;
         queryId?: number;
@@ -1254,12 +1623,12 @@ export declare namespace NftCollection {
         isInitialized: boolean;
         index: number;
         collectionAddress: Address_2;
-        ownerAddress?: Address_2;
+        ownerAddress: MaybeAddress;
         contentUri?: string;
     }
 }
 
-export declare class NftCollection extends Contract_2<NftCollection.Options, NftCollection.Methods> {
+export declare class NftCollection<OptionsType extends NftCollection.Options = NftCollection.Options, MethodsType extends NftCollection.Methods = NftCollection.Methods> extends Contract_2<OptionsType, MethodsType> {
     constructor(provider: HttpProvider_2, options: NftCollection.Options);
     createMintBody(params: NftCollection.MintBodyParams): Cell_3;
     createGetRoyaltyParamsBody(params: NftCollection.GetRoyaltyParamsBodyParams): Cell_3;
@@ -1303,7 +1672,7 @@ export declare namespace NftItem {
         newOwnerAddress: Address_2;
         responseAddress: Address_2;
         queryId?: number;
-        forwardAmount?: BN_2;
+        forwardAmount?: BN;
         forwardPayload?: Uint8Array;
     }
     export interface GetStaticDataBodyParams {
@@ -1352,10 +1721,10 @@ export declare namespace NftSale {
     export interface Options extends ContractOptions {
         marketplaceAddress?: Address_2;
         nftAddress?: Address_2;
-        fullPrice?: BN_2;
-        marketplaceFee?: BN_2;
+        fullPrice?: BN;
+        marketplaceFee?: BN;
         royaltyAddress?: Address_2;
-        royaltyAmount?: BN_2;
+        royaltyAmount?: BN;
     }
     export interface Methods extends ContractMethods {
         getData: () => Promise<SaleData>;
@@ -1398,11 +1767,15 @@ export declare interface ParsedTransferUrl {
     text?: string;
 }
 
-export declare type ParseObjectResult = (BN_2 | ParseObjectResult[]);
+declare function parseNextResolverRecord(cell: Cell_3): (Address_2 | null);
+
+export declare type ParseObjectResult = (BN | ParseObjectResult[]);
 
 export declare type ParseResponseResult = (ParseResponseStackResult | ParseResponseStackResult[]);
 
-export declare type ParseResponseStackResult = (BN_2 | ParseObjectResult | Cell_3);
+export declare type ParseResponseStackResult = (BN | ParseObjectResult | Cell_3);
+
+declare function parseSmartContractAddressRecord(cell: Cell_3): (Address_2 | null);
 
 /**
  * Parses the specified TON-transfer URL into its individual
@@ -1433,6 +1806,13 @@ export declare interface Query {
     signingMessage?: Cell_3;
     stateInit?: Cell_3;
 }
+
+declare interface RawBitString {
+    bytes: Uint8Array;
+    usedBits: number;
+}
+
+declare function readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
 
 export declare type RequestHeaders = (Record<string, string | string[]>);
 
@@ -1494,9 +1874,11 @@ export declare interface SetPluginParams {
     secretKey: Uint8Array;
     seqno: number;
     pluginAddress: AddressType;
-    amount?: BN_2;
+    amount?: BN;
     queryId?: number;
 }
+
+declare function sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
 
 /**
  * A shardchain block definition.
@@ -1556,6 +1938,12 @@ export declare interface StateInit {
  */
 declare function stringToBase64(text: string): string;
 
+/**
+ * @deprecated: this function is no longer used in the library
+ *              and will be deleted in the future.
+ */
+declare function stringToBytes(str: string, size?: number): Uint8Array;
+
 export declare type SubscriptionContract = SubscriptionContract_2;
 
 declare class SubscriptionContract_2 extends Contract_2<SubscriptionContractOptions, SubscriptionContractMethods> {
@@ -1582,7 +1970,7 @@ export declare interface SubscriptionContractMethods extends ContractMethods {
 export declare interface SubscriptionContractOptions extends ContractOptions {
     wallet?: Address_2;
     beneficiary?: Address_2;
-    amount?: BN_2;
+    amount?: BN;
     period?: number;
     timeout?: number;
     startAt?: number;
@@ -1592,7 +1980,7 @@ export declare interface SubscriptionContractOptions extends ContractOptions {
 export declare interface SubscriptionData {
     wallet: string;
     beneficiary: string;
-    amount: BN_2;
+    amount: BN;
     period: number;
     startAt: number;
     timeout: number;
@@ -1602,30 +1990,35 @@ export declare interface SubscriptionData {
     subscriptionId: number;
 }
 
+/**
+ * Converts the specified amount from coins to nanocoins.
+ */
+declare function toNano(amount: (BN | string)): BN;
+
 declare class TonWeb {
     provider: HttpProvider_2;
     static version: string;
     static utils: {
-        base64ToBytes: typeof base64ToBytes;
-        bytesToBase64: typeof bytesToBase64;
-        base64toString: typeof base64toString;
-        stringToBase64: typeof stringToBase64;
-        BN: typeof $BN;
-        nacl: nacl_2;
         Address: typeof Address_2;
+        BN: typeof BN;
+        base64ToBytes: typeof base64ToBytes;
+        base64toString: typeof base64toString;
+        bytesToBase64: typeof bytesToBase64;
+        bytesToHex: typeof bytesToHex;
+        compareBytes: typeof compareBytes;
+        concatBytes: typeof concatBytes;
+        crc16: typeof crc16;
+        crc32c: typeof crc32c;
         formatTransferUrl: typeof formatTransferUrl;
+        fromNano: typeof fromNano;
+        hexToBytes: typeof hexToBytes;
+        nacl: nacl_2;
         parseTransferUrl: typeof parseTransferUrl;
-        sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
-        toNano(amount: string | $BN): $BN;
-        fromNano(amount: string | $BN): string;
-        bytesToHex(buffer: Uint8Array): string;
-        hexToBytes(hex: string): Uint8Array;
-        stringToBytes(str: string, size?: number): Uint8Array;
-        crc32c(bytes: Uint8Array): Uint8Array;
-        crc16(data: ArrayLike<number>): Uint8Array;
-        concatBytes(bytes1: Uint8Array, bytes2: Uint8Array): Uint8Array;
-        compareBytes(a: Uint8Array, b: Uint8Array): boolean;
-        readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
+        readNBytesUIntFromArray: typeof readNBytesUIntFromArray;
+        sha256: typeof sha256;
+        stringToBase64: typeof stringToBase64;
+        stringToBytes: typeof stringToBytes;
+        toNano: typeof toNano;
     };
     static Address: typeof Address_2;
     static boc: {
@@ -1646,6 +2039,10 @@ declare class TonWeb {
     static BlockSubscription: typeof BlockSubscription_2;
     static InMemoryBlockStorage: typeof InMemoryBlockStorage_2;
     static FetchHttpClient: typeof FetchHttpClient_2;
+    static dns: typeof Dns & {
+        DnsCollection: typeof DnsCollection;
+        DnsItem: typeof DnsItem;
+    };
     static ledger: {
         TransportWebUSB: typeof TransportWebUSB;
         TransportWebHID: any;
@@ -1670,26 +2067,26 @@ declare class TonWeb {
     };
     version: string;
     utils: {
-        base64ToBytes: typeof base64ToBytes;
-        bytesToBase64: typeof bytesToBase64;
-        base64toString: typeof base64toString;
-        stringToBase64: typeof stringToBase64;
-        BN: typeof $BN;
-        nacl: nacl_2;
         Address: typeof Address_2;
+        BN: typeof BN;
+        base64ToBytes: typeof base64ToBytes;
+        base64toString: typeof base64toString;
+        bytesToBase64: typeof bytesToBase64;
+        bytesToHex: typeof bytesToHex;
+        compareBytes: typeof compareBytes;
+        concatBytes: typeof concatBytes;
+        crc16: typeof crc16;
+        crc32c: typeof crc32c;
         formatTransferUrl: typeof formatTransferUrl;
+        fromNano: typeof fromNano;
+        hexToBytes: typeof hexToBytes;
+        nacl: nacl_2;
         parseTransferUrl: typeof parseTransferUrl;
-        sha256(bytes: Uint8Array): Promise<ArrayBuffer>;
-        toNano(amount: string | $BN): $BN;
-        fromNano(amount: string | $BN): string;
-        bytesToHex(buffer: Uint8Array): string;
-        hexToBytes(hex: string): Uint8Array;
-        stringToBytes(str: string, size?: number): Uint8Array;
-        crc32c(bytes: Uint8Array): Uint8Array;
-        crc16(data: ArrayLike<number>): Uint8Array;
-        concatBytes(bytes1: Uint8Array, bytes2: Uint8Array): Uint8Array;
-        compareBytes(a: Uint8Array, b: Uint8Array): boolean;
-        readNBytesUIntFromArray(n: number, ui8array: Uint8Array): number;
+        readNBytesUIntFromArray: typeof readNBytesUIntFromArray;
+        sha256: typeof sha256;
+        stringToBase64: typeof stringToBase64;
+        stringToBytes: typeof stringToBytes;
+        toNano: typeof toNano;
     };
     Address: typeof Address_2;
     boc: {
@@ -1707,6 +2104,7 @@ declare class TonWeb {
         };
         list: (typeof LockupWalletV1_2)[];
     };
+    dns: Dns;
     constructor(provider?: HttpProvider_2);
     /**
      * Use this method to get transaction history of a given address.
@@ -1746,19 +2144,21 @@ export declare type TransferMethod = ((params: TransferMethodParams) => Method);
 export declare interface TransferMethodParams {
     secretKey: Uint8Array;
     toAddress: AddressType;
-    amount: (BN_2 | number);
+    amount: (BN | number);
     seqno: number;
     payload?: (string | Uint8Array | Cell_3);
     sendMode?: number;
     stateInit?: Cell_3;
 }
 
+declare type Values<Type> = Type[keyof Type];
+
 export declare type WalletContract = WalletContract_2;
 
 /**
  * Abstract standard wallet class.
  */
-declare class WalletContract_2<WalletType extends WalletContractOptions = WalletContractOptions, MethodsType extends WalletContractMethods = WalletContractMethods> extends Contract_2<WalletType, MethodsType> {
+declare class WalletContract_2<OptionsType extends WalletContractOptions = WalletContractOptions, MethodsType extends WalletContractMethods = WalletContractMethods> extends Contract_2<OptionsType, MethodsType> {
     constructor(provider: HttpProvider_2, options: WalletContractOptions);
     /**
      * Returns name of the contract.
@@ -1773,7 +2173,7 @@ declare class WalletContract_2<WalletType extends WalletContractOptions = Wallet
      * `nacl.KeyPair.secretKey`
      * @todo improve the description
      */
-    secretKey: Uint8Array, address: AddressType, nanograms: (BN_2 | number), seqno: number, payload?: (string | Uint8Array | Cell_3), sendMode?: number, dummySignature?: boolean, stateInit?: Cell_3): Promise<ExternalMessage>;
+    secretKey: Uint8Array, address: AddressType, nanograms: (BN | number), seqno: number, payload?: (string | Uint8Array | Cell_3), sendMode?: number, dummySignature?: boolean, stateInit?: Cell_3): Promise<ExternalMessage>;
     deploy(secretKey: Uint8Array): Method;
     /**
      * Returns cell that contains wallet data.
@@ -1879,13 +2279,13 @@ declare class WalletV3ContractR2_2 extends WalletV3ContractBase {
 }
 
 declare class WalletV4ContractBase<WalletType extends WalletV4ContractOptions = WalletV4ContractOptions, MethodsType extends WalletV4ContractMethods = WalletV4ContractMethods> extends WalletContract_2<WalletType, MethodsType> {
-    getPublicKey(): Promise<BN_2>;
+    getPublicKey(): Promise<BN>;
     protected createSigningMessage(seqno?: number, withoutOp?: boolean): Cell_3;
     protected createDataCell(): Cell_3;
 }
 
 export declare interface WalletV4ContractMethods extends WalletContractMethods {
-    getPublicKey: () => Promise<BN_2>;
+    getPublicKey: () => Promise<BN>;
 }
 
 export declare interface WalletV4ContractOptions extends WalletContractOptions {

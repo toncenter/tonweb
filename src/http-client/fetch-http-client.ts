@@ -77,7 +77,7 @@ export class FetchHttpClient implements HttpClient {
         };
 
         let abortController: AbortController;
-        let timeoutInterval: (number | undefined);
+        let timeoutInterval: any;
         if (this.options.timeout !== false) {
             abortController = new AbortController();
             requestOptions.signal = abortController.signal;

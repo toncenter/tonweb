@@ -56,10 +56,10 @@ export interface ExternalMessage {
  * Abstract standard wallet class.
  */
 export class WalletContract<
-    WalletType extends WalletContractOptions = WalletContractOptions,
+    OptionsType extends WalletContractOptions = WalletContractOptions,
     MethodsType extends WalletContractMethods = WalletContractMethods
 
-> extends Contract<WalletType, MethodsType> {
+> extends Contract<OptionsType, MethodsType> {
 
     constructor(
         provider: HttpProvider,

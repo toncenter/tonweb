@@ -108,10 +108,12 @@ export class HttpProviderUtils {
 
     }
 
-    public static parseResponse(
+    public static parseResponse<
+        ResultType = ParseResponseResult
+    >(
         result: ParseResponseParam
 
-    ): ParseResponseResult {
+    ): ResultType {
 
         if (result.exit_code !== 0) {
             // @todo use custom error class
@@ -120,11 +122,13 @@ export class HttpProviderUtils {
             throw error;
         }
 
-        const arr = (result.stack
+        const stackItems = (result.stack
             .map(HttpProviderUtils.parseResponseStack)
         );
 
-        return (arr.length === 1 ? arr[0] : arr);
+        return <ResultType> <any> (
+            (stackItems.length === 1 ? stackItems[0] : stackItems)
+        );
 
     }
 

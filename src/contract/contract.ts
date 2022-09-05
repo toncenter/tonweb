@@ -4,8 +4,8 @@ import BN from 'bn.js';
 import { Cell } from '../boc/cell/cell';
 import { HttpProvider } from '../http-provider/http-provider';
 import { bytesToBase64 } from '../utils/base64';
-import { bytesToHex } from '../utils/common';
 import { Address, AddressType } from '../utils/address';
+import { bytesToHex } from '../utils/hex';
 
 
 export interface ContractOptions {
@@ -142,13 +142,13 @@ export class Contract<
         message.bits.writeBit(bounced);
         message.bits.writeAddress(src ? new Address(src) : undefined);
         message.bits.writeAddress(destAddress);
-        message.bits.writeGrams(nanograms);
+        message.bits.writeCoins(nanograms);
         if (currencyCollection) {
             throw new Error('Currency collections are not implemented yet');
         }
         message.bits.writeBit(Boolean(currencyCollection));
-        message.bits.writeGrams(ihrFees);
-        message.bits.writeGrams(fwdFees);
+        message.bits.writeCoins(ihrFees);
+        message.bits.writeCoins(fwdFees);
         message.bits.writeUint(createdLt, 64);
         message.bits.writeUint(createdAt, 32);
         return message;
@@ -167,7 +167,7 @@ export class Contract<
         message.bits.writeUint(2, 2);
         message.bits.writeAddress(src ? new Address(src) : undefined);
         message.bits.writeAddress(new Address(dest));
-        message.bits.writeGrams(importFee);
+        message.bits.writeCoins(importFee);
         return message;
     }
 

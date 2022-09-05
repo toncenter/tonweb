@@ -7,7 +7,7 @@ import { Contract, Method, Query } from '../contract/contract';
 import { WalletContract } from '../contract/wallet/wallet-contract';
 import TonWeb from '../index';
 import { Address, AddressType } from '../utils/address';
-import { bytesToHex } from '../utils/common';
+import { bytesToHex } from '../utils/hex';
 
 
 export interface AppConfiguration {
@@ -126,8 +126,12 @@ export class AppTon {
                 buffer
             );
         const len = response[0];
-        const addressHex = new Uint8Array(response.slice(1, 1 + len));
-        const address = new Address('0:' + bytesToHex(addressHex));
+        const addressHex = new Uint8Array(
+            response.slice(1, 1 + len)
+        );
+        const address = new Address(
+            '0:' + bytesToHex(addressHex)
+        );
         return { address };
     }
 

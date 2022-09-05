@@ -139,7 +139,7 @@ export class SubscriptionContract extends Contract<
         const cell = new Cell();
         cell.bits.writeAddress(this.options.wallet);
         cell.bits.writeAddress(this.options.beneficiary);
-        cell.bits.writeGrams(this.options.amount);
+        cell.bits.writeCoins(this.options.amount);
         cell.bits.writeUint(this.options.period, 32);
         cell.bits.writeUint(this.options.startAt, 32); // start_time
         cell.bits.writeUint(this.options.timeout, 32);

@@ -1,10 +1,15 @@
 
 import { base64ToBytes, bytesToBase64 } from './base64';
+import { bytesToHex, hexToBytes } from './hex';
 import { Workchain, WorkchainId } from './workchain';
-import { bytesToHex, crc16, hexToBytes } from './common';
+import { crc16 } from './common';
 
 
 export type AddressType = (Address | string);
+
+export type MaybeAddress = (Address | null);
+
+export type MaybeAddressType = (AddressType | null);
 
 interface ParsedAddress {
     workchain: number;
@@ -20,6 +25,46 @@ enum Flags {
     NonBounceable = 0x51,
     Test = 0x80,
 }
+
+/**
+ * Chapter A.11.9. "Message and address manipulation primitives".
+ * {@link https://ton-blockchain.github.io/docs/tvm.pdf}
+ */
+export const AddressTypes = {
+
+    /**
+     * addr_none$00 = MsgAddressExt;
+     */
+    None: 0b00,
+
+    /**
+     * addr_extern$01
+     *   len:(## 8)
+     *   external_address:(bits len)
+     * = MsgAddressExt;
+     */
+    External: 0b01,
+
+    /**
+     * addr_std$10
+     *   anycast:(Maybe Anycast)
+     *   workchain_id:int8
+     *   address:bits256
+     * = MsgAddressInt;
+     */
+    InternalStandard: 0b10,
+
+    /**
+     * addr_var$11
+     *   anycast:(Maybe Anycast)
+     *   addr_len:(## 9)
+     *   workchain_id:int32
+     *   address:(bits addr_len)
+     * = MsgAddressInt;
+     */
+    InternalVariable: 0b11,
+
+} as const;
 
 
 export class Address {

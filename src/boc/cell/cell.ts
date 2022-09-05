@@ -1,16 +1,19 @@
 
+import { Address } from '../../utils/address';
 import { bytesToBase64 } from '../../utils/base64';
-import { BitString } from '../bit-string';
+import { hexToBytes } from '../../utils/hex';
+import { BitString } from '../bit-string/bit-string';
+import { CellSlice } from './cell-slice';
 
 import {
     compareBytes,
     concatBytes,
     crc32c,
-    hexToBytes,
     readNBytesUIntFromArray,
     sha256,
 
 } from '../../utils/common';
+
 
 import {
     IndexHashmap,
@@ -25,10 +28,33 @@ type SerializedBoc = (string | Uint8Array);
 export type CellHash = Uint8Array;
 export type CellHashBase64 = string;
 
+export type MaybeCell = (Cell | null);
+
+interface BocHeaderParseResult {
+    has_idx: number;
+    hash_crc32: number;
+    has_cache_bits: number;
+    flags: number;
+    size_bytes: number;
+    off_bytes: number;
+    cells_num: number;
+    roots_num: number;
+    absent_num: number;
+    tot_cells_size: number;
+    root_list: number[];
+    index: (number[] | false);
+    cells_data: Uint8Array;
+}
+
+interface DeserializeCellDataResult {
+    cell: Cell;
+    residue: Uint8Array;
+}
+
 
 const bocConstructorTag = hexToBytes('B5EE9C72');
-const leanBocMagicPrefix = hexToBytes('68ff65f3');
-const leanBocMagicPrefixCRC = hexToBytes('acc3a728');
+const leanBocMagicPrefix = hexToBytes('68FF65F3');
+const leanBocMagicPrefixCRC = hexToBytes('ACC3A728');
 
 const maxCellBits = 1023;
 const maxCellRefs = 4;
@@ -37,8 +63,10 @@ const maxCellRefs = 4;
 export class Cell {
 
     public readonly bits = new BitString(maxCellBits);
-    public isExotic = false;
+
     public refs: Cell[] = [];
+
+    public isExotic = false;
 
 
     /**
@@ -80,7 +108,7 @@ export class Cell {
      */
     public writeCell(cell: Cell) {
         // @todo check for bits overflow and
-        //        the number of cell references
+        //       the number of cell references
         this.bits.writeBitString(cell.bits);
         this.refs = this.refs.concat(cell.refs);
     }
@@ -94,7 +122,7 @@ export class Cell {
     public getMaxLevel(): number {
 
         // Chapter 3.1.3 of the "Telegram Open Network Virtual Machine".
-        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
+        // {@link https://ton-blockchain.github.io/docs/tvm.pdf}
 
         // The level of an ordinary cell is always equal
         // to the maximum of the levels of all its children.
@@ -150,7 +178,7 @@ export class Cell {
     public async getRepr(): Promise<Uint8Array> {
 
         // Chapter 3.1.4 of the "Telegram Open Network Virtual Machine".
-        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
+        // {@link https://ton-blockchain.github.io/docs/tvm.pdf}
 
         const reprArray = [];
 
@@ -184,7 +212,7 @@ export class Cell {
     public getDataWithDescriptors(): Uint8Array {
 
         // Chapter 3.1.4 of the "Telegram Open Network Virtual Machine".
-        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
+        // {@link https://ton-blockchain.github.io/docs/tvm.pdf}
         //
         // Two descriptor bytes `d1` and `d2`
         // are serialized first.
@@ -220,7 +248,7 @@ export class Cell {
     public getRefsDescriptor(): Uint8Array {
 
         // Chapter 3.1.4 of the "Telegram Open Network Virtual Machine".
-        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
+        // {@link https://ton-blockchain.github.io/docs/tvm.pdf}
         //
         // Byte `d1` equals `r + 8s + 32l`, where
         // - `0 ≤ r ≤ 4` is the quantity of cell references
@@ -245,7 +273,7 @@ export class Cell {
     public getBitsDescriptor(): Uint8Array {
 
         // Chapter 3.1.4 of the "Telegram Open Network Virtual Machine".
-        // ${link https://ton-blockchain.github.io/docs/tvm.pdf}
+        // {@link https://ton-blockchain.github.io/docs/tvm.pdf}
         //
         // Byte `d2` equals `⌊b/8⌋ + ⌈b/8⌉`, where
         // `0 ≤ b ≤ 1023` is the quantity of data bits in `c`.
@@ -305,11 +333,13 @@ export class Cell {
 
     ): Promise<Uint8Array> {
 
-        // TL-B Scheme:
-        // {@link https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/tl/boc.tlb#L25}
-
-        // C++ implementation:
-        // {@link https://github.com/newton-blockchain/ton/blob/master/crypto/vm/boc.cpp#L500}
+        /**
+         * TL-B Scheme:
+         * {@link https://github.com/ton-blockchain/ton/blob/24dc184a2ea67f9c47042b4104bbb4d82289fac1/crypto/tl/boc.tlb#L25}
+         *
+         * C++ implementation:
+         * {@link https://github.com/newton-blockchain/ton/blob/master/crypto/vm/boc.cpp#L500}
+         */
 
         const rootCell = this;
 
@@ -326,65 +356,72 @@ export class Cell {
             // @todo it should be async map or async for
             cellOffsetsIndex.push(offset);
             // @todo use index cache to minimize number
-            //        of calls to serializeForBoc/bocSerializationSize
-            const cellSize = await cell
+            //       of calls to serializeForBoc/bocSerializationSize
+            const cellSize = (await cell
                 .bocSerializationSize(indexHashmap, refByteSize)
-            ;
+            );
             offset += cellSize;
         }
         const fullSize = offset;
 
         // Minimal number of bits to offset/len
         const offsetBits = fullSize.toString(2).length;
-        const offsetBytes = Math.max(Math.ceil(offsetBits / 8), 1);
+
+        const offsetBytes = Math.max(
+            Math.ceil(offsetBits / 8),
+            1
+        );
 
         const cellRefsLength = (32 * maxCellRefs);
 
-        const boc = new BitString(
+        // @todo do not use BitString for this,
+        //       use normal array of bytes instead.
+
+        const bocBitString = new BitString(
             (maxCellBits + cellRefsLength + (32 * 3)) *
             cellsCount
         );
 
         // [serialized_boc#b5ee9c72]
-        boc.writeBytes(bocConstructorTag);
+        bocBitString.writeBytes(bocConstructorTag);
 
         // [has_idx]
-        boc.writeBit(hasIdx);
+        bocBitString.writeBit(hasIdx);
 
         // [has_crc32c]
-        boc.writeBit(hashCrc32);
+        bocBitString.writeBit(hashCrc32);
 
         // [has_cache_bits]
-        boc.writeBit(hasCacheBits);
+        bocBitString.writeBit(hasCacheBits);
 
         // [flags]
-        boc.writeUint(flags, 2);
+        bocBitString.writeUint(flags, 2);
 
         // [size]
-        boc.writeUint(refByteSize, 3);
+        bocBitString.writeUint(refByteSize, 3);
 
         // [off_bytes]
-        boc.writeUint8(offsetBytes);
+        bocBitString.writeUint(offsetBytes, 8);
 
         // Cells [cells]
-        boc.writeUint(cellsCount, refByteSize * 8);
+        bocBitString.writeUint(cellsCount, refByteSize * 8);
 
         // Roots [roots] (one root for now)
-        boc.writeUint(1, refByteSize * 8);
+        bocBitString.writeUint(1, refByteSize * 8);
 
         // Absent [absent] (complete BOCs only)
-        boc.writeUint(0, refByteSize * 8);
+        bocBitString.writeUint(0, refByteSize * 8);
 
         // Total cells size [tot_cells_size]
-        boc.writeUint(fullSize, offsetBytes * 8);
+        bocBitString.writeUint(fullSize, offsetBytes * 8);
 
         // Root list [root_list] (root should have index 0)
-        boc.writeUint(0, refByteSize * 8);
+        bocBitString.writeUint(0, refByteSize * 8);
 
         // Cell offsets [index]
         if (hasIdx) {
             for (let index = 0; index < cellsCount; index++) {
-                boc.writeUint(
+                bocBitString.writeUint(
                     cellOffsetsIndex[index],
                     (offsetBytes * 8)
                 );
@@ -394,14 +431,14 @@ export class Cell {
         // Serialized cells [cell_data]
         for (let cell of orderedCells) {
             // @todo it should be async map or async for
-            const serializedCell = await cell
+            const serializedCell = (await cell
                 .serializeForBoc(indexHashmap, refByteSize)
-            ;
-            boc.writeBytes(serializedCell);
+            );
+            bocBitString.writeBytes(serializedCell);
         }
 
         // Converting to bytes
-        let bocBytes = boc.getTopUppedArray();
+        let bocBytes = bocBitString.getTopUppedArray();
 
         // Checksum [crc32c]
         if (hashCrc32) {
@@ -409,6 +446,16 @@ export class Cell {
         }
 
         return bocBytes;
+
+    }
+
+    /**
+     * Returns a slice with this cell's data that
+     * allows you to parse it.
+     */
+    public parse(): CellSlice {
+
+        return new CellSlice(this);
 
     }
 
@@ -483,151 +530,31 @@ export class Cell {
 }
 
 
-
-function parseBocHeader(serializedBoc) {
-    // snake_case is used to match TON docs
-    if (serializedBoc.length < 4 + 1) {
-        throw new Error('Not enough bytes for magic prefix');
-    }
-    const inputData = serializedBoc; // Save copy for crc32
-    const prefix = serializedBoc.slice(0, 4);
-    serializedBoc = serializedBoc.slice(4);
-    let has_idx, hash_crc32, has_cache_bits, flags, size_bytes;
-    if (compareBytes(prefix, bocConstructorTag)) {
-        const flags_byte = serializedBoc[0];
-        has_idx = flags_byte & 128;
-        hash_crc32 = flags_byte & 64;
-        has_cache_bits = flags_byte & 32;
-        flags = (flags_byte & 16) * 2 + (flags_byte & 8);
-        size_bytes = flags_byte % 8;
-    }
-    if (compareBytes(prefix, leanBocMagicPrefix)) {
-        has_idx = 1;
-        hash_crc32 = 0;
-        has_cache_bits = 0;
-        flags = 0;
-        size_bytes = serializedBoc[0];
-    }
-    if (compareBytes(prefix, leanBocMagicPrefixCRC)) {
-        has_idx = 1;
-        hash_crc32 = 1;
-        has_cache_bits = 0;
-        flags = 0;
-        size_bytes = serializedBoc[0];
-    }
-    serializedBoc = serializedBoc.slice(1);
-    if (serializedBoc.length < 1 + 5 * size_bytes) {
-        throw new Error('Not enough bytes for encoding cells counters');
-    }
-    const offset_bytes = serializedBoc[0];
-    serializedBoc = serializedBoc.slice(1);
-    const cells_num = readNBytesUIntFromArray(size_bytes, serializedBoc);
-    serializedBoc = serializedBoc.slice(size_bytes);
-    const roots_num = readNBytesUIntFromArray(size_bytes, serializedBoc);
-    serializedBoc = serializedBoc.slice(size_bytes);
-    const absent_num = readNBytesUIntFromArray(size_bytes, serializedBoc);
-    serializedBoc = serializedBoc.slice(size_bytes);
-    const tot_cells_size = readNBytesUIntFromArray(offset_bytes, serializedBoc);
-    serializedBoc = serializedBoc.slice(offset_bytes);
-    if (serializedBoc.length < roots_num * size_bytes) {
-        throw new Error('Not enough bytes for encoding root cells hashes');
-    }
-    let root_list = [];
-    for (let c = 0; c < roots_num; c++) {
-        root_list.push(readNBytesUIntFromArray(size_bytes, serializedBoc));
-        serializedBoc = serializedBoc.slice(size_bytes);
-    }
-    let index: (number[] | false) = false;
-    if (has_idx) {
-        index = [];
-        if (serializedBoc.length < offset_bytes * cells_num) {
-            throw new Error('Not enough bytes for index encoding');
-        }
-        for (let c = 0; c < cells_num; c++) {
-            index.push(readNBytesUIntFromArray(offset_bytes, serializedBoc));
-            serializedBoc = serializedBoc.slice(offset_bytes);
-        }
-    }
-
-    if (serializedBoc.length < tot_cells_size) {
-        throw new Error('Not enough bytes for cells data');
-    }
-    const cells_data = serializedBoc.slice(0, tot_cells_size);
-    serializedBoc = serializedBoc.slice(tot_cells_size);
-    if (hash_crc32) {
-        if (serializedBoc.length < 4) {
-            throw new Error('Not enough bytes for crc32c hashsum');
-        }
-        const length = inputData.length;
-        if (!compareBytes(crc32c(inputData.slice(0, length - 4)), serializedBoc.slice(0, 4))) {
-            throw new Error('Crc32c hashsum mismatch');
-        }
-        serializedBoc = serializedBoc.slice(4);
-    }
-    if (serializedBoc.length) {
-        throw new Error('Too much bytes in BoC serialization');
-    }
-    return {
-        has_idx: has_idx, hash_crc32: hash_crc32, has_cache_bits: has_cache_bits, flags: flags, size_bytes: size_bytes,
-        off_bytes: offset_bytes, cells_num: cells_num, roots_num: roots_num, absent_num: absent_num,
-        tot_cells_size: tot_cells_size, root_list: root_list, index: index,
-        cells_data: cells_data
-    };
-}
-
-function deserializeCellData(cellData, referenceIndexSize) {
-    if (cellData.length < 2) {
-        throw new Error('Not enough bytes to encode cell descriptors');
-    }
-    const d1 = cellData[0], d2 = cellData[1];
-    cellData = cellData.slice(2);
-    // @todo remove/use unused variable `level`
-    // const level = Math.floor(d1 / 32);
-    const isExotic = d1 & 8;
-    const refNum = d1 % 8;
-    const dataBytesize = Math.ceil(d2 / 2);
-    const fulfilledBytes = !(d2 % 2);
-    let cell = new Cell();
-    cell.isExotic = Boolean(isExotic);
-    if (cellData.length < dataBytesize + referenceIndexSize * refNum) {
-        throw new Error('Not enough bytes to encode cell data');
-    }
-    cell.bits.setTopUppedArray(cellData.slice(0, dataBytesize), fulfilledBytes);
-    cellData = cellData.slice(dataBytesize);
-    for (let r = 0; r < refNum; r++) {
-        cell.refs.push(
-            // @todo right now we are storing cell references as numbers in `refs`
-            //        and resolve them to Cell objects later on,
-            //        however, this breaks typing and is not a best practice,
-            //        the temporary structure should be introduced instead to support parsing.
-            <any> readNBytesUIntFromArray(referenceIndexSize, cellData)
-        );
-        cellData = cellData.slice(referenceIndexSize);
-    }
-    return { cell, residue: cellData };
-}
-
-
 /**
  * Deserializes the BOC specified as HEX-string or
  * a byte-array and returns root cells.
  *
- * @param serializedBoc - HEX string or array of bytes
+ * @param serializedBoc - HEX string or array of bytes.
  *
- * @returns List of root cells
+ * @returns List of root cells.
  */
 function deserializeBoc(serializedBoc: SerializedBoc): Cell[] {
-    if (typeof (serializedBoc) == 'string') {
+    if (typeof serializedBoc === 'string') {
         serializedBoc = hexToBytes(serializedBoc);
     }
+
     const header = parseBocHeader(serializedBoc);
+
     let cellsData = header.cells_data;
+
+    // Parsing individual cells
     let cellsArray = [];
-    for (let ci = 0; ci < header.cells_num; ci++) {
-        let dd = deserializeCellData(cellsData, header.size_bytes);
+    for (let index = 0; index < header.cells_num; index++) {
+        let dd = parseCell(cellsData, header.size_bytes);
         cellsData = dd.residue;
         cellsArray.push(dd.cell);
     }
+
     for (let ci = header.cells_num - 1; ci >= 0; ci--) {
         let c = cellsArray[ci];
         for (let ri = 0; ri < c.refs.length; ri++) {
@@ -643,4 +570,204 @@ function deserializeBoc(serializedBoc: SerializedBoc): Cell[] {
         rootCells.push(cellsArray[ri]);
     }
     return rootCells;
+}
+
+
+/**
+ * Parses the specified BOC header and returns
+ * the parsing result.
+ *
+ * @param bocBytes - an entire array of BOC bytes.
+ */
+function parseBocHeader(
+    bocBytes: Uint8Array
+
+): BocHeaderParseResult {
+
+    // snake_case is used to match TON docs
+    if (bocBytes.length < (4 + 1)) {
+        throw new Error('Not enough bytes for magic prefix');
+    }
+
+    const inputData = bocBytes; // Save copy for crc32
+    const prefix = bocBytes.slice(0, 4);
+    bocBytes = bocBytes.slice(4);
+
+    let has_idx: number;
+    let hash_crc32: number;
+    let has_cache_bits: number;
+    let flags: number;
+    let size_bytes: number;
+
+    if (compareBytes(prefix, bocConstructorTag)) {
+        const flags_byte = bocBytes[0];
+        has_idx = flags_byte & 128;
+        hash_crc32 = flags_byte & 64;
+        has_cache_bits = flags_byte & 32;
+        flags = (flags_byte & 16) * 2 + (flags_byte & 8);
+        size_bytes = flags_byte % 8;
+    }
+
+    if (compareBytes(prefix, leanBocMagicPrefix)) {
+        has_idx = 1;
+        hash_crc32 = 0;
+        has_cache_bits = 0;
+        flags = 0;
+        size_bytes = bocBytes[0];
+    }
+
+    if (compareBytes(prefix, leanBocMagicPrefixCRC)) {
+        has_idx = 1;
+        hash_crc32 = 1;
+        has_cache_bits = 0;
+        flags = 0;
+        size_bytes = bocBytes[0];
+    }
+
+    bocBytes = bocBytes.slice(1);
+    if (bocBytes.length < 1 + 5 * size_bytes) {
+        throw new Error('Not enough bytes for encoding cells counters');
+    }
+
+    const off_bytes = bocBytes[0];
+    bocBytes = bocBytes.slice(1);
+    const cells_num = readNBytesUIntFromArray(size_bytes, bocBytes);
+    bocBytes = bocBytes.slice(size_bytes);
+    const roots_num = readNBytesUIntFromArray(size_bytes, bocBytes);
+    bocBytes = bocBytes.slice(size_bytes);
+    const absent_num = readNBytesUIntFromArray(size_bytes, bocBytes);
+    bocBytes = bocBytes.slice(size_bytes);
+    const tot_cells_size = readNBytesUIntFromArray(off_bytes, bocBytes);
+    bocBytes = bocBytes.slice(off_bytes);
+
+    if (bocBytes.length < roots_num * size_bytes) {
+        throw new Error('Not enough bytes for encoding root cells hashes');
+    }
+
+    let root_list: number[] = [];
+    for (let c = 0; c < roots_num; c++) {
+        root_list.push(readNBytesUIntFromArray(size_bytes, bocBytes));
+        bocBytes = bocBytes.slice(size_bytes);
+    }
+
+    let index: (number[] | false) = false;
+    if (has_idx) {
+        index = [];
+        if (bocBytes.length < off_bytes * cells_num) {
+            throw new Error('Not enough bytes for index encoding');
+        }
+        for (let c = 0; c < cells_num; c++) {
+            index.push(readNBytesUIntFromArray(off_bytes, bocBytes));
+            bocBytes = bocBytes.slice(off_bytes);
+        }
+    }
+
+    if (bocBytes.length < tot_cells_size) {
+        throw new Error('Not enough bytes for cells data');
+    }
+    const cells_data = bocBytes.slice(0, tot_cells_size);
+    bocBytes = bocBytes.slice(tot_cells_size);
+    if (hash_crc32) {
+        if (bocBytes.length < 4) {
+            throw new Error('Not enough bytes for crc32c hashsum');
+        }
+        const length = inputData.length;
+        if (!compareBytes(crc32c(inputData.slice(0, length - 4)), bocBytes.slice(0, 4))) {
+            throw new Error('Crc32c hashsum mismatch');
+        }
+        bocBytes = bocBytes.slice(4);
+    }
+
+    if (bocBytes.length > 0) {
+        throw new Error('Too much bytes in BoC serialization');
+    }
+
+    return {
+        has_idx,
+        hash_crc32,
+        has_cache_bits,
+        flags,
+        size_bytes,
+        off_bytes,
+        cells_num,
+        roots_num,
+        absent_num,
+        tot_cells_size,
+        root_list,
+        index,
+        cells_data,
+    };
+
+}
+
+/**
+ */
+
+
+/**
+ *
+ * @param bytes - An array of cell bytes to parse.
+ * @param referenceIndexSize
+ */
+function parseCell(
+    bytes: Uint8Array,
+    referenceIndexSize: number
+
+): DeserializeCellDataResult {
+
+    /**
+     * Chapter 1.1.3 of the "Telegram Open Network Blockchain"
+     * {@link https://ton-blockchain.github.io/docs/tblkch.pdf | tblkch.pdf}
+     */
+
+    if (bytes.length < 2) {
+        throw new Error('Not enough bytes to encode cell descriptors');
+    }
+    const byte1 = bytes[0];
+    const byte2 = bytes[1];
+    bytes = bytes.slice(2);
+
+    const cell = new Cell();
+
+    cell.isExotic = Boolean(byte1 & 8);
+
+    const refsCount = (byte1 % 8);
+    if (refsCount > 4) {
+        throw new Error(
+            `Failed to parse cell: ` +
+            `cell can't have more than 4 references`
+        );
+    }
+
+    const dataByteSize = Math.ceil(byte2 / 2);
+    const noCompletion = !(byte2 % 2);
+
+    if (bytes.length < dataByteSize + (referenceIndexSize * refsCount)) {
+        throw new Error('Not enough bytes to encode cell data');
+    }
+
+    cell.bits.setTopUppedArray(
+        bytes.slice(0, dataByteSize),
+        noCompletion
+    );
+
+    bytes = bytes.slice(dataByteSize);
+    for (let r = 0; r < refsCount; r++) {
+        cell.refs.push(
+            // @todo right now we are storing cell references
+            //       as numbers in `refs` and resolve them
+            //       to Cell objects later on, however, this
+            //       breaks typing and is not a best practice,
+            //       the temporary structure should be
+            //       introduced instead to support parsing.
+            <any> readNBytesUIntFromArray(referenceIndexSize, bytes)
+        );
+        bytes = bytes.slice(referenceIndexSize);
+    }
+
+    return {
+        cell,
+        residue: bytes,
+    };
+
 }

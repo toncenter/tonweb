@@ -180,9 +180,9 @@ export class LockupWalletV1 extends WalletContract<
             cell.bits.writeUint(0, 1);
         }
 
-        cell.bits.writeGrams(0);   // .store_grams(total_locked_value)
+        cell.bits.writeCoins(0);   // .store_grams(total_locked_value)
         cell.bits.writeUint(0, 1); // empty locked dict
-        cell.bits.writeGrams(0);   // .store_grams(total_restricted_value)
+        cell.bits.writeCoins(0);   // .store_grams(total_restricted_value)
         cell.bits.writeUint(0, 1); // empty locked dict
 
         return cell;

@@ -5,14 +5,10 @@ import { Cell } from '../../../boc/cell/cell';
 import { HttpProvider } from '../../../http-provider/http-provider';
 import { Address } from '../../../utils/address';
 import { bytesToBase64 } from '../../../utils/base64';
+import { parseAddressFromCell } from '../../../utils/parsing';
+import { expectBN, expectCell } from '../../../utils/type-guards';
 import { Contract, ContractMethods, ContractOptions } from '../../contract';
-
-import {
-    createOffchainUriCell,
-    parseAddress,
-    parseOffchainUriCell,
-
-} from '../nft/utils';
+import { createOffchainUriCell, parseOffchainUriCell } from '../nft/utils';
 
 
 export namespace JettonMinter {
@@ -199,11 +195,13 @@ export class JettonMinter extends Contract<
         );
 
         return {
-            totalSupply: result[0],
-            isMutable: (result[1].toNumber() === -1),
-            adminAddress: parseAddress(result[2]),
-            jettonContentUri: parseOffchainUriCell(result[3]),
-            jettonWalletCode: result[4],
+            totalSupply: expectBN(result[0]),
+            isMutable: (expectBN(result[1]).toNumber() === -1),
+            adminAddress: parseAddressFromCell(result[2]),
+            jettonContentUri: parseOffchainUriCell(
+                expectCell(result[3])
+            ),
+            jettonWalletCode: expectCell(result[4]),
         };
 
     }
@@ -226,14 +224,7 @@ export class JettonMinter extends Contract<
             [['tvm.Slice', bytesToBase64(bytes)]],
         );
 
-        if (!(result instanceof Cell)) {
-            throw new Error(
-                `Unexpected API response: ` +
-                `"get_wallet_address" should return a cell`
-            );
-        }
-
-        return parseAddress(result);
+        return parseAddressFromCell(result);
 
     }
 

@@ -8,9 +8,9 @@
     "baseUrl": ".",
     "paths": {
       "__tonweb__": [
-        "src/index.ts",
-      ],
-    },
+        "src/index.ts"
+      ]
+    }
   },
   "include": [
     "src/",
@@ -18,5 +18,5 @@
   ],
   "exclude": [
     "node_modules/"
-  ],
+  ]
 }

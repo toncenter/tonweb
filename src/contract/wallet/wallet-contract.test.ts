@@ -306,9 +306,9 @@ for (const test of wallets) {
                 createWallet().getAddress()
             );
 
-            expect(address.toString(true, true))
+            (expect(address.toString(true, true))
                 .toEqual(test.address)
-            ;
+            );
 
         });
 
@@ -323,9 +323,9 @@ for (const test of wallets) {
                 }).getAddress()
             );
 
-            expect(address.toString(false))
+            (expect(address.toString(false))
                 .toEqual(test.addressMC)
-            ;
+            );
 
         });
 
@@ -335,9 +335,9 @@ for (const test of wallets) {
                 seqno: 0,
             });
 
-            expect(queryBocString)
+            (expect(queryBocString)
                 .toEqual(test.transferQueryBoc64.seqno0)
-            ;
+            );
 
         });
 
@@ -347,9 +347,9 @@ for (const test of wallets) {
                 seqno: 1,
             });
 
-            expect(queryBocString)
+            (expect(queryBocString)
                 .toEqual(test.transferQueryBoc64.seqno1)
-            ;
+            );
 
         });
 
@@ -360,9 +360,9 @@ for (const test of wallets) {
                 sendMode: (128 + 32 + 2),
             });
 
-            expect(queryBocString)
+            (expect(queryBocString)
                 .toEqual(test.transferQueryBoc64.seqno1SendMode)
-            ;
+            );
 
         });
 
@@ -373,9 +373,9 @@ for (const test of wallets) {
                 payload: 'MARCO',
             });
 
-            expect(queryBocString)
+            (expect(queryBocString)
                 .toEqual(test.transferQueryBoc64.seqno1PayloadStr)
-            ;
+            );
 
         });
 
@@ -386,9 +386,9 @@ for (const test of wallets) {
                 payload: '1B: A, 2B: Ω, 3B: ಄, 4B: 𓅱',
             });
 
-            expect(queryBocString)
+            (expect(queryBocString)
                 .toEqual(test.transferQueryBoc64.seqno1PayloadMBStr)
-            ;
+            );
 
         });
 
@@ -399,9 +399,9 @@ for (const test of wallets) {
                 payload: Uint8Array.from([1, 3, 3, 7]),
             });
 
-            expect(queryBocString)
+            (expect(queryBocString)
                 .toEqual(test.transferQueryBoc64.seqno1PayloadBytes)
-            ;
+            );
 
         });
 
@@ -412,7 +412,7 @@ for (const test of wallets) {
             payload.bits.writeBit(true);
             payload.bits.writeBit(false);
             payload.bits.writeBit(true);
-            payload.bits.writeGrams(100500);
+            payload.bits.writeCoins(100500);
             payload.bits.writeString('MARCO');
             payload.bits.writeAddress(testAddress);
 
@@ -421,9 +421,9 @@ for (const test of wallets) {
                 payload,
             });
 
-            expect(queryBocString)
+            (expect(queryBocString)
                 .toEqual(test.transferQueryBoc64.seqno1PayloadCell)
-            ;
+            );
 
         });
 
@@ -474,9 +474,9 @@ for (const test of wallets) {
             );
 
             // Address
-            expect(initMessage.address.toString(true, true))
+            (expect(initMessage.address.toString(true, true))
                 .toEqual(test.address)
-            ;
+            );
 
             // Message
             const messageBoc = await initMessage.message.toBoc();
@@ -628,9 +628,9 @@ for (const test of wallets) {
         );
 
         // Address
-        expect(transferMessage.address.toString(true, true))
+        (expect(transferMessage.address.toString(true, true))
             .toEqual(test.address)
-        ;
+        );
 
         // Message
         const messageBoc = await transferMessage.message.toBoc();
