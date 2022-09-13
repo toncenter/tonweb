@@ -409,14 +409,14 @@ export class HttpProvider {
             headers['X-API-Key'] = this.options.apiKey;
         }
 
-        const response = await this.httpClient
+        const response = (await this.httpClient
             .sendRequest({
                 url: apiUrl,
                 method: 'POST',
                 body: request,
                 headers,
             })
-        ;
+        );
 
         return this.processApiResponseOrThrow(
             response.payload

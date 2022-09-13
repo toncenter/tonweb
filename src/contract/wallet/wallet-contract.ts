@@ -108,7 +108,8 @@ export class WalletContract<
                         //        the errors
                     }
                 }
-            })
+            }),
+
         }
 
     }

@@ -1,5 +1,4 @@
 
-import { Address } from '../../utils/address';
 import { bytesToBase64 } from '../../utils/base64';
 import { hexToBytes } from '../../utils/hex';
 import { BitString } from '../bit-string/bit-string';

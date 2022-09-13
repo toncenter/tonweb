@@ -181,6 +181,12 @@ import {
 
 } from './utils/base64';
 
+import {
+    keyPairFromSeed,
+    newKeyPair,
+    newSeed,
+
+} from './utils/crypto';
 
 import {
     bytesToHex,
@@ -230,6 +236,9 @@ const utils = {
     stringToBase64,
     stringToBytes,
     toNano,
+    keyPairFromSeed,
+    newKeyPair,
+    newSeed,
 };
 
 
@@ -631,6 +640,25 @@ import { Dns } from './contract/dns/dns';
 import { DnsCollection } from './contract/dns/dns-collection';
 import { DnsItem } from './contract/dns/dns-item';
 
+export type {
+    Dns,
+    DnsCollection,
+    DnsItem,
+};
+
+
+//==========//
+// PAYMENTS //
+//==========//
+
+import { Payments } from './contract/payments/payments';
+import { PaymentChannel } from './contract/payments/payment-channel';
+
+export type {
+    Payments,
+    PaymentChannel,
+};
+
 
 // -----
 
@@ -650,11 +678,8 @@ export default class TonWeb {
     public static BlockSubscription = $BlockSubscription;
     public static InMemoryBlockStorage = $InMemoryBlockStorage;
     public static FetchHttpClient = $FetchHttpClient;
-
-    public static dns = Object.assign({}, Dns, {
-        DnsCollection,
-        DnsItem,
-    });
+    public static dns = Dns;
+    public static payments = Payments;
 
     public static ledger = {
         TransportWebUSB,
@@ -678,6 +703,7 @@ export default class TonWeb {
     public BlockSubscription = $BlockSubscription;
     public InMemoryBlockStorage = $InMemoryBlockStorage;
     public wallet = new $Wallets(this.provider);
+    public payments = new Payments(this.provider);
     public lockupWallet = LockupWallets;
     public dns = new Dns(this.provider);
 
@@ -758,6 +784,15 @@ export default class TonWeb {
     }
 
 }
+
+Object.assign(TonWeb.dns, {
+    DnsCollection,
+    DnsItem,
+});
+
+Object.assign(TonWeb.payments, {
+    PaymentChannel,
+});
 
 // @todo set window.TonWeb = TonWeb via webpack
 

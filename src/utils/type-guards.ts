@@ -38,6 +38,20 @@ export function expectCell(value: any): Cell {
 
 }
 
+export function expectMaybeCell(value: any): (Cell | undefined) {
+
+    return (!IsTvmNull(value) ? expectCell(value) : undefined);
+
+}
+
+export function IsTvmNull(value: any) {
+
+    // NULL-values in TVM are represented
+    // by an empty list.
+    return (Array.isArray(value) && value.length === 0);
+
+}
+
 export function expectBoolean(value: any): boolean {
 
     if (value !== true && value !== false) {

@@ -3,6 +3,7 @@
 
 import BN from 'bn.js';
 import { default as nacl_2 } from 'tweetnacl';
+import { SignKeyPair } from 'tweetnacl';
 import { TonLib } from '@ton.js/types';
 import Transport from '@ledgerhq/hw-transport';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
@@ -775,7 +776,7 @@ export declare interface DeployAndInstallPluginParams {
     body: Cell_3;
 }
 
-declare class Dns {
+export declare class Dns {
     private readonly provider;
     static resolve: typeof dnsResolve;
     static createSmartContractAddressRecord: typeof createSmartContractAddressRecord;
@@ -826,20 +827,20 @@ declare type DnsCategory = Values<typeof DnsCategories>;
  * Contract source code:
  * {@link https://github.com/ton-blockchain/dns-contract/blob/main/func/nft-collection.fc | nft-collection.fc}
  */
-declare namespace DnsCollection {
-    interface Options extends ContractOptions {
+export declare namespace DnsCollection {
+    export interface Options extends ContractOptions {
         collectionContent: Cell_3;
         dnsItemCodeHex: string;
         address?: AddressType;
         code?: Cell_3;
     }
-    interface Methods extends ContractMethods {
+    export interface Methods extends ContractMethods {
         getCollectionData(): Promise<CollectionData>;
         getNftItemAddressByIndex(): Promise<Address_2>;
         getNftItemContent(): Promise<DnsItem.Data>;
         resolve(domain: string, category?: DnsCategory, oneStep?: boolean): Promise<DnsResolveResponse>;
     }
-    interface CollectionData {
+    export interface CollectionData {
         collectionContentUri: string;
         collectionContent: Cell_3;
         ownerAddress: null;
@@ -852,7 +853,7 @@ declare namespace DnsCollection {
  *
  * @todo extend NftCollection?
  */
-declare class DnsCollection extends Contract_2<DnsCollection.Options, DnsCollection.Methods> {
+export declare class DnsCollection extends Contract_2<DnsCollection.Options, DnsCollection.Methods> {
     constructor(provider: HttpProvider_2, options: DnsCollection.Options);
     /**
      * Returns DNS collection's data.
@@ -890,33 +891,33 @@ declare class DnsCollection extends Contract_2<DnsCollection.Options, DnsCollect
  * Smart contract source code:
  * {@link https://github.com/ton-blockchain/dns-contract/blob/main/func/nft-item.fc | nft-item.fc}
  */
-declare namespace DnsItem {
-    interface Options extends ContractOptions {
+export declare namespace DnsItem {
+    export interface Options extends ContractOptions {
         index: BN;
         collectionAddress: Address_2;
         address?: MaybeAddressType;
         code?: Cell_3;
     }
-    interface Methods extends ContractMethods {
+    export interface Methods extends ContractMethods {
         getData: () => Promise<Data>;
         getDomain: () => Promise<string>;
         getAuctionInfo: () => Promise<AuctionInfo>;
         getLastFillUpTime: () => Promise<number>;
         resolve(domain: string, category?: DnsCategory, oneStep?: boolean): Promise<DnsResolveResponse>;
     }
-    interface AuctionInfo {
+    export interface AuctionInfo {
         maxBidAddress: MaybeAddress;
         maxBidAmount: BN;
         auctionEndTime: number;
     }
-    interface Data {
+    export interface Data {
         isInitialized: boolean;
         index: BN;
         collectionAddress: MaybeAddress;
         ownerAddress: MaybeAddress;
         contentCell: Cell_3;
     }
-    interface TransferBodyParams {
+    export interface TransferBodyParams {
         queryId?: number;
         newOwnerAddress: Address_2;
         forwardAmount?: BN;
@@ -925,7 +926,7 @@ declare namespace DnsItem {
     }
 }
 
-declare class DnsItem extends Contract_2<DnsItem.Options, DnsItem.Methods> {
+export declare class DnsItem extends Contract_2<DnsItem.Options, DnsItem.Methods> {
     /**
      * BOC of the DNS item smart contract's source code
      * in HEX format.
@@ -1499,6 +1500,8 @@ export declare class JettonWallet extends Contract_2<JettonWallet.Options, Jetto
     createBurnBody(params: JettonWallet.BurnBodyParams): Promise<Cell_3>;
 }
 
+declare function keyPairFromSeed(seed: Uint8Array): SignKeyPair;
+
 export declare type LedgerAppTon = AppTon;
 
 export declare type LockupWalletV1 = LockupWalletV1_2;
@@ -1582,6 +1585,10 @@ declare interface MethodMeta<ParamsType, ResponseType> {
     params: ParamsType;
     response: ResponseType;
 }
+
+declare function newKeyPair(): SignKeyPair;
+
+declare function newSeed(): Uint8Array;
 
 export declare namespace NftCollection {
     export interface Options extends ContractOptions {
@@ -1769,7 +1776,7 @@ export declare interface ParsedTransferUrl {
 
 declare function parseNextResolverRecord(cell: Cell_3): (Address_2 | null);
 
-export declare type ParseObjectResult = (BN | ParseObjectResult[]);
+export declare type ParseObjectResult = (BN | Cell_3 | ParseObjectResult[]);
 
 export declare type ParseResponseResult = (ParseResponseStackResult | ParseResponseStackResult[]);
 
@@ -1790,6 +1797,180 @@ export declare interface PayExternalMessage {
     signature?: Uint8Array;
     cell?: Cell_3;
     resultMessage?: Cell_3;
+}
+
+export declare namespace PaymentChannel {
+    export interface Options extends ContractOptions {
+        isA: boolean;
+        channelId: BN;
+        myKeyPair: nacl_2.SignKeyPair;
+        hisPublicKey: Uint8Array;
+        initBalanceA: BN;
+        initBalanceB: BN;
+        addressA: Address_2;
+        addressB: Address_2;
+        closingConfig?: ClosingConfig;
+        excessFee?: BN;
+    }
+    export interface CooperativeCloseChannelParams {
+        hisSignature?: Uint8Array;
+        balanceA: BN;
+        balanceB: BN;
+        seqnoA: BN;
+        seqnoB: BN;
+    }
+    export interface CooperativeCommitParams {
+        hisSignature?: Uint8Array;
+        seqnoA: BN;
+        seqnoB: BN;
+    }
+    export interface ClosingConfig {
+        quarantineDuration: number;
+        misbehaviorFine: BN;
+        conditionalCloseDuration: number;
+    }
+    export interface SignedCell {
+        cell: Cell_3;
+        signature: Uint8Array;
+    }
+    export interface StateParams {
+        balanceA: BN;
+        balanceB: BN;
+        seqnoA: BN;
+        seqnoB: BN;
+    }
+    export interface Data {
+        state: number;
+        balanceA: BN;
+        balanceB: BN;
+        publicKeyA: Uint8Array;
+        publicKeyB: Uint8Array;
+        channelId: BN;
+        quarantineDuration: number;
+        misbehaviorFine: BN;
+        conditionalCloseDuration: number;
+        seqnoA: BN;
+        seqnoB: BN;
+        quarantine?: Cell_3;
+        excessFee: BN;
+        addressA: Address_2;
+        addressB: Address_2;
+    }
+    export interface WalletParams {
+        wallet: WalletContract_2;
+        secretKey: Uint8Array;
+    }
+    export interface InitParams {
+        balanceA: BN;
+        balanceB: BN;
+    }
+    export interface TopUpParams {
+        coinsA: BN;
+        coinsB: BN;
+    }
+    export interface CloseParams {
+        hisSignature: Uint8Array;
+        balanceA: BN;
+        balanceB: BN;
+        seqnoA: BN;
+        seqnoB: BN;
+    }
+    export interface CommitParams {
+        hisSignature: Uint8Array;
+        seqnoA: BN;
+        seqnoB: BN;
+    }
+    export interface StartUncooperativeCloseParams {
+        signedSemiChannelStateA: Cell_3;
+        signedSemiChannelStateB: Cell_3;
+    }
+    export interface ChallengeQuarantinedStateParams {
+        signedSemiChannelStateA: Cell_3;
+        signedSemiChannelStateB: Cell_3;
+    }
+    export interface SettleConditionalsParams {
+        conditionalsToSettle?: (Cell_3 | null);
+    }
+    export interface WalletChannel {
+        deploy: () => TransferMethod;
+        init: (params: InitParams) => TransferMethod;
+        topUp: (params: PaymentChannel.TopUpParams) => TransferMethod;
+        close: (params: PaymentChannel.CloseParams) => TransferMethod;
+        commit: (params: PaymentChannel.CommitParams) => TransferMethod;
+        startUncooperativeClose: (params: PaymentChannel.StartUncooperativeCloseParams) => TransferMethod;
+        challengeQuarantinedState: (params: PaymentChannel.ChallengeQuarantinedStateParams) => TransferMethod;
+        settleConditionals: (params: PaymentChannel.SettleConditionalsParams) => TransferMethod;
+        finishUncooperativeClose: () => TransferMethod;
+    }
+    export interface TransferMethod {
+        send: (amount: (BN | number)) => Promise<any>;
+        estimateFee: (amount: (BN | number)) => Promise<any>;
+    }
+}
+
+export declare class PaymentChannel extends Contract_2<PaymentChannel.Options, {}> {
+    #private;
+    static codeHex: string;
+    static STATE_UNINITED: number;
+    static STATE_OPEN: number;
+    static STATE_CLOSURE_STARTED: number;
+    static STATE_SETTLING_CONDITIONALS: number;
+    static STATE_AWAITING_FINALIZATION: number;
+    constructor(provider: HttpProvider_2, options: PaymentChannel.Options);
+    createTopUpBalance(params: PaymentChannel.TopUpParams): Promise<Cell_3>;
+    createInitChannel(params: PaymentChannel.InitParams): Promise<PaymentChannel.SignedCell>;
+    createCooperativeCloseChannel(params: PaymentChannel.CooperativeCloseChannelParams): Promise<PaymentChannel.SignedCell>;
+    createCooperativeCommit(params: PaymentChannel.CooperativeCommitParams): Promise<PaymentChannel.SignedCell>;
+    signState(params: PaymentChannel.StateParams): Promise<Uint8Array>;
+    verifyState(params: PaymentChannel.StateParams, hisSignature: Uint8Array): Promise<boolean>;
+    signClose(params: PaymentChannel.StateParams): Promise<Uint8Array>;
+    verifyClose(params: PaymentChannel.StateParams, hisSignature: Uint8Array): Promise<boolean>;
+    /**
+     * @param params.signedSemiChannelStateA - signed semi-channel state created
+     *                                         by `createSignedSemiChannelState()`.
+     *
+     * @param params.signedSemiChannelStateB - signed semi-channel state created
+     *                                         by `createSignedSemiChannelState()`.
+     */
+    createStartUncooperativeClose(params: {
+        signedSemiChannelStateA: Cell_3;
+        signedSemiChannelStateB: Cell_3;
+    }): Promise<PaymentChannel.SignedCell>;
+    /**
+     * @param params.signedSemiChannelStateA - signed semi-channel state created
+     *                                         by `createSignedSemiChannelState()`.
+     *
+     * @param params.signedSemiChannelStateB - signed semi-channel state created
+     *                                         by `createSignedSemiChannelState()`.
+     */
+    createChallengeQuarantinedState(params: {
+        signedSemiChannelStateA: Cell_3;
+        signedSemiChannelStateB: Cell_3;
+    }): Promise<PaymentChannel.SignedCell>;
+    /**
+     * @param params.conditionalsToSettle - A dictionary with uint32 keys and
+     *                                      values created by `createConditionalPayment()`.
+     */
+    createSettleConditionals(params: {
+        conditionalsToSettle?: (Cell_3 | null);
+    }): Promise<PaymentChannel.SignedCell>;
+    createFinishUncooperativeClose(): Promise<Cell_3>;
+    getChannelState(): Promise<number>;
+    getData(): Promise<PaymentChannel.Data>;
+    fromWallet(params: PaymentChannel.WalletParams): PaymentChannel.WalletChannel;
+    /**
+     * @returns Cell containing payment channel data.
+     */
+    protected createDataCell(): Cell_3;
+    private createOneSignature;
+    private createTwoSignature;
+    private createSignedSemiChannelState;
+}
+
+export declare class Payments {
+    readonly provider: HttpProvider_2;
+    constructor(provider: HttpProvider_2);
+    createChannel(options: PaymentChannel.Options): PaymentChannel;
 }
 
 /**
@@ -2019,6 +2200,9 @@ declare class TonWeb {
         stringToBase64: typeof stringToBase64;
         stringToBytes: typeof stringToBytes;
         toNano: typeof toNano;
+        keyPairFromSeed: typeof keyPairFromSeed;
+        newKeyPair: typeof newKeyPair;
+        newSeed: typeof newSeed;
     };
     static Address: typeof Address_2;
     static boc: {
@@ -2039,10 +2223,8 @@ declare class TonWeb {
     static BlockSubscription: typeof BlockSubscription_2;
     static InMemoryBlockStorage: typeof InMemoryBlockStorage_2;
     static FetchHttpClient: typeof FetchHttpClient_2;
-    static dns: typeof Dns & {
-        DnsCollection: typeof DnsCollection;
-        DnsItem: typeof DnsItem;
-    };
+    static dns: typeof Dns;
+    static payments: typeof Payments;
     static ledger: {
         TransportWebUSB: typeof TransportWebUSB;
         TransportWebHID: any;
@@ -2087,6 +2269,9 @@ declare class TonWeb {
         stringToBase64: typeof stringToBase64;
         stringToBytes: typeof stringToBytes;
         toNano: typeof toNano;
+        keyPairFromSeed: typeof keyPairFromSeed;
+        newKeyPair: typeof newKeyPair;
+        newSeed: typeof newSeed;
     };
     Address: typeof Address_2;
     boc: {
@@ -2097,6 +2282,7 @@ declare class TonWeb {
     BlockSubscription: typeof BlockSubscription_2;
     InMemoryBlockStorage: typeof InMemoryBlockStorage_2;
     wallet: Wallets_2;
+    payments: Payments;
     lockupWallet: {
         LockupWalletV1: typeof LockupWalletV1_2;
         all: {

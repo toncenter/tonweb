@@ -38,7 +38,7 @@ export function parseBigIntInput(value: BigIntInput): BN {
             );
         }
 
-    } else if (value instanceof BN) {
+    } else if (BN.isBN(value)) {
         // No special checks here
 
     } else {

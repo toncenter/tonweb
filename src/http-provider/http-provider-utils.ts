@@ -12,14 +12,17 @@ import { RunGetMethodResult, RunGetMethodResultStackItem } from './types/respons
 
 /* parseObject */
 export type ParseObjectParam = (
+    | TonLib.Combinators.Tvm.Cell
     | TonLib.Combinators.Tvm.List
-    | TonLib.Combinators.Tvm.Tuple
     | TonLib.Combinators.Tvm.NumberDecimal
+    | TonLib.Combinators.Tvm.StackEntryCell
+    | TonLib.Combinators.Tvm.Tuple
     | TonLib.Types.Tvm.StackEntry
 );
 
 export type ParseObjectResult = (
     | BN
+    | Cell
     | ParseObjectResult[]
 );
 
@@ -56,7 +59,6 @@ export class HttpProviderUtils {
 
         // @todo handle additional types:
         //        - tvm.stackEntrySlice
-        //        - tvm.stackEntryCell
         //        - tvm.stackEntryList
         //        - tvm.stackEntryUnsupported
 
@@ -64,12 +66,22 @@ export class HttpProviderUtils {
             case 'tvm.list':
             case 'tvm.tuple':
                 return obj.elements.map(HttpProviderUtils.parseObject);
+
+            case 'tvm.cell':
+                return Cell.oneFromBoc(base64ToBytes(obj.bytes));
+
+            case 'tvm.stackEntryCell':
+                return HttpProviderUtils.parseObject(obj.cell);
+
             case 'tvm.stackEntryTuple':
                 return HttpProviderUtils.parseObject(obj.tuple);
+
             case 'tvm.stackEntryNumber':
                 return HttpProviderUtils.parseObject(obj.number);
+
             case 'tvm.numberDecimal':
                 return new BN(obj.number, 10);
+
             default:
                 throw new Error(`Unknown type: ${typeName}`);
         }
