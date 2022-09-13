@@ -19,6 +19,21 @@ class Cell {
         this.bits = new BitString(1023);
         this.refs = [];
         this.isExotic = false;
+        this.max_refs = 4;
+    }
+
+    /**
+     * @return {number}
+     */
+    getFreeRefs() {
+        return this.max_refs - this.refs.length;
+    }
+
+    /**
+     * @return {number}
+     */
+    getUsedRefs() {
+        return this.refs.length;
     }
 
     /**
