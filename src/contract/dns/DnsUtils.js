@@ -1,5 +1,5 @@
 const {parseAddress} = require("../token/nft/NftUtils");
-const {BN, sha256, bytesToHex, bytesToBase64} = require("../../utils");
+const {AdnlAddress, BN, sha256, bytesToHex, bytesToBase64} = require("../../utils");
 const {Cell} = require("../../boc");
 
 const DNS_CATEGORY_NEXT_RESOLVER = 'dns_next_resolver'; // Smart Contract address
@@ -30,13 +30,13 @@ const createSmartContractAddressRecord = (smartContractAddress) => {
 }
 
 /**
- * @param adnlAddress   {BN}
+ * @param adnlAddress   {AdnlAddress}
  * @return {Cell}
  */
 const createAdnlAddressRecord = (adnlAddress) => {
     const cell = new Cell();
     cell.bits.writeUint(0xad01, 16); // https://github.com/ton-blockchain/ton/blob/7e3df93ca2ab336716a230fceb1726d81bac0a06/crypto/block/block.tlb#L821
-    cell.bits.writeUint(adnlAddress, 256);
+    cell.bits.writeBytes(adnlAddress.bytes);
     cell.bits.writeUint(0, 8); // flags
     return cell;
 }
@@ -82,13 +82,23 @@ const parseNextResolverRecord = (cell) => {
 }
 
 /**
+ * @param cell  {Cell}
+ * @return {AdnlAddress}
+ */
+const parseAdnlAddressRecord = (cell) => {
+    if (cell.bits.array[0] !== 0xad || cell.bits.array[1] !== 0x01) throw new Error('Invalid dns record value prefix');
+    const bytes = cell.bits.array.slice(2, 2 + 32); // skip prefix - first 16 bits
+    return new AdnlAddress(bytes);
+}
+
+/**
  * @private
  * @param provider  {HttpProvider}
  * @param dnsAddress   {string} address of dns smart contract
  * @param rawDomainBytes {Uint8Array}
  * @param category  {string | undefined} category of requested DNS record
  * @param oneStep {boolean | undefined} non-recursive
- * @returns {Promise<Cell | Address | BN | null>}
+ * @returns {Promise<Cell | Address | AdnlAddress | null>}
  */
 const dnsResolveImpl = async (provider, dnsAddress, rawDomainBytes, category, oneStep) => {
     const len = rawDomainBytes.length * 8;
@@ -130,7 +140,7 @@ const dnsResolveImpl = async (provider, dnsAddress, rawDomainBytes, category, on
         } else if (category === DNS_CATEGORY_WALLET) {
             return cell ? parseSmartContractAddressRecord(cell) : null;
         } else if (category === DNS_CATEGORY_SITE) {
-            return cell ? cell : null // todo: convert to BN;
+            return cell ? parseAdnlAddressRecord(cell) : null;
         } else {
             return cell;
         }
@@ -204,7 +214,7 @@ const domainToBytes = (domain) => {
  * @param domain    {string} e.g "sub.alice.ton"
  * @param category  {string | undefined} category of requested DNS record
  * @param oneStep {boolean | undefined} non-recursive
- * @returns {Promise<Cell | Address | BN | null>}
+ * @returns {Promise<Cell | Address | AdnlAddress | null>}
  */
 const dnsResolve = async (provider, rootDnsAddress, domain, category, oneStep) => {
     const rawDomainBytes = domainToBytes(domain);
@@ -221,7 +231,8 @@ module.exports = {
     createSmartContractAddressRecord,
     createAdnlAddressRecord,
     createNextResolverRecord,
-    parseNextResolverRecord,
     parseSmartContractAddressRecord,
+    parseAdnlAddressRecord,
+    parseNextResolverRecord,
     dnsResolve
 };

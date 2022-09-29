@@ -7,8 +7,9 @@ const {
     createSmartContractAddressRecord,
     createAdnlAddressRecord,
     createNextResolverRecord,
-    parseNextResolverRecord,
     parseSmartContractAddressRecord,
+    parseAdnlAddressRecord,
+    parseNextResolverRecord,
     dnsResolve
 } = require("./DnsUtils");
 
@@ -38,7 +39,7 @@ class Dns {
      * @param domain    {string} e.g "sub.alice.ton"
      * @param category  {string | undefined} category of requested DNS record, null for all categories
      * @param oneStep {boolean | undefined}  non-recursive
-     * @returns {Promise<Cell | Address | BN | null>}
+     * @returns {Promise<Cell | Address | AdnlAddress | null>}
      */
     async resolve(domain, category, oneStep) {
         const rootDnsAddress = await this.getRootDnsAddress();
@@ -52,6 +53,14 @@ class Dns {
     getWalletAddress(domain) {
        return this.resolve(domain, DNS_CATEGORY_WALLET);
     }
+
+    /**
+     * @param domain    {string} e.g "sub.alice.ton"
+     * @returns {Promise<AdnlAddress | null>}
+     */
+    getSiteAddress(domain) {
+        return this.resolve(domain, DNS_CATEGORY_SITE);
+    }
 }
 
 Dns.resolve = dnsResolve;
@@ -59,6 +68,7 @@ Dns.createSmartContractAddressRecord = createSmartContractAddressRecord;
 Dns.createAdnlAddressRecord = createAdnlAddressRecord;
 Dns.createNextResolverRecord = createNextResolverRecord;
 Dns.parseNextResolverRecord = parseNextResolverRecord;
+Dns.parseAdnlAddressRecord = parseAdnlAddressRecord;
 Dns.parseSmartContractAddressRecord = parseSmartContractAddressRecord;
 Dns.DNS_CATEGORY_NEXT_RESOLVER = DNS_CATEGORY_NEXT_RESOLVER;
 Dns.DNS_CATEGORY_WALLET = DNS_CATEGORY_WALLET;
