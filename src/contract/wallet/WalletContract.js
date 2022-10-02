@@ -8,7 +8,7 @@ const {nacl, stringToBytes, Address, BN} = require("../../utils");
 class WalletContract extends Contract {
     /**
      * @param provider    {HttpProvider}
-     * @param options?    {{code: Uint8Array, publicKey?: Uint8Array, address?: Address | string, wc?: number}}
+     * @param options?    {{code: Cell, publicKey?: Uint8Array, address?: Address | string, wc?: number}}
      */
     constructor(provider, options) {
         if (!options.publicKey && !options.address) throw new Error('WalletContract required publicKey or address in options')
@@ -16,9 +16,9 @@ class WalletContract extends Contract {
 
         this.methods = {
             /**
-             * @param   params {{secretKey: Uint8Array, toAddress: Address | string, amount: BN | number, seqno: number, payload: string | Uint8Array | Cell, sendMode: number, stateInit?: Cell}}
+             * @param   params {{secretKey: Uint8Array, toAddress: Address | string, amount: BN | number, seqno: number, payload: string | Uint8Array | Cell, sendMode: number, stateInit?: Cell, expireAt?: number}}
              */
-            transfer: (params) => Contract.createMethod(provider, this.createTransferMessage(params.secretKey, params.toAddress, params.amount, params.seqno, params.payload, params.sendMode, !Boolean(params.secretKey), params.stateInit)),
+            transfer: (params) => Contract.createMethod(provider, this.createTransferMessage(params.secretKey, params.toAddress, params.amount, params.seqno, params.payload, params.sendMode, !Boolean(params.secretKey), params.stateInit, params.expireAt)),
 
             seqno: () => {
                 return {
@@ -167,6 +167,7 @@ class WalletContract extends Contract {
      * @param sendMode?  {number}
      * @param dummySignature?    {boolean}
      * @param stateInit? {Cell}
+     * @param expireAt? {number}
      * @return {Promise<{address: Address, signature: Uint8Array, message: Cell, cell: Cell, body: Cell, resultMessage: Cell}>}
      */
     async createTransferMessage(
@@ -177,7 +178,8 @@ class WalletContract extends Contract {
         payload = "",
         sendMode = 3,
         dummySignature = false,
-        stateInit = null
+        stateInit = null,
+        expireAt = undefined
     ) {
         let payloadCell = new Cell();
         if (payload) {
@@ -195,7 +197,7 @@ class WalletContract extends Contract {
 
         const orderHeader = Contract.createInternalMessageHeader(new Address(address), new BN(amount));
         const order = Contract.createCommonMsgInfo(orderHeader, stateInit, payloadCell);
-        const signingMessage = this.createSigningMessage(seqno);
+        const signingMessage = this.createSigningMessage(seqno, expireAt);
         signingMessage.bits.writeUint8(sendMode);
         signingMessage.refs.push(order);
 
