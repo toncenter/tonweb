@@ -1,5 +1,6 @@
 const {Cell} = require("../../boc");
 const {WalletContract} = require("./WalletContract");
+const {parseWalletV3TransferQuery, parseWalletV3TransferBody} = require("./WalletQueryParser");
 
 class WalletV3ContractBase extends WalletContract {
 
@@ -56,6 +57,9 @@ class WalletV3ContractR1 extends WalletV3ContractBase {
     }
 }
 
+WalletV3ContractR1.parseTransferQuery = parseWalletV3TransferQuery;
+WalletV3ContractR1.parseTransferBody = parseWalletV3TransferBody;
+
 class WalletV3ContractR2 extends WalletV3ContractBase {
     /**
      * @param provider    {HttpProvider}
@@ -71,6 +75,9 @@ class WalletV3ContractR2 extends WalletV3ContractBase {
         return 'v3R2';
     }
 }
+
+WalletV3ContractR2.parseTransferQuery = parseWalletV3TransferQuery;
+WalletV3ContractR2.parseTransferBody = parseWalletV3TransferBody;
 
 module.exports = {WalletV3ContractR1, WalletV3ContractR2};
 

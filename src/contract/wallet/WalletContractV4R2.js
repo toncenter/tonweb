@@ -2,6 +2,7 @@ const {Cell} = require("../../boc");
 const {Contract} = require("../index.js");
 const {Address, bytesToHex, BN, toNano} = require("../../utils");
 const {WalletContract} = require("./WalletContract");
+const {parseWalletV3TransferQuery, parseWalletV3TransferBody} = require("./WalletQueryParser");
 
 class WalletV4ContractR2 extends WalletContract {
 
@@ -157,5 +158,8 @@ class WalletV4ContractR2 extends WalletContract {
         return result.map(parseAddress);
     }
 }
+
+WalletV4ContractR2.parseTransferQuery = parseWalletV3TransferQuery;
+WalletV4ContractR2.parseTransferBody = parseWalletV3TransferBody;
 
 module.exports = {WalletV4ContractR2};
