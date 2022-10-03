@@ -5,7 +5,7 @@ async function init() {
 
     // Create private key
 
-    const seed = TonWeb.utils.base64ToBytes('vt58J2v6FaSuXFGcyGtqT5elpVxcZ+I1zgu/GUfA5uY=');
+    const seed = TonWeb.utils.base64ToBytes('vt58J2v6FaBuXFGcyGtqT5elpVxcZ+I1zgu/GUfA5uY=');
     const keyPair = TonWeb.utils.nacl.sign.keyPair.fromSeed(seed);
 
     // Create v3 wallet
@@ -24,7 +24,7 @@ async function init() {
     const transfer = wallet.methods.transfer({
         secretKey: keyPair.secretKey,
         toAddress: 'EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG',
-        amount: TonWeb.utils.toNano(0.01), // 0.01 TON
+        amount: TonWeb.utils.toNano('0.01'), // 0.01 TON
         seqno: 0,
         payload: 'The aim of this text is to provide a brief',
         expireAt: Math.floor(Date.now() / 1000) + 60 // now + 60 seconds
@@ -49,10 +49,10 @@ async function init() {
 
     // Get transaction and parse
 
-    const transactions = await tonweb.provider.getTransactions('EQCf2JlHO9h75KuqMQQVth0hxSdav0XT3pBPbb8CQof8flk7');
+    const transactions = await tonweb.provider.getTransactions(walletAddress.toString(true, true, true));
 
     try {
-        const tx = transactions[2];
+        const tx = transactions[0];
         const inMsgBody = TonWeb.utils.base64ToBytes(tx.in_msg.msg_data.body);
         const parsed = WalletClass.parseTransferBody(TonWeb.boc.Cell.oneFromBoc(inMsgBody).beginParse());
 
