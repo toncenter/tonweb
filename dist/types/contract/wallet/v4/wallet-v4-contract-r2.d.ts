@@ -20,6 +20,7 @@ export interface DeployAndInstallPluginParams {
     amount: BN;
     stateInit: Cell;
     body: Cell;
+    expireAt?: number;
 }
 export interface SetPluginParams {
     secretKey: Uint8Array;
@@ -27,6 +28,7 @@ export interface SetPluginParams {
     pluginAddress: AddressType;
     amount?: BN;
     queryId?: number;
+    expireAt?: number;
 }
 export declare class WalletV4ContractR2 extends WalletV4ContractBase<WalletV4ContractOptions, WalletV4ContractR2Methods> {
     constructor(provider: HttpProvider, options: WalletV4ContractOptions);

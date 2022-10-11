@@ -9,11 +9,12 @@ export interface WalletContractOptions extends ContractOptions {
 export interface TransferMethodParams {
     secretKey: Uint8Array;
     toAddress: AddressType;
-    amount: (BN | number);
+    amount: (BN | string);
     seqno: number;
     payload?: (string | Uint8Array | Cell);
     sendMode?: number;
     stateInit?: Cell;
+    expireAt?: number;
 }
 export interface WalletContractMethods extends ContractMethods {
     transfer: TransferMethod;
@@ -54,7 +55,7 @@ export declare class WalletContract<WalletType extends WalletContractOptions = W
      * `nacl.KeyPair.secretKey`
      * @todo: improve the description
      */
-    secretKey: Uint8Array, address: AddressType, nanograms: (BN | number), seqno: number, payload?: (string | Uint8Array | Cell), sendMode?: number, dummySignature?: boolean, stateInit?: Cell): Promise<ExternalMessage>;
+    secretKey: Uint8Array, address: AddressType, nanocoins: (BN | string), seqno: number, payload?: (string | Uint8Array | Cell), sendMode?: number, dummySignature?: boolean, stateInit?: Cell, expireAt?: number): Promise<ExternalMessage>;
     /**
      * Returns cell that contains wallet data.
      */

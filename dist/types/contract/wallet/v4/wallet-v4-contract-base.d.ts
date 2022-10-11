@@ -9,6 +9,6 @@ export interface WalletV4ContractMethods extends WalletContractMethods {
 }
 export declare class WalletV4ContractBase<WalletType extends WalletV4ContractOptions = WalletV4ContractOptions, MethodsType extends WalletV4ContractMethods = WalletV4ContractMethods> extends WalletContract<WalletType, MethodsType> {
     getPublicKey(): Promise<BN>;
-    protected createSigningMessage(seqno?: number, withoutOp?: boolean): Cell;
+    protected createSigningMessage(seqno?: number, expireAt?: number, withoutOp?: boolean): Cell;
     protected createDataCell(): Cell;
 }
