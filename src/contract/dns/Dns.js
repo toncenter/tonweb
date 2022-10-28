@@ -1,5 +1,5 @@
 const {Cell} = require("../../boc");
-const {BN, Address} = require("../../utils");
+const {Address, bytesToHex} = require("../../utils");
 const {
     DNS_CATEGORY_NEXT_RESOLVER,
     DNS_CATEGORY_SITE,
@@ -13,10 +13,6 @@ const {
     dnsResolve
 } = require("./DnsUtils");
 
-// Need to get this address from network Config #4
-const testnetRootDnsAddress = 'Ef_v5x0Thgr6pq6ur2NvkWhIf4DxAxsL-Nk5rknT6n99oPKX';
-const mainnetRootDnsAddress = 'Ef-OJd0IF0yc0xkhgaAirq12WawqnUoSuE9RYO3S7McG6lDh';
-
 class Dns {
     /**
      * @param provider  {HttpProvider}
@@ -29,10 +25,11 @@ class Dns {
      * @returns {Promise<Address>}
      */
     async getRootDnsAddress() {
-        if (this.provider.host.indexOf('testnet') > -1) {
-            return new Address(testnetRootDnsAddress);
-        }
-        return new Address(mainnetRootDnsAddress);
+        const cell = await this.provider.getConfigParam(4);
+        const byteArray = cell.bits.array;
+        if (byteArray.length !== 256 / 8) throw new Error('Invalid ConfigParam 4 length ' + byteArray.length);
+        const hex = bytesToHex(byteArray);
+        return new Address('-1:' + hex);
     }
 
     /**
@@ -51,7 +48,7 @@ class Dns {
      * @returns {Promise<Address | null>}
      */
     getWalletAddress(domain) {
-       return this.resolve(domain, DNS_CATEGORY_WALLET);
+        return this.resolve(domain, DNS_CATEGORY_WALLET);
     }
 
     /**

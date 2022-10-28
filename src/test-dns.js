@@ -10,7 +10,7 @@ class DnsRoot extends Contract {
     constructor(provider) {
         const options = {};
         options.wc = -1;
-        options.code = options.code || Cell.oneFromBoc('B5EE9C724101080100E2000114FF00F4A413F4BCF2C80B0102016202030202CD040500ADA1C6186041AE92F152118001E5C08C41AE140F800043AE938010A4216126B6F0DBC0412A03A60E6203BC43E00425AE3061166E8DEDD041AE92B38E0B6726B6E0DBC10401752791961FDA89A19E2D920522F122E1C54003020120060700936483001258C2040FA201938083001658C20407D200CB8083001A58C204064200A38083001E58C20404B2007B8083002258C204032200538083002650C20191EB83002A4E00C9D781E9C6000545F03800334709F01D30701C00020B39402A60802DE12E63120C000F2D0C98DD88C2AC');
+        options.code = options.code || Cell.oneFromBoc('B5EE9C724102070100011D000114FF00F4A413F4BCF2C80B0102016202030202CD040501FBA1C619DBF66041AE92F152118001E5C08C41AE140F800043AE92418010A4416128BE06F0DBC0432A05A60E6205BDDA89A1F481F48060E191166E8DEDD19E2D960F93A047843F1C484BAE3A3E038E0B1C326062650401752791961EB19E2D920322F122E1C54C3003B663C063246063C4E04191164DACB19E2D960F162E91060005D2F81C00936483001258C2040FA201938083001658C20407D200CB8083001A58C204064200A38083001E58C20404B2007B8083002258C204032200538083002650C20191EB83002A4E00C9D781E9C60064CF16CB07C9D002C2278E2103D71D2701C7058E168200BA93C8CB0F58CF16C90191789170E2A62001DB31E05B925F04E2706D4E3401C0');
         super(provider, options);
     }
 
@@ -21,7 +21,8 @@ class DnsRoot extends Contract {
      */
     createDataCell() {
         const cell = new Cell();
-        cell.bits.writeAddress(new TonWeb.Address('EQDjPtM6QusgMgWfl9kMcG-EALslbTITnKcH8VZK1pnH3UZA'));
+        cell.bits.writeAddress(new TonWeb.Address('EQC3dNlesgVD8YbAazcauIrXBPfiVhMMr5YYk2in0Mtsz0Bz'));
+        cell.bits.writeAddress(new TonWeb.Address('EQCA14o1-VWhS2efqoh_9M1b_A9DtKTuoqfmkn83AbJzwnPi'));
         return cell;
     }
 }
@@ -30,16 +31,19 @@ async function init() {
     const tonweb = new TonWeb(new TonWeb.HttpProvider('https://testnet.toncenter.com/api/v2/jsonRPC', {apiKey: ''}));
 
     const dnsResolve = async () => {
+        // const testnetRootDnsAddress = 'Ef_v5x0Thgr6pq6ur2NvkWhIf4DxAxsL-Nk5rknT6n99oPKX';
+        // const mainnetRootDnsAddress = 'Ef-OJd0IF0yc0xkhgaAirq12WawqnUoSuE9RYO3S7McG6lDh';
+
         const rootAddress = await tonweb.dns.getRootDnsAddress();
         console.log('rootAddress=', rootAddress.toString(true, true, true));
 
         const s = 'apple.ton';
 
-        const cell = await tonweb.dns.resolve(s, TonWeb.dns.DNS_CATEGORY_NEXT_RESOLVER, true);
-        console.log(cell.toString(true, true, true));
+        // const cell = await tonweb.dns.resolve(s, TonWeb.dns.DNS_CATEGORY_NEXT_RESOLVER, true);
+        // console.log(cell.toString(true, true, true));
 
-        // const result = await tonweb.dns.getWalletAddress('alice-alice-alice.ton');
-        // console.log(result?.toString(true, true, true));
+        const result = await tonweb.dns.getWalletAddress('foundation.ton');
+        console.log(result?.toString(true, true, true));
     }
 
     const seed = TonWeb.utils.base64ToBytes('vt58J2v6FaSuXFGcyGtqT5elpVxcZ+I1zgu/GUfA5uY=');

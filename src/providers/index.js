@@ -1,3 +1,5 @@
+const {Cell} = require("../boc");
+const {base64ToBytes} = require("../utils");
 const HttpProviderUtils = require('./HttpProviderUtils').default;
 
 if (typeof fetch === 'undefined') {
@@ -150,6 +152,22 @@ class HttpProvider {
             stack: params
         });
         return HttpProviderUtils.parseResponse(result);
+    }
+
+    /**
+     * Returns network config param
+     * @param configParamId {number}
+     * @return {Cell}
+     */
+    async getConfigParam(configParamId) {
+        const rawResult = await this.send('getConfigParam', {
+            config_id: configParamId
+        });
+        if (rawResult['@type'] !== 'configInfo') throw new Error('getConfigParam expected type configInfo');
+        if (!rawResult.config) throw new Error('getConfigParam expected config');
+        if (rawResult.config['@type'] !== 'tvm.cell') throw new Error('getConfigParam expected type tvm.cell');
+        if (!rawResult.config.bytes) throw new Error('getConfigParam expected bytes');
+        return Cell.oneFromBoc(base64ToBytes(rawResult.config.bytes));
     }
 
     /**
