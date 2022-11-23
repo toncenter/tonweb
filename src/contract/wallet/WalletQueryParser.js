@@ -82,7 +82,8 @@ function parseWalletV3TransferBody(slice) {
         bounce,
         seqno,
         expireAt,
-        payload
+        payload,
+        sendMode
     };
 }
 
