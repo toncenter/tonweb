@@ -17,7 +17,7 @@ function parseWalletV3TransferBody(slice) {
     const seqno = slice.loadUint(32).toNumber();
 
     const sendMode = slice.loadUint(8).toNumber();
-    if (sendMode !== 3) throw new Error('invalid sendMode');
+    if(!validateSendMode(sendMode)) new Error('invalid sendMode');
 
     let order = slice.loadRef();
 
@@ -84,6 +84,25 @@ function parseWalletV3TransferBody(slice) {
         expireAt,
         payload
     };
+}
+
+function validateSendMode(sendMode){
+    // unknown flags
+    if(sendMode & 0b00011100) {
+        return false
+    }
+
+    // strange combination of modes 128 and 64
+    if((sendMode & 0b11000000) === 0b11000000 ) {
+        return false
+    }
+
+    // fee already included
+    if((sendMode & 0b10000001) === 0b10000001) {
+        return false
+    }
+
+    return true
 }
 
 /**
