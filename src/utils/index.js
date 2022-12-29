@@ -23,6 +23,7 @@ const {
 
 const Address = require("./Address").default;
 const AdnlAddress = require("./AdnlAddress").default;
+const StorageBagId = require("./StorageBagId").default;
 
 // ton://transfer/EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG
 // ton://transfer/EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG?amount=1000000000
@@ -110,6 +111,7 @@ function formatTransferUrl(address, amount, text) {
 module.exports = {
     Address,
     AdnlAddress,
+    StorageBagId,
     BN,
     nacl,
     sha256,
