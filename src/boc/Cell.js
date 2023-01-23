@@ -23,6 +23,27 @@ class Cell {
     }
 
     /**
+     * @return {number}
+     */
+    get max_refs() {
+        return 4;
+    }
+
+    /**
+     * @return {number}
+     */
+    getFreeRefs() {
+        return this.max_refs - this.refs.length;
+    }
+
+    /**
+     * @return {number}
+     */
+    getUsedRefs() {
+        return this.refs.length;
+    }
+
+    /**
      * @param serializedBoc  {string | Uint8Array} hex or bytearray
      * @return {Cell[]} root cells
      */

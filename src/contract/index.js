@@ -198,9 +198,12 @@ class Contract {
         } else {
             commonMsgInfo.bits.writeBit(false);
         }
-        // TODO we also should check for free refs here
+
         if (body) {
-            if (commonMsgInfo.bits.getFreeBits() >= body.bits.getUsedBits()) {
+            if (
+                commonMsgInfo.bits.getFreeBits() >= body.bits.getUsedBits() && 
+                commonMsgInfo.getFreeRefs() >= body.getUsedRefs()
+            ) {
                 commonMsgInfo.bits.writeBit(false);
                 commonMsgInfo.writeCell(body);
             } else {
