@@ -1,5 +1,5 @@
 const {Cell} = require("../boc");
-const {Address, bytesToBase64, bytesToHex} = require("../utils");
+const {Address, bytesToBase64, bytesToHex, BN} = require("../utils");
 
 class Contract {
     /**
@@ -169,6 +169,33 @@ class Contract {
         message.bits.writeAddress(new Address(dest));
         message.bits.writeGrams(importFee);
         return message;
+    }
+
+    /**
+     * @param address {Address | string}
+     * @param amount {BN} in nanotons
+     * @param payload   {string | Uint8Array | Cell}
+     * @param stateInit? {Cell}
+     * @return {Cell}
+     */
+    static createOutMsg(address, amount, payload, stateInit = null) {
+        let payloadCell = new Cell();
+        if (payload) {
+            if (payload.refs) { // is Cell
+                payloadCell = payload;
+            } else if (typeof payload === 'string') {
+                if (payload.length > 0) {
+                    payloadCell.bits.writeUint(0, 32);
+                    payloadCell.bits.writeString(payload);
+                }
+            } else {
+                payloadCell.bits.writeBytes(payload)
+            }
+        }
+
+        const orderHeader = Contract.createInternalMessageHeader(new Address(address), new BN(amount));
+        const order = Contract.createCommonMsgInfo(orderHeader, stateInit, payloadCell);
+        return order;
     }
 
     //tblkch.pdf, page 57

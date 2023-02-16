@@ -20,10 +20,15 @@ class WalletContract extends Contract {
              */
             transfer: (params) => Contract.createMethod(provider, this.createTransferMessage(params.secretKey, params.toAddress, params.amount, params.seqno, params.payload, params.sendMode, !Boolean(params.secretKey), params.stateInit, params.expireAt)),
 
+            /**
+             * @param   params {{secretKey: Uint8Array, seqno: number, expireAt?: number, messages: [{address: Address | string, amount: BN, payload?: string | Uint8Array | Cell, sendMode?: number, stateInit?: Cell }]}}
+             */
+            transfers: (params) => Contract.createMethod(provider, this.createTransferMessages(params.secretKey, params.seqno, params.messages, !Boolean(params.secretKey), params.expireAt)),
+
             seqno: () => {
                 return {
                     /**
-                     * @return {Promise<number>}
+                     * @return {Promise<number|null>}
                      */
                     call: async () => {
                         const address = await this.getAddress();
@@ -161,7 +166,7 @@ class WalletContract extends Contract {
     /**
      * @param secretKey {Uint8Array}  nacl.KeyPair.secretKey
      * @param address   {Address | string}
-     * @param amount    {BN | number} in nanograms
+     * @param amount    {BN | number} in nanotons
      * @param seqno {number}
      * @param payload?   {string | Uint8Array | Cell}
      * @param sendMode?  {number}
@@ -181,26 +186,49 @@ class WalletContract extends Contract {
         stateInit = null,
         expireAt = undefined
     ) {
-        let payloadCell = new Cell();
-        if (payload) {
-            if (payload.refs) { // is Cell
-                payloadCell = payload;
-            } else if (typeof payload === 'string') {
-                if (payload.length > 0) {
-                    payloadCell.bits.writeUint(0, 32);
-                    payloadCell.bits.writeString(payload);
-                }
-            } else {
-                payloadCell.bits.writeBytes(payload)
-            }
+        if (seqno === null || seqno === undefined || seqno < 0) {
+            throw new Error('seqno must be number >= 0')
         }
-
-        const orderHeader = Contract.createInternalMessageHeader(new Address(address), new BN(amount));
-        const order = Contract.createCommonMsgInfo(orderHeader, stateInit, payloadCell);
         const signingMessage = this.createSigningMessage(seqno, expireAt);
+        if (sendMode === null || sendMode === undefined) {
+            sendMode = 3;
+        }
         signingMessage.bits.writeUint8(sendMode);
-        signingMessage.refs.push(order);
+        signingMessage.refs.push(Contract.createOutMsg(address, amount, payload, stateInit));
 
+        return this.createExternalMessage(signingMessage, secretKey, seqno, dummySignature);
+    }
+
+    /**
+     * @param secretKey {Uint8Array}  nacl.KeyPair.secretKey
+     * @param seqno {number}
+     * @param messages {[{toAddress: Address | string, amount: BN, payload?: string | Uint8Array | Cell, sendMode?: number, stateInit?: Cell }]} up to 4 messages
+     * @param dummySignature?    {boolean}
+     * @param expireAt? {number}
+     * @return {Promise<{address: Address, signature: Uint8Array, message: Cell, cell: Cell, body: Cell, resultMessage: Cell}>}
+     */
+    async createTransferMessages(
+        secretKey,
+        seqno,
+        messages,
+        dummySignature = false,
+        expireAt = undefined,
+    ) {
+        if (seqno === null || seqno === undefined || seqno < 0) {
+            throw new Error('seqno must be number >= 0')
+        }
+        const signingMessage = this.createSigningMessage(seqno, expireAt);
+        if (messages.length < 1 || messages.length > 4) {
+            throw new Error('put 1-4 messages');
+        }
+        for (let msg of messages) {
+            let sendMode = msg.sendMode;
+            if (sendMode === null || sendMode === undefined) {
+                sendMode = 3;
+            }
+            signingMessage.bits.writeUint8(sendMode);
+            signingMessage.refs.push(Contract.createOutMsg(msg.toAddress, msg.amount, msg.payload, msg.stateInit));
+        }
         return this.createExternalMessage(signingMessage, secretKey, seqno, dummySignature);
     }
 }
