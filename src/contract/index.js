@@ -227,7 +227,7 @@ class Contract {
         }
         // TODO we also should check for free refs here
         if (body) {
-            if (commonMsgInfo.bits.getFreeBits() >= body.bits.getUsedBits()) {
+            if ((commonMsgInfo.bits.getFreeBits() >= body.bits.getUsedBits()) && (commonMsgInfo.refs.length + body.refs.length <= 4)) {
                 commonMsgInfo.bits.writeBit(false);
                 commonMsgInfo.writeCell(body);
             } else {
