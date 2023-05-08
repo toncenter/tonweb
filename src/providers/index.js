@@ -78,6 +78,14 @@ class HttpProvider {
     }
 
     /**
+	 * Get NFT or Jetton information..
+	 * @param address {string}
+	 */
+	async getTokenData(address) {
+		return this.send('getTokenData', { address: address });
+	}
+
+    /**
      * Use this method to get transaction history of a given address.
      * @param address   {string}
      * @param limit?    {number}
