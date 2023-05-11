@@ -68,6 +68,13 @@ export declare class HttpProvider {
      */
     getWalletInfo(address: string): Promise<any>;
     /**
+	 * Use this method to retrieve NFT or Jetton information.
+	 *
+	 *
+	 * {@link https://toncenter.com/api/v2/#/accounts/get_token_data_getTokenData_get}
+	 */
+	getTokenData(address: string): Promise<any>;
+    /**
      * Use this method to get transaction history of a given address.
      *
      * Returns array of transaction objects.
