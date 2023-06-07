@@ -33,7 +33,6 @@
     "@ledgerhq/hw-transport-webusb": "5.48.0",
     "bn.js": "5.1.1",
     "ethjs-unit": "0.1.6",
-    "isomorphic-webcrypto": "2.3.8",
     "node-fetch": "2.6.7",
     "tweetnacl": "1.0.3"
   },
