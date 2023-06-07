@@ -2,15 +2,14 @@ const BN = require("bn.js");
 const nacl = require("tweetnacl");
 const ethunit = require("ethjs-unit");
 
-const isCryptoAvailable = typeof this !== 'undefined' && this.crypto && this.crypto.subtle;
+const isCryptoAvailable = typeof self !== 'undefined' && self.crypto && self.crypto.subtle;
 
 let myCrypto = null;
 
-if (isCryptoAvailable) { // web or nodejs
+if (isCryptoAvailable) { // web
     // nothing to do
-    console.log('crypto есть');
-} else { // other
-    console.log('crypto нет');
+} else { // nodejs
+    myCrypto = require('crypto').webcrypto;
 }
 
 /**
