@@ -102,7 +102,7 @@ class Slice {
         if (sign) {
             const b = new BN(2);
             const nb = b.pow(new BN(bitLength - 1));
-            number -= nb;
+            number = number.sub(nb);
         }
         return number;
     }
