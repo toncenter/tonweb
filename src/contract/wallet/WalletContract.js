@@ -21,7 +21,7 @@ class WalletContract extends Contract {
             transfer: (params) => Contract.createMethod(provider, this.createTransferMessage(params.secretKey, params.toAddress, params.amount, params.seqno, params.payload, params.sendMode, !Boolean(params.secretKey), params.stateInit, params.expireAt)),
 
             /**
-             * @param   params {{secretKey: Uint8Array, seqno: number, expireAt?: number, messages: [{address: Address | string, amount: BN, payload?: string | Uint8Array | Cell, sendMode?: number, stateInit?: Cell }]}}
+             * @param   params {{secretKey: Uint8Array, seqno: number, expireAt?: number, messages: [{toAddress: Address | string, amount: BN, payload?: string | Uint8Array | Cell, sendMode?: number, stateInit?: Cell }]}}
              */
             transfers: (params) => Contract.createMethod(provider, this.createTransferMessages(params.secretKey, params.seqno, params.messages, !Boolean(params.secretKey), params.expireAt)),
 
