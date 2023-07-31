@@ -115,6 +115,11 @@ class BitString {
      * @param bitLength  {number}  size of uint in bits
      */
     writeUint(number, bitLength) {
+        if (isNaN(number)) throw new Error('writeUint: value is NaN');
+        if (number === null) throw new Error('writeUint: value is null');
+        if (number === undefined) throw new Error('writeUint: value is undefined');
+        if (!bitLength) throw new Error('writeUint: no bitLength');
+
         number = new BN(number);
         if (
             bitLength == 0 ||
@@ -135,6 +140,11 @@ class BitString {
      * @param bitLength  {number}  size of int in bits
      */
     writeInt(number, bitLength) {
+        if (isNaN(number)) throw new Error('writeInt: value is NaN');
+        if (number === null) throw new Error('writeInt: value is null');
+        if (number === undefined) throw new Error('writeInt: value is undefined');
+        if (!bitLength) throw new Error('writeInt: no bitLength');
+
         number = new BN(number);
         if (bitLength == 1) {
             if (number == -1) {
