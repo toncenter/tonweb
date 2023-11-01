@@ -49,7 +49,7 @@ class HttpProvider {
     send(method, params) {
         return this.sendImpl(
             this.host,
-            {id: 1, jsonrpc: "2.0", method: method, params: params}
+            {id: "1", jsonrpc: "2.0", method: method, params: params}
         );
     }
 
