@@ -78,8 +78,9 @@ class Address {
             return;
         }
 
+        this.isUrlSafe = true;
+
         if (anyForm.search(/\-/) > 0 || anyForm.search(/_/) > 0) {
-            this.isUrlSafe = true;
             anyForm = anyForm.replace(/\-/g, '+').replace(/_/g, '\/');
         } else {
             this.isUrlSafe = false;

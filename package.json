@@ -1,6 +1,6 @@
 {
   "name": "tonweb",
-  "version": "0.0.60",
+  "version": "0.0.62",
   "description": "TonWeb - JavaScript API for TON blockchain",
   "main": "src/index.js",
   "types": "dist/types/index.d.ts",
@@ -15,13 +15,13 @@
   ],
   "authors": [
     {
-      "name": "rulon"
+      "name": "EmelyanenkoK"
     },
     {
       "name": "tolya-yanot"
     }
   ],
-  "license": "GPL-3.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/toncenter/tonweb/issues"
   },

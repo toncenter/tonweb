@@ -242,6 +242,16 @@ class Contract {
 
     static createMethod(provider, queryPromise) {
         return {
+            /**
+             * @return {Promise<Cell>}
+             */
+            getBody: async () => {
+                return (await queryPromise).body;
+            },
+
+            /**
+             * @return {Promise<Cell>}
+             */
             getQuery: async () => {
                 return (await queryPromise).message;
             },
