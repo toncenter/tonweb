@@ -81,9 +81,9 @@ class HttpProvider {
      * Use this method to get transaction history of a given address.
      * @param address   {string}
      * @param limit?    {number}
-     * @param lt?    {number}
+     * @param lt?    {number | string}
      * @param hash?    {string}
-     * @param to_lt?    {number}
+     * @param to_lt?    {number | string}
      * @return array of transaction object
      */
     async getTransactions(address, limit = 20, lt = undefined, hash = undefined, to_lt = undefined, archival = undefined) {
@@ -192,21 +192,30 @@ class HttpProvider {
      * @param workchain {number}
      * @param shardId   {string}
      * @param shardBlockNumber  {number}
+     * @param limit? {number}
+     * @param afterLt? {number}
+     * @param afterHash? {string}
      */
-    async getBlockTransactions(workchain, shardId, shardBlockNumber) {
+    async getBlockTransactions(workchain, shardId, shardBlockNumber, limit, afterLt, afterHash) {
         return this.send('getBlockTransactions', {
             workchain: workchain,
             shard: shardId,
-            seqno: shardBlockNumber
+            seqno: shardBlockNumber,
+            count: limit,
+            after_lt: afterLt,
+            after_hash: afterHash
         });
     }
 
     /**
      * Returns transactions hashes included in this masterhcain block
      * @param masterchainBlockNumber  {number}
+     * @param limit? {number}
+     * @param afterLt? {number | string}
+     * @param afterHash? {string}
      */
-    async getMasterchainBlockTransactions(masterchainBlockNumber) {
-        return this.getBlockTransactions(-1, SHARD_ID_ALL, masterchainBlockNumber);
+    async getMasterchainBlockTransactions(masterchainBlockNumber, limit, afterLt, afterHash) {
+        return this.getBlockTransactions(-1, SHARD_ID_ALL, masterchainBlockNumber, limit, afterLt, afterHash);
     }
 
     /**

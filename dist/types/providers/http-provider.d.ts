@@ -74,7 +74,7 @@ export declare class HttpProvider {
      *
      * {@link https://toncenter.com/api/v2/#/accounts/get_transactions_getTransactions_get}
      */
-    getTransactions(address: string, limit?: number, lt?: number, hash?: string, to_lt?: number, archival?: any): Promise<any>;
+    getTransactions(address: string, limit?: number, lt?: number | string, hash?: string, to_lt?: number | string, archival?: any): Promise<any>;
     /**
      * Use this method to get balance (in nanograms)
      * of a given address.
@@ -157,7 +157,7 @@ export declare class HttpProvider {
      *
      * {@link https://toncenter.com/api/v2/#/blocks/get_block_transactions_getBlockTransactions_get}
      */
-    getBlockTransactions(workchain: number, shardId: string, shardBlockNumber: number): Promise<any>;
+    getBlockTransactions(workchain: number, shardId: string, shardBlockNumber: number, limit?: number, afterLt?: number | string, afterHash?: string): Promise<any>;
     /**
      * Returns transactions hashes included
      * in this masterchain block.
