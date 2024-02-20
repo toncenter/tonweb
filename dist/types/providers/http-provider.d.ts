@@ -157,7 +157,7 @@ export declare class HttpProvider {
      *
      * {@link https://toncenter.com/api/v2/#/blocks/get_block_transactions_getBlockTransactions_get}
      */
-    getBlockTransactions(workchain: number, shardId: string, shardBlockNumber: number, limit?: number, afterLt?: number | string, afterHash?: string): Promise<any>;
+    getBlockTransactions(workchain: number, shardId: string, shardBlockNumber: number, limit?: number, afterLt?: number | string, addressHash?: string): Promise<any>;
     /**
      * Returns transactions hashes included
      * in this masterchain block.
