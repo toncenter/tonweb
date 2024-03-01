@@ -22,7 +22,7 @@ export interface CreateTransferBodyParams {
     responseAddress: Address;
     queryId?: number;
     forwardAmount?: BN;
-    forwardPayload?: Uint8Array;
+    forwardPayload?: Uint8Array | Cell;
 }
 export interface CreateGetStaticDataBodyParams {
     queryId?: number;
