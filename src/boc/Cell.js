@@ -211,7 +211,7 @@ class Cell {
 
         const cells_num = topologicalOrder.length;
         const s = cells_num.toString(2).length; // Minimal number of bits to represent reference (unused?)
-        const s_bytes = Math.min(Math.ceil(s / 8), 1);
+        const s_bytes = Math.max(Math.ceil(s / 8), 1);
         let full_size = 0;
         let sizeIndex = [];
         for (let cell_info of topologicalOrder) {
@@ -269,9 +269,7 @@ class Cell {
             const refHash = await i.hash();
             const refIndexInt = cellsIndex[refHash];
             let refIndexHex = refIndexInt.toString(16);
-            if (refIndexHex.length % 2) {
-                refIndexHex = "0" + refIndexHex;
-            }
+            refIndexHex = "0".repeat(refSize*2 - refIndexHex.length) + refIndexHex; 
             const reference = hexToBytes(refIndexHex);
             reprArray.push(reference);
         }
