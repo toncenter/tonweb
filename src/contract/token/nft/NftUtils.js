@@ -1,5 +1,5 @@
-const {Address} = require("../../../utils");
-const {Cell} = require("../../../boc");
+const {Address, BN} = require('../../../utils');
+const {Cell} = require('../../../boc');
 
 const SNAKE_DATA_PREFIX = 0x00;
 const CHUNK_DATA_PREFIX = 0x01;
@@ -61,18 +61,26 @@ const parseOffchainUriCell = (cell) => {
 }
 
 /**
- * @param bs    {BitString}
- * @param cursor    {number}
- * @param bits  {number}
- * @return {BigInt}
+ * @param bs {BitString}
+ * @param cursor {number}
+ * @param bits {number}
+ *
+ * @return {BN}
  */
-const readIntFromBitString = (bs, cursor, bits) => {
-    let n = BigInt(0);
-    for (let i = 0; i < bits; i++) {
-        n *= BigInt(2);
-        n += BigInt(bs.get(cursor + i));
+const readUintFromBitString = (bs, cursor, bits) => {
+
+    if ((cursor + bits) > bs.getUsedBits()) {
+        throw new Error(`Bit string offset is out of bounds`);
     }
+
+    let n = new BN(0);
+    for (let i = 0; i < bits; i++) {
+        n.imuln(2);
+        n.iaddn(bs.get(cursor + i) ? 1 : 0);
+    }
+
     return n;
+
 }
 
 /**
@@ -80,14 +88,45 @@ const readIntFromBitString = (bs, cursor, bits) => {
  * @return {Address|null}
  */
 const parseAddress = cell => {
-    let n = readIntFromBitString(cell.bits, 3, 8);
-    if (n > BigInt(127)) {
-        n = n - BigInt(256);
+
+    const type = readUintFromBitString(cell.bits, 0, 2);
+
+    // "none" address
+    if (type.eqn(0b00)) {
+        return null;
     }
-    const hashPart = readIntFromBitString(cell.bits, 3 + 8, 256);
-    if (n.toString(10) + ":" + hashPart.toString(16) === '0:0') return null;
-    const s = n.toString(10) + ":" + hashPart.toString(16).padStart(64, '0');
-    return new Address(s);
+
+    // internal standard address
+    if (type.eqn(0b10)) {
+
+        /**
+         * addr_std$10
+         *   anycast:(Maybe Anycast)
+         *   workchain_id:int8
+         *   address:bits256
+         * = MsgAddressInt;
+         */
+
+        // @todo: implement readInt (signed) method instead
+        let workchainId = readUintFromBitString(cell.bits, 3, 8);
+        if (workchainId.gtn(127)) {
+            workchainId.isubn(256);
+        }
+
+        const hashPart = readUintFromBitString(cell.bits, 3 + 8, 256);
+
+        return new Address(
+          workchainId.toString() + ':' +
+          hashPart.toString(16).padStart(64, '0')
+        );
+
+    } else {
+        throw new Error(
+          `Unsupported address type: 0b${type.toString(2, 2)}`
+        );
+
+    }
+
 };
 
 /**
