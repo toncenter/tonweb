@@ -1,6 +1,6 @@
 const BN = require("bn.js");
 const nacl = require("tweetnacl");
-const ethunit = require("ethjs-unit");
+const ethunit = require("@ton.js/ethjs-unit");
 
 const isCryptoAvailable = typeof self !== 'undefined' && self.crypto && self.crypto.subtle;
 
