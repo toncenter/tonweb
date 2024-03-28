@@ -16,7 +16,7 @@ const TransportWebUSB = require("@ledgerhq/hw-transport-webusb").default;
 const TransportWebHID = require("@ledgerhq/hw-transport-webhid").default;
 const BluetoothTransport = require("@ledgerhq/hw-transport-web-ble").default;
 const {Dns, DnsCollection, DnsItem} = require("./contract/dns").default;
-const version = '0.0.64';
+const version = '0.0.65';
 
 class TonWeb {
     constructor(provider) {
