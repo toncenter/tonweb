@@ -1,4 +1,5 @@
-const {HighloadQueryId} = require("./contract/highloadWallet/HighloadQueryId");
+const TonWeb = require("./index");
+const HighloadQueryId = TonWeb.HighloadWallets.HighloadQueryId;
 
 if (HighloadQueryId.fromSeqno(0n).toSeqno() !== 0n) throw new Error();
 
