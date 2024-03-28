@@ -13,12 +13,12 @@ const i4 = HighloadQueryId.fromSeqno(8380415n);
 if (i4.toSeqno() !== 8380415n) throw new Error();
 
 
-const queryId = new HighloadQueryId();
-console.log(queryId.getQueryId(), queryId.isEnd());
+let queryId = new HighloadQueryId();
+console.log(queryId.getQueryId(), queryId.hasNext());
 
 const MAX = (2n ** 13n) * 1023n - 2n;
 for (let i = 0; i < MAX; i++) {
-    queryId.increase();
+    queryId = queryId.getNext();
 
     const q = queryId.getQueryId();
     const q2 = HighloadQueryId.fromQueryId(q);
@@ -32,11 +32,11 @@ for (let i = 0; i < MAX; i++) {
     if (queryId.getBitNumber() !== q3.getBitNumber()) throw new Error()
     if (q3.getQueryId() !== q) throw new Error();
 
-    if (queryId.isEnd()) {
+    if (!queryId.hasNext()) {
         console.log('END')
     }
 }
 console.log(queryId.shift);
 console.log(queryId.bitnumber);
 
-console.log(queryId.getQueryId(), queryId.isEnd());
+console.log(queryId.getQueryId(), queryId.hasNext());

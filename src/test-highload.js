@@ -21,8 +21,8 @@ const init = async () => {
 
     console.log('Highload-wallet address is ' + highloadAddress.toString(true, true, true));
 
-    const queryId = new HighloadQueryId();
-    queryId.increase();
+    let queryId = new HighloadQueryId();
+    queryId = queryId.getNext();
 
     const createAt = Math.floor(Date.now() / 1000) - 60;
     console.log(createAt);

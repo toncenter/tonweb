@@ -33,24 +33,28 @@ class HighloadQueryId {
         return q;
     }
 
-    increase() {
-        this.bitnumber += 1n;
+    getNext() {
+        let newBitnumber = this.bitnumber + 1n;
+        let newShift = this.shift;
 
-        if (this.shift === MAX_SHIFT && this.bitnumber > (MAX_BIT_NUMBER - 1n)) {
+        if (newShift === MAX_SHIFT && newBitnumber > (MAX_BIT_NUMBER - 1n)) {
             throw new Error('Overload'); // NOTE: we left one queryId for emergency withdraw
         }
 
-        if (this.bitnumber > MAX_BIT_NUMBER) {
-            this.bitnumber = 0n;
-            this.shift += 1n;
-            if (this.shift > MAX_SHIFT) {
+        if (newBitnumber > MAX_BIT_NUMBER) {
+            newBitnumber = 0n;
+            newShift += 1n;
+            if (newShift > MAX_SHIFT) {
                 throw new Error('Overload')
             }
         }
+
+        return HighloadQueryId.fromShiftAndBitNumber(newShift, newBitnumber);
     }
 
-    isEnd() {
-        return this.bitnumber >= (MAX_BIT_NUMBER - 1n) && this.shift === MAX_SHIFT; // NOTE: we left one queryId for emergency withdraw
+    hasNext() {
+        const isEnd = this.bitnumber >= (MAX_BIT_NUMBER - 1n) && this.shift === MAX_SHIFT; // NOTE: we left one queryId for emergency withdraw;
+        return !isEnd;
     }
 
     /**
