@@ -13,6 +13,8 @@ class HttpProviderUtils {
                 return Cell.oneFromBoc(base64ToBytes(x.bytes));
             case 'tvm.stackEntryCell':
                 return HttpProviderUtils.parseObject(x.cell);
+            case 'tvm.stackEntryList':
+                return HttpProviderUtils.parseObject(x.list);
             case 'tvm.stackEntryTuple':
                 return HttpProviderUtils.parseObject(x.tuple);
             case 'tvm.stackEntryNumber':
