@@ -33,7 +33,7 @@ class NftItem extends Contract {
     }
 
     /**
-     * @return {Promise<{isInitialized: boolean, index: number, itemIndex: BN, collectionAddress: Address|null, ownerAddress: Address|null, contentCell: Cell, contentUri: string|null}>}
+     * @return {Promise<{isInitialized: boolean, index: number, itemIndex: BN, collectionAddress: Address|null, ownerAddress: Address|null, contentCell: Cell, content: Uint8Array|null, contentUri: string|null}>}
      */
     async getData() {
         const myAddress = await this.getAddress();
@@ -56,7 +56,26 @@ class NftItem extends Contract {
         } catch (e) {
         }
 
-        return {isInitialized, index, itemIndex, collectionAddress, ownerAddress, contentCell, contentUri};
+        let content = null;
+        if (contentUri === null) {
+            let length = 0;
+            let c = contentCell;
+            while (c) {
+                length += c.bits.array.length;
+                c = c.refs[0];
+            }
+
+            content = new Uint8Array(length);
+            length = 0;
+            c = contentCell;
+            while (c) {
+                content.set(c.bits.array, length)
+                length += c.bits.array.length;
+                c = c.refs[0];
+            }
+        }
+
+        return {isInitialized, index, itemIndex, collectionAddress, ownerAddress, contentCell, content, contentUri};
     }
 
     /**
