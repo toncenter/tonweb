@@ -12,11 +12,11 @@ export interface WalletData {
     balance: BN;
     ownerAddress: Address;
     jettonMinterAddress: Address;
-    tokenWalletCode: Cell;
+    jettonWalletCode: Cell;
 }
 export interface TransferBodyParams {
     queryId?: number;
-    tokenAmount: BN;
+    jettonAmount: BN;
     toAddress: Address;
     responseAddress: Address;
     forwardAmount?: BN;
@@ -24,7 +24,7 @@ export interface TransferBodyParams {
 }
 export interface BurnBodyParams {
     queryId?: number;
-    tokenAmount: BN;
+    jettonAmount: BN;
     responseAddress: Address;
 }
 /**
