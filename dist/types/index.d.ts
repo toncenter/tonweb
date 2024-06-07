@@ -14,6 +14,7 @@ import { formatTransferUrl, parseTransferUrl } from './utils/transfer-url';
 export { ParsedTransferUrl } from './utils/transfer-url';
 import { BitString } from './boc/bit-string';
 import { Cell } from './boc/cell';
+import { Slice } from './boc/slice';
 import { Contract } from './contract/contract';
 export { ContractMethods, ContractOptions, Method, Query, StateInit, } from './contract/contract';
 import { Wallets } from './contract/wallet/wallets';
@@ -68,6 +69,7 @@ export default class TonWeb {
     static boc: {
         BitString: typeof BitString;
         Cell: typeof Cell;
+        Slice: typeof Slice;
     };
     static HttpProvider: typeof HttpProvider;
     static Contract: typeof Contract;
