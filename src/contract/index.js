@@ -255,9 +255,12 @@ class Contract {
             getQuery: async () => {
                 return (await queryPromise).message;
             },
-            send: async () => {
+            send: async (returnHash = false) => {
                 const query = await queryPromise;
                 const boc = bytesToBase64(await query.message.toBoc(false));
+                if (returnHash) {
+                    return provider.sendBocReturnHash(boc);
+                }
                 return provider.sendBoc(boc);
             },
             estimateFee: async () => {
