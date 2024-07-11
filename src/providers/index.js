@@ -107,6 +107,15 @@ class HttpProvider {
     };
 
     /**
+     * Use this method to send serialized boc file: fully packed and serialized external message.
+     * @param base64 {string} base64 of boc bytes Cell.toBoc
+     * @return Object containing result, error, code
+     */
+    async sendBocReturnHash(base64) {
+        return this.send("sendBocReturnHash", {'boc': base64});
+    };
+
+    /**
      * @deprecated
      * Send external message
      * @param query     object as described https://toncenter.com/api/test/v2/#sendQuerySimple
