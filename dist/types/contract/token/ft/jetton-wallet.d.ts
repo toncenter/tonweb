@@ -16,7 +16,7 @@ export interface WalletData {
 }
 export interface TransferBodyParams {
     queryId?: number;
-    tokenAmount: BN;
+    jettonAmount: BN;
     toAddress: Address;
     responseAddress: Address;
     forwardAmount?: BN;
@@ -24,7 +24,7 @@ export interface TransferBodyParams {
 }
 export interface BurnBodyParams {
     queryId?: number;
-    tokenAmount: BN;
+    jettonAmount: BN;
     responseAddress: Address;
 }
 /**
