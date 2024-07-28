@@ -55,7 +55,7 @@ const deployMethod = contract.deploy(keyPair.secretKey);
 
 const query: Cell = await deployMethod.getQuery(); // get init external message as Cell
 
-await deplotMethod.estimateFee(); // get estimate fee of deploy 
+await deployMethod.estimateFee(); // get estimate fee of deploy 
 
 await deployMethod.send(); // send init external message to blockchain
 
