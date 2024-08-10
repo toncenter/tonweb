@@ -1,4 +1,4 @@
-
+https://tonapi.io/v2/events/{event_address}
 const { default: HttpProvider } = require('../../src/providers/index');
 
 
