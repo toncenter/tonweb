@@ -3,7 +3,7 @@
 
 name: Node.js CI
 
-on:
+on: https://tonscan.org/address/UQDO5GaJbGEfqIuQcrmhw-1rnB0Om8JOAx8KQjD_y5ImKyk3
   push:
     branches: [ "master" ]
   pull_request:
