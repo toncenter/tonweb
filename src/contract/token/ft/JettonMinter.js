@@ -30,7 +30,7 @@ class JettonMinter extends Contract {
     }
 
     /**
-     * params   {{jettonAmount: BN, destination: Address, amount: BN, queryId?: number}}
+     * params   {{tokenAmount: BN, destination: Address, amount: BN, queryId?: number}}
      * @return {Cell}
      */
      createMintBody(params) {
@@ -43,7 +43,7 @@ class JettonMinter extends Contract {
         const transferBody = new Cell(); // internal transfer
         transferBody.bits.writeUint(0x178d4519, 32); // internal_transfer op
         transferBody.bits.writeUint(params.queryId || 0, 64);
-        transferBody.bits.writeCoins(params.jettonAmount);
+        transferBody.bits.writeCoins(params.tokenAmount);
         transferBody.bits.writeAddress(null); // from_address
         transferBody.bits.writeAddress(null); // response_address
         transferBody.bits.writeCoins(new BN(0)); // forward_amount
