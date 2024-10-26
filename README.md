@@ -17,7 +17,7 @@ const tonweb = new TonWeb();
 or
 
 `<script src="tonweb.js"></script>`
-
+get tokens in my wallet:EQABgIN3j-o_buKCcuOPDa8kLjMvgRD_b0oc59uc1oLdnJjH 
 `const tonweb = new window.TonWeb();`
 
 ## Install NodeJS
