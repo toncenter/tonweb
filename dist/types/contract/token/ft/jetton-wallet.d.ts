@@ -19,8 +19,8 @@ export interface TransferBodyParams {
     tokenAmount: BN;
     toAddress: Address;
     responseAddress: Address;
-    forwardAmount: BN;
-    forwardPayload: Uint8Array;
+    forwardAmount?: BN;
+    forwardPayload?: Uint8Array | Cell;
 }
 export interface BurnBodyParams {
     queryId?: number;

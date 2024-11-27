@@ -1,5 +1,5 @@
 const {Cell} = require("../boc");
-const {Address, bytesToBase64, bytesToHex} = require("../utils");
+const {Address, bytesToBase64, bytesToHex, BN} = require("../utils");
 
 class Contract {
     /**
@@ -171,6 +171,33 @@ class Contract {
         return message;
     }
 
+    /**
+     * @param address {Address | string}
+     * @param amount {BN} in nanotons
+     * @param payload   {string | Uint8Array | Cell}
+     * @param stateInit? {Cell}
+     * @return {Cell}
+     */
+    static createOutMsg(address, amount, payload, stateInit = null) {
+        let payloadCell = new Cell();
+        if (payload) {
+            if (payload.refs) { // is Cell
+                payloadCell = payload;
+            } else if (typeof payload === 'string') {
+                if (payload.length > 0) {
+                    payloadCell.bits.writeUint(0, 32);
+                    payloadCell.bits.writeString(payload);
+                }
+            } else {
+                payloadCell.bits.writeBytes(payload)
+            }
+        }
+
+        const orderHeader = Contract.createInternalMessageHeader(new Address(address), new BN(amount));
+        const order = Contract.createCommonMsgInfo(orderHeader, stateInit, payloadCell);
+        return order;
+    }
+
     //tblkch.pdf, page 57
     /**
      * Create CommonMsgInfo contains header, stateInit, body
@@ -200,7 +227,7 @@ class Contract {
         }
         // TODO we also should check for free refs here
         if (body) {
-            if (commonMsgInfo.bits.getFreeBits() >= body.bits.getUsedBits()) {
+            if ((commonMsgInfo.bits.getFreeBits() >= body.bits.getUsedBits()) && (commonMsgInfo.refs.length + body.refs.length <= 4)) {
                 commonMsgInfo.bits.writeBit(false);
                 commonMsgInfo.writeCell(body);
             } else {
@@ -215,6 +242,16 @@ class Contract {
 
     static createMethod(provider, queryPromise) {
         return {
+            /**
+             * @return {Promise<Cell>}
+             */
+            getBody: async () => {
+                return (await queryPromise).body;
+            },
+
+            /**
+             * @return {Promise<Cell>}
+             */
             getQuery: async () => {
                 return (await queryPromise).message;
             },

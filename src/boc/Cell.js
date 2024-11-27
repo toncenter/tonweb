@@ -78,10 +78,11 @@ class Cell {
     getMaxDepth() {
         let maxDepth = 0;
         if (this.refs.length > 0) {
-            for (let k in this.refs) {
-                const i = this.refs[k];
-                if (i.getMaxDepth() > maxDepth) {
-                    maxDepth = i.getMaxDepth();
+            for (let k = 0; k < this.refs.length; k++) {
+                const child = this.refs[k];
+                let childMaxDepth = child.getMaxDepth();
+                if (childMaxDepth > maxDepth) {
+                    maxDepth = childMaxDepth;
                 }
             }
             maxDepth = maxDepth + 1;

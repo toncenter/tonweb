@@ -11,8 +11,6 @@ tonweb.Contract is abstract class for all smart contract objects in TonWeb.
 ABI and json interface of contract not yet invented in TON, so you need extend tonweb.Contract and compose messages to contract yourself.
 
 ```js
-import {Contract} from 'web3-eth-contract';
-
 export class MyContract extends Contract {
     constructor(provider, options) {
         options.code = hexToBytes('abcd..');
@@ -23,10 +21,6 @@ export class MyContract extends Contract {
 
     // @override
     createDataCell() {
-    }
-    
-    // @override
-    createSigningMessage(options) {
     }
 }
 ```
