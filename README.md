@@ -1,4 +1,4 @@
-![splash_js_sdk](https://user-images.githubusercontent.com/1449561/154848382-e89fef68-3aee-4ca6-8d52-1466bfdf2c89.png)
+ ![splash_js_sdk](https://user-images.githubusercontent.com/1449561/154848382-e89fef68-3aee-4ca6-8d52-1466bfdf2c89.png)
 
 # TonWeb - JavaScript SDK for [The Open Network](https://ton.org)
 
@@ -101,7 +101,6 @@ Each part is documented separately:
 [tonweb-boc](https://github.com/toncenter/tonweb/blob/master/src/boc/README.md) - serializations of Cell and BitString
 
 [tonweb-utils](https://github.com/toncenter/tonweb/blob/master/src/utils/README.md) - work with TON Addresses, coin values, byte arrays, hex, hash functions.
-
 
 **Also we use JSDoc in code**
 
