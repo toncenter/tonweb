@@ -1,0 +1,7 @@
+{              - نام: برچسب زنی
+                موارد استفاده: actions/labeler@v5.0.0
+            
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {
+  }
+}

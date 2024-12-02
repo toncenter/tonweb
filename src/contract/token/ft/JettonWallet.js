@@ -17,7 +17,7 @@ class JettonWallet extends Contract {
     }
 
     /**
-     * @param params    {{queryId?: number, jettonAmount: BN, toAddress: Address, responseAddress: Address, forwardAmount: BN, forwardPayload: Uint8Array}}
+     * @param params    {{queryId?: number, jettonAmount: BN, toAddress: Address, responseAddress: Address, forwardAmount?: BN, forwardPayload?: Uint8Array | Cell}}
      */
     async createTransferBody(params) {
         const cell = new Cell();
@@ -28,9 +28,17 @@ class JettonWallet extends Contract {
         cell.bits.writeAddress(params.responseAddress);
         cell.bits.writeBit(false); // null custom_payload
         cell.bits.writeCoins(params.forwardAmount || new BN(0));
-        cell.bits.writeBit(false); // forward_payload in this slice, not separate cell
         if (params.forwardPayload) {
-            cell.bits.writeBytes(params.forwardPayload);
+            if (params.forwardPayload.refs) { // is Cell
+                cell.bits.writeBit(true); // true Either - write forward_payload in separate cell
+                cell.refs.push(params.forwardPayload);
+            } else { // Uint8Array
+                cell.bits.writeBit(false); // false Either - write forward_payload in current slice
+                cell.bits.writeBytes(params.forwardPayload);
+                // todo: support write snake bytes
+            }
+        } else {
+            cell.bits.writeBit(false); // false Either for empty payload
         }
         return cell;
     }

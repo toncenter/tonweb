@@ -73,7 +73,7 @@ class DnsCollection extends Contract {
      * @param domain    {string} e.g "sub.alice.ton"
      * @param category?  {string} category of requested DNS record, null for all categories
      * @param oneStep? {boolean} non-recursive
-     * @returns {Promise<Cell | Address | AdnlAddress | null>}
+     * @returns {Promise<Cell | Address | AdnlAddress | StorageBagId | null>}
      */
     async resolve(domain, category, oneStep) {
         const myAddress = await this.getAddress();

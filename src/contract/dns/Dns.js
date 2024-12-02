@@ -4,11 +4,15 @@ const {
     DNS_CATEGORY_NEXT_RESOLVER,
     DNS_CATEGORY_SITE,
     DNS_CATEGORY_WALLET,
+    DNS_CATEGORY_STORAGE,
     createSmartContractAddressRecord,
     createAdnlAddressRecord,
+    createStorageBagIdRecord,
     createNextResolverRecord,
     parseSmartContractAddressRecord,
     parseAdnlAddressRecord,
+    parseStorageBagIdRecord,
+    parseSiteRecord,
     parseNextResolverRecord,
     dnsResolve
 } = require("./DnsUtils");
@@ -36,7 +40,7 @@ class Dns {
      * @param domain    {string} e.g "sub.alice.ton"
      * @param category  {string | undefined} category of requested DNS record, null for all categories
      * @param oneStep {boolean | undefined}  non-recursive
-     * @returns {Promise<Cell | Address | AdnlAddress | null>}
+     * @returns {Promise<Cell | Address | AdnlAddress | StorageBagId | null>}
      */
     async resolve(domain, category, oneStep) {
         const rootDnsAddress = await this.getRootDnsAddress();
@@ -53,7 +57,7 @@ class Dns {
 
     /**
      * @param domain    {string} e.g "sub.alice.ton"
-     * @returns {Promise<AdnlAddress | null>}
+     * @returns {Promise<AdnlAddress | StorageBagId | null>}
      */
     getSiteAddress(domain) {
         return this.resolve(domain, DNS_CATEGORY_SITE);
@@ -63,12 +67,16 @@ class Dns {
 Dns.resolve = dnsResolve;
 Dns.createSmartContractAddressRecord = createSmartContractAddressRecord;
 Dns.createAdnlAddressRecord = createAdnlAddressRecord;
+Dns.createStorageBagIdRecord = createStorageBagIdRecord;
 Dns.createNextResolverRecord = createNextResolverRecord;
 Dns.parseNextResolverRecord = parseNextResolverRecord;
 Dns.parseAdnlAddressRecord = parseAdnlAddressRecord;
+Dns.parseStorageBagIdRecord = parseStorageBagIdRecord;
+Dns.parseSiteRecord = parseSiteRecord;
 Dns.parseSmartContractAddressRecord = parseSmartContractAddressRecord;
 Dns.DNS_CATEGORY_NEXT_RESOLVER = DNS_CATEGORY_NEXT_RESOLVER;
 Dns.DNS_CATEGORY_WALLET = DNS_CATEGORY_WALLET;
 Dns.DNS_CATEGORY_SITE = DNS_CATEGORY_SITE;
+Dns.DNS_CATEGORY_STORAGE = DNS_CATEGORY_STORAGE;
 
 module.exports.default = Dns;

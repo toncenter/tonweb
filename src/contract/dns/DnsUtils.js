@@ -1,10 +1,11 @@
 const {parseAddress} = require("../token/nft/NftUtils");
-const {AdnlAddress, BN, sha256, bytesToHex, bytesToBase64} = require("../../utils");
+const {AdnlAddress, StorageBagId, BN, sha256, bytesToHex, bytesToBase64} = require("../../utils");
 const {Cell} = require("../../boc");
 
 const DNS_CATEGORY_NEXT_RESOLVER = 'dns_next_resolver'; // Smart Contract address
 const DNS_CATEGORY_WALLET = 'wallet'; // Smart Contract address
-const DNS_CATEGORY_SITE = 'site'; // ADNL address
+const DNS_CATEGORY_SITE = 'site'; // ADNL address or Bag ID
+const DNS_CATEGORY_STORAGE = 'storage'; // Bag ID
 
 /**
  * @param category  {string | undefined}
@@ -38,6 +39,17 @@ const createAdnlAddressRecord = (adnlAddress) => {
     cell.bits.writeUint(0xad01, 16); // https://github.com/ton-blockchain/ton/blob/7e3df93ca2ab336716a230fceb1726d81bac0a06/crypto/block/block.tlb#L821
     cell.bits.writeBytes(adnlAddress.bytes);
     cell.bits.writeUint(0, 8); // flags
+    return cell;
+}
+
+/**
+ * @param storageBagId   {StorageBagId}
+ * @return {Cell}
+ */
+const createStorageBagIdRecord = (storageBagId) => {
+    const cell = new Cell();
+    cell.bits.writeUint(0x7473, 16);
+    cell.bits.writeBytes(storageBagId.bytes);
     return cell;
 }
 
@@ -92,13 +104,36 @@ const parseAdnlAddressRecord = (cell) => {
 }
 
 /**
+ * @param cell  {Cell}
+ * @return {StorageBagId}
+ */
+const parseStorageBagIdRecord = (cell) => {
+    if (cell.bits.array[0] !== 0x74 || cell.bits.array[1] !== 0x73) throw new Error('Invalid dns record value prefix');
+    const bytes = cell.bits.array.slice(2, 2 + 32); // skip prefix - first 16 bits
+    return new StorageBagId(bytes);
+}
+
+/**
+ * @param cell  {Cell}
+ * @return {AdnlAddress|StorageBagId|null}
+ */
+const parseSiteRecord = (cell) => {
+    if (!cell) return null;
+    if (cell.bits.array[0] === 0xad || cell.bits.array[1] === 0x01) {
+        return parseAdnlAddressRecord(cell);
+    } else {
+        return parseStorageBagIdRecord(cell);
+    }
+}
+
+/**
  * @private
  * @param provider  {HttpProvider}
  * @param dnsAddress   {string} address of dns smart contract
  * @param rawDomainBytes {Uint8Array}
  * @param category  {string | undefined} category of requested DNS record
  * @param oneStep {boolean | undefined} non-recursive
- * @returns {Promise<Cell | Address | AdnlAddress | null>}
+ * @returns {Promise<Cell | Address | AdnlAddress | StorageBagId | null>}
  */
 const dnsResolveImpl = async (provider, dnsAddress, rawDomainBytes, category, oneStep) => {
     const len = rawDomainBytes.length * 8;
@@ -140,7 +175,9 @@ const dnsResolveImpl = async (provider, dnsAddress, rawDomainBytes, category, on
         } else if (category === DNS_CATEGORY_WALLET) {
             return cell ? parseSmartContractAddressRecord(cell) : null;
         } else if (category === DNS_CATEGORY_SITE) {
-            return cell ? parseAdnlAddressRecord(cell) : null;
+            return cell ? parseSiteRecord(cell) : null;
+        } else if (category === DNS_CATEGORY_STORAGE) {
+            return cell ? parseStorageBagIdRecord(cell) : null;
         } else {
             return cell;
         }
@@ -214,7 +251,7 @@ const domainToBytes = (domain) => {
  * @param domain    {string} e.g "sub.alice.ton"
  * @param category  {string | undefined} category of requested DNS record
  * @param oneStep {boolean | undefined} non-recursive
- * @returns {Promise<Cell | Address | AdnlAddress | null>}
+ * @returns {Promise<Cell | Address | AdnlAddress | StorageBagId | null>}
  */
 const dnsResolve = async (provider, rootDnsAddress, domain, category, oneStep) => {
     const rawDomainBytes = domainToBytes(domain);
@@ -226,6 +263,7 @@ module.exports = {
     DNS_CATEGORY_NEXT_RESOLVER,
     DNS_CATEGORY_SITE,
     DNS_CATEGORY_WALLET,
+    DNS_CATEGORY_STORAGE,
     categoryToBN,
     domainToBytes,
     createSmartContractAddressRecord,
@@ -233,6 +271,9 @@ module.exports = {
     createNextResolverRecord,
     parseSmartContractAddressRecord,
     parseAdnlAddressRecord,
+    parseStorageBagIdRecord,
+    parseSiteRecord,
     parseNextResolverRecord,
+    createStorageBagIdRecord,
     dnsResolve
 };
