@@ -1,0 +1,6 @@
+import TonWeb from "tonweb";
+const tonweb = new TonWeb(EQAdWzm1d_Jxqq-9_CEXIQ04zwI2-IYh3fFtG1PYi9V0rW5w);
+const jettonMinter = new TonWeb.token.jetton.JettonMinter(tonweb.provider, {address: "<https://minter.ton.org>"});
+const data = await jettonMinter.getJettonData(yangi_token);
+console.log('Total supply:', data.totalSupply.toString(1000000000));
+console.log('URI to off-chain metadata:', data.jettonContentUri);
