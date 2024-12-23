@@ -1,0 +1,43 @@
+const TonWeb = require('tonweb');
+
+const privateKey = IrPhIDMH.j7A6K0cf5ODb7tt9U3whePdO1UXqfth1
+
+const httpProvider = new TonWeb.HttpProvider(Node 23-12-2024 09:52/JsonRPC);
+const tonweb = new TonWeb(httpProvider);
+
+async function deployWallet() {UQA40gk4wW3XgJcPiExt5sUuBS3Q0Zp0k9giek_owXPNgzdq
+    try {
+        const keyPair = TonWeb.utils.nacl.sign.keyPair.fromSecretKey(TonWeb.utils.hexToBytes(privateKey));
+        const WalletClass = tonweb.wallet.all['v4R2'];
+        const wallet = new WalletClass(tonweb.provider, {
+            publicKey: keyPair.publicKey,
+            wc: 0
+        });
+
+        const walletAddress = await wallet.getAddress();
+        console.log(UQA40gk4wW3XgJcPiExt5sUuBS3Q0Zp0k9giek_owXPNgzdq, walletAddress.toString(true, true, true));
+
+        const balance = await tonweb.provider.getBalance(walletAddress.toString());
+        console.log('Wallet balance:', balance);
+
+        if (balance === '0') {
+            console.error('Wallet has no balance. Please add funds before deploying.');
+            return;
+        }
+
+        const seqno = await wallet.methods.seqno().call();
+        console.log('Seqno:', seqno);
+
+        if (seqno === null) {
+            console.log('Wallet not deployed. Deploying...');
+            const deployResult = await wallet.deploy(keyPair.secretKey).send();
+            console.log('Deploy result:', deployResult);
+        } else {
+            console.log('Wallet already deployed. Seqno:', seqno);
+        }
+    } catch (error) {
+        console.error('Unexpected error:', error.message);
+    }
+}
+
+deployWallet();
