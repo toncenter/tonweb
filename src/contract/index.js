@@ -1,5 +1,5 @@
 const {Cell} = require("../boc");
-const {Address, bytesToBase64, bytesToHex, BN} = require("../utils");
+const {Address, bytesToBase64, bytesToHex, BN, CurrencyCollection} = require("../utils");
 
 class Contract {
     /**
@@ -100,6 +100,28 @@ class Contract {
     // currencies$_ grams:Grams other:ExtraCurrencyCollection
     // = CurrencyCollection;
 
+    /**
+    * @param id {number} Extra currency id
+    * @param amount {number | BN} EC amount
+    */
+
+    static createExtraCurrencyCollection(id, amount) {
+        const ecData = new Cell();
+
+        let maxSignedInt32 = (2 ** 31) - 1;
+        if(id > maxSignedInt32 || id < -maxSignedInt32) {
+            throw Error(`Extra currency id is out of 32 bit range: ${id}`);
+        }
+
+        // hml_long$10 {m:#} n:(#<= m) s:(n * Bit) = HmLabel ~n m;
+        ecData.bits.writeUint(0b10, 2); // tag
+        ecData.bits.writeUint(32, 6); // Label len
+        ecData.bits.writeUint(id, 32); // 32 bit label
+        ecData.bits.writeVarUint(32, amount); // Data
+
+        return ecData;
+    }
+
     //int_msg_info$0 ihr_disabled:Bool bounce:Bool
     //src:MsgAddressInt dest:MsgAddressInt
     //value:CurrencyCollection ihr_fee:Grams fwd_fee:Grams
@@ -111,7 +133,7 @@ class Contract {
      * @param bounce  {null | boolean}
      * @param bounced {boolean}
      * @param src  {Address | string}
-     * @param currencyCollection  {null}
+     * @param currencyCollection  {Cell | null}
      * @param ihrFees  {number | BN}
      * @param fwdFees  {number | BN}
      * @param createdLt  {number | BN}
@@ -142,7 +164,7 @@ class Contract {
         message.bits.writeAddress(new Address(dest));
         message.bits.writeGrams(gramValue);
         if (currencyCollection) {
-            throw "Currency collections are not implemented yet";
+            message.refs.push(currencyCollection);
         }
         message.bits.writeBit(Boolean(currencyCollection));
         message.bits.writeGrams(ihrFees);
@@ -173,7 +195,7 @@ class Contract {
 
     /**
      * @param address {Address | string}
-     * @param amount {BN} in nanotons
+     * @param amount {BN} | {CurrencyCollection} in nanotons
      * @param payload   {string | Uint8Array | Cell}
      * @param stateInit? {Cell}
      * @return {Cell}
@@ -193,7 +215,19 @@ class Contract {
             }
         }
 
-        const orderHeader = Contract.createInternalMessageHeader(new Address(address), new BN(amount));
+        let bnAmount;
+        let extraCell = null;
+
+        if(amount instanceof CurrencyCollection) {
+            bnAmount  = amount.value;
+            extraCell = this.createExtraCurrencyCollection(amount.extra.id, amount.extra.value);
+        } else if(BN.isBN(amount)) {
+            bnAmount = amount;
+        } else {
+            bnAmount = new BN(amount);
+        }
+
+        const orderHeader = Contract.createInternalMessageHeader(new Address(address), bnAmount, true, null, false, null, extraCell);
         const order = Contract.createCommonMsgInfo(orderHeader, stateInit, payloadCell);
         return order;
     }

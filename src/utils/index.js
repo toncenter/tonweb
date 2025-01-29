@@ -21,9 +21,12 @@ const {
     newSeed
 } = require("./Utils");
 
+const { waitSome } = require("./Time");
+
 const Address = require("./Address").default;
 const AdnlAddress = require("./AdnlAddress").default;
 const StorageBagId = require("./StorageBagId").default;
+const CurrencyCollection = require("./CurrencyCollection").default;
 
 // ton://transfer/EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG
 // ton://transfer/EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG?amount=1000000000
@@ -112,6 +115,7 @@ module.exports = {
     Address,
     AdnlAddress,
     StorageBagId,
+    CurrencyCollection,
     BN,
     nacl,
     sha256,
@@ -133,5 +137,6 @@ module.exports = {
     formatTransferUrl,
     keyPairFromSeed,
     newKeyPair,
-    newSeed
+    newSeed,
+    waitSome
 };

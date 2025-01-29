@@ -47,6 +47,40 @@ class TonWeb {
     async getTransactions(address, limit = 20, lt = undefined, txhash = undefined, to_lt = undefined) {
         return this.provider.getTransactions(address.toString(), limit, lt, txhash, to_lt);
     };
+    /*
+     * @param from {Address | string},
+     * @param to { Address | string},
+     * @param lt { BN | string},
+     * @param hash { string },
+     * @param maxTry?: { number },
+     * @param waitTime?: { number }
+     */
+    async waitForTx (from, to, lt, hash, maxTry = 20, waitTime = 2000) {
+
+        let tryCount = 0;
+
+        let lastTx = {lt: new TonWeb.utils.BN(lt), hash};
+        let fromAddress = typeof from == 'string' ? new this.utils.Address(from) : from;
+        let toAddress   = typeof to == 'string' ? new this.utils.Address(to) : to;
+
+        do {
+            await this.utils.waitSome();
+
+            const txs = await this.getTransactions(toAddress.toString(), 10, undefined, lastTx.hash, lastTx.lt.toString());
+            const newTxs = txs.filter(x => new this.utils.BN(x.transaction_id.lt).gt(lastTx.lt));
+            if(newTxs.length > 0) {
+                const highloadTx = newTxs.find(x => new Address(x.in_msg.source).toString(false) == fromAddress.toString(false));
+                if(highloadTx) {
+                    return highloadTx;
+                }
+                lastTx = {lt: new TonWeb.utils.BN(newTxs[0].lt), hash: newTxs[0].hash};
+            }
+
+            if(++tryCount > maxTry) {
+                throw Error(`Sending request is not processed within ${Math.floor(waitTime / 1000) * maxTry} sec. Likely failed`);
+            }
+        } while(true);
+    }
 
     /**
      * @param address   {Address | string}

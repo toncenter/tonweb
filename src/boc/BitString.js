@@ -220,6 +220,33 @@ class BitString {
         this.writeGrams(amount);
     }
 
+    /**
+     * @param bits {number} VarUint bits
+     * @param amount {number | BN} value
+     * var_uint$_ {n:#} len:(#< n) value:(uint (len * 8)) = VarUInteger n;
+     */
+    writeVarUint(bits, amount) {
+        const lengthBits = Math.ceil(Math.log2(bits));
+        if(amount == 0) {
+            this.writeUint(0, lengthBits);
+        } else {
+            if(amount < 0) {
+                throw RangeError("VarUint amount has to be unsigned!");
+            }
+            const bigAmount = new BN(amount);
+            const l         = bigAmount.byteLength();
+            const bitLen    = l * 8;
+            // If VarUint bits are, let's say 32, then lenght prefix is 5 bits.
+            // Max amount storable in 5 bits is 31, so max value length is 31 * 8
+            const maxValueLen = (bits - 1) * 8;
+            if(bitLen > maxValueLen) {
+                throw RangeError(`Value too long ${bitLen}/${maxValueLen}`);
+            }
+            this.writeUint(l, lengthBits);
+            this.writeUint(bigAmount, bitLen);
+        }
+    }
+
     //addr_none$00 = MsgAddressExt;
     //addr_std$10 anycast:(Maybe Anycast)
     // workchain_id:int8 address:uint256 = MsgAddressInt;

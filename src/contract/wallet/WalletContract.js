@@ -166,7 +166,7 @@ class WalletContract extends Contract {
     /**
      * @param secretKey {Uint8Array}  nacl.KeyPair.secretKey
      * @param address   {Address | string}
-     * @param amount    {BN | number} in nanotons
+     * @param amount    {BN | number | CurrencyCollection} in nanotons
      * @param seqno {number}
      * @param payload?   {string | Uint8Array | Cell}
      * @param sendMode?  {number}
@@ -202,7 +202,7 @@ class WalletContract extends Contract {
     /**
      * @param secretKey {Uint8Array}  nacl.KeyPair.secretKey
      * @param seqno {number}
-     * @param messages {[{toAddress: Address | string, amount: BN, payload?: string | Uint8Array | Cell, sendMode?: number, stateInit?: Cell }]} up to 4 messages
+     * @param messages {[{toAddress: Address | string, amount: BN | CurrencyCollection, payload?: string | Uint8Array | Cell, sendMode?: number, stateInit?: Cell }]} up to 4 messages
      * @param dummySignature?    {boolean}
      * @param expireAt? {number}
      * @return {Promise<{address: Address, signature: Uint8Array, message: Cell, cell: Cell, body: Cell, resultMessage: Cell}>}

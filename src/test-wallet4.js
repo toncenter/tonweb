@@ -29,7 +29,7 @@ async function init() {
 
     // wallet seqno get method
 
-    const seqno = (await wallet.methods.seqno().call()) || 0;
+    let seqno = (await wallet.methods.seqno().call()) || 0;
     console.log('wallet seqno = ', seqno);
 
     // Simple transfer
@@ -46,6 +46,63 @@ async function init() {
                 sendMode: 3,
             }).send()
         );
+    }
+
+    const ecTransfer = async () => {
+        const stateBefore = await tonweb.provider.getAddressInfo(BENEFICIARY);
+        const toSend  = new TonWeb.utils.BN(1 * (10 ** 6));
+        const prevSeqno = seqno;
+        let balanceBefore;
+        let ecFound = stateBefore.extra_currencies.find(x => (x.id == 100));
+        if(ecFound) {
+            balanceBefore = new TonWeb.utils.BN(ecFound.amount);
+        } else {
+            balanceBefore = new TonWeb.utils.BN(0);
+        }
+        console.log(balanceBefore.toString());
+        await TonWeb.utils.waitSome();
+        console.log(
+            'Extra currency transfer',
+            await wallet.methods.transfer({
+                secretKey: keyPair.secretKey,
+                toAddress: BENEFICIARY,
+                amount: new TonWeb.utils.CurrencyCollection(0, {id: 100, value: toSend}),
+                seqno: seqno || 0,
+                payload: 'Hello EC',
+                sendMode: 3
+            }).send()
+        );
+
+        let retryCount = 0;
+        do {
+            await TonWeb.utils.waitSome();
+            seqno = await wallet.methods.seqno().call();
+            if(retryCount++ > 10) {
+                throw Error("Seqno didn't update withing 20 sec. Sending likely failed");
+            }
+        } while(prevSeqno == seqno);
+
+        console.log("Message sent successfully!");
+
+        const depositTx  = await tonweb.waitForTx(wallet.address, BENEFICIARY, stateBefore.last_transaction_id.lt, stateBefore.last_transaction_id.hash);
+        if(depositTx.in_msg.extra_currencies.find(c => c.id == 100 && new TonWeb.utils.BN(c.amount).eq(toSend)) == undefined) {
+            throw Error("Deposit tx not found!");
+        } else {
+            console.log("Deposit tx found!");
+        }
+        const stateAfter = await tonweb.provider.getAddressInfo(BENEFICIARY);
+        ecFound = stateAfter.extra_currencies.find(x => (x.id == 100));
+        if(ecFound) {
+            if((new TonWeb.utils.BN(ecFound.amount)).eq(balanceBefore.add(toSend))) {
+                console.log(`${BENEFICIARY} got ${toSend} EC`);
+            } else {
+                console.log(stateAfter);
+                throw Error(`Expected balance ${balanceBefore.add(toSend)} got ${ecFound.amount}`);
+            }
+        } else {
+            console.log(stateAfter);
+            throw Error("No extra currency with id 100 present on receiver address");
+        }
     }
 
     // Create subscription
@@ -140,6 +197,7 @@ async function init() {
     //
 
     // await simpleTransfer();
+    await ecTransfer();
     // await deployAndInstallPlugin();
     // await installPlugin();
     // await removePlugin();

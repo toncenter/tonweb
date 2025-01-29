@@ -99,7 +99,7 @@ class HighloadWalletContractV3 extends Contract {
     /**
      * @param secretKey {Uint8Array}  nacl.KeyPair.secretKey
      * @param address   {Address | string}
-     * @param amount    {BN | number} in nanotons
+     * @param amount    {BN | number | CurrencyCollection} in nanotons
      * @param queryId {HighloadQueryId}
      * @param [payload]   {string | Uint8Array | Cell}
      * @param [sendMode]  {number}
