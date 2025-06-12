@@ -1,5 +1,5 @@
-const {Cell} = require("../boc");
-const {Address, bytesToBase64, bytesToHex, BN} = require("../utils");
+const { Cell } = require("../boc");
+const { Address, bytesToBase64, bytesToHex, BN } = require("../utils");
 
 class Contract {
     /**
@@ -72,10 +72,10 @@ class Contract {
      * @return {Cell}
      */
     static createStateInit(code,
-                           data,
-                           library = null,
-                           splitDepth = null,
-                           ticktock = null) {
+        data,
+        library = null,
+        splitDepth = null,
+        ticktock = null) {
         if (library)
             throw "Library in state init is not implemented";
         if (splitDepth)
@@ -119,16 +119,16 @@ class Contract {
      * @return {Cell}
      */
     static createInternalMessageHeader(dest,
-                                       gramValue = 0,
-                                       ihrDisabled = true,
-                                       bounce = null,
-                                       bounced = false,
-                                       src = null,
-                                       currencyCollection = null,
-                                       ihrFees = 0,
-                                       fwdFees = 0,
-                                       createdLt = 0,
-                                       createdAt = 0) {
+        gramValue = 0,
+        ihrDisabled = true,
+        bounce = null,
+        bounced = false,
+        src = null,
+        currencyCollection = null,
+        ihrFees = 0,
+        fwdFees = 0,
+        createdLt = 0,
+        createdAt = 0) {
         const message = new Cell();
         message.bits.writeBit(false);
         message.bits.writeBit(ihrDisabled);
@@ -161,8 +161,8 @@ class Contract {
      * @return {Cell}
      */
     static createExternalMessageHeader(dest,
-                                       src = null,
-                                       importFee = 0) {
+        src = null,
+        importFee = 0) {
         const message = new Cell();
         message.bits.writeUint(2, 2);
         message.bits.writeAddress(src ? new Address(src) : null);
@@ -206,7 +206,7 @@ class Contract {
      * @param body?  {Cell}
      * @return {Cell}
      */
-    static createCommonMsgInfo(header, stateInit = null, body = null) {
+    static createCommonMsgInfo(header, stateInit = null, body = null, bodyIsRef = false) {
         const commonMsgInfo = new Cell();
         commonMsgInfo.writeCell(header);
 
@@ -227,7 +227,7 @@ class Contract {
         }
         // TODO we also should check for free refs here
         if (body) {
-            if ((commonMsgInfo.bits.getFreeBits() >= body.bits.getUsedBits()) && (commonMsgInfo.refs.length + body.refs.length <= 4)) {
+            if (!bodyIsRef && (commonMsgInfo.bits.getFreeBits() >= body.bits.getUsedBits()) && (commonMsgInfo.refs.length + body.refs.length <= 4)) {
                 commonMsgInfo.bits.writeBit(false);
                 commonMsgInfo.writeCell(body);
             } else {
@@ -279,4 +279,4 @@ class Contract {
     }
 }
 
-module.exports = {Contract};
+module.exports = { Contract };

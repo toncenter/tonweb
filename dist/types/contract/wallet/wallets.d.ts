@@ -7,7 +7,8 @@ import { WalletV4ContractR2 } from './v4/wallet-v4-contract-r2';
 import { WalletV2ContractR1 } from './v2/wallet-v2-contract-r1';
 import { WalletV2ContractR2 } from './v2/wallet-v2-contract-r2';
 import { WalletV3ContractR1 } from './v3/wallet-v3-contract-r1';
-import { WalletV3ContractR2 } from './v3/wallet-v3-contract-r2';
+import { WalletV3ContractR1 } from './v3/wallet-v3-contract-r1';
+import { WalletV5Contract } from './v5/wallet-v5-contract';
 export declare class Wallets {
     readonly provider: HttpProvider;
     static all: {
@@ -20,6 +21,7 @@ export declare class Wallets {
         v3R2: typeof WalletV3ContractR2;
         v4R1: typeof WalletV4ContractR1;
         v4R2: typeof WalletV4ContractR2;
+        v5R1: typeof WalletV5Contract;
     };
     static list: (typeof SimpleWalletContractR1 | typeof WalletV4ContractR1)[];
     readonly all: {
@@ -32,9 +34,10 @@ export declare class Wallets {
         v3R2: typeof WalletV3ContractR2;
         v4R1: typeof WalletV4ContractR1;
         v4R2: typeof WalletV4ContractR2;
+        v5R1: typeof WalletV5Contract;
     };
     readonly list: (typeof SimpleWalletContractR1 | typeof WalletV4ContractR1)[];
-    readonly defaultVersion = "v3R1";
+    readonly defaultVersion = "v3R2";
     readonly default: typeof WalletV3ContractR1;
     constructor(provider: HttpProvider);
     create(options: any): WalletV3ContractR1;
