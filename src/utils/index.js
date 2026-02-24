@@ -24,6 +24,7 @@ const {
 const Address = require("./Address").default;
 const AdnlAddress = require("./AdnlAddress").default;
 const StorageBagId = require("./StorageBagId").default;
+const { SendMode } = require("./SendMode");
 
 // ton://transfer/EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG
 // ton://transfer/EQA0i8-CdGnF_DhUHHf92R1ONH6sIA9vLZ_WLcCIhfBBXwtG?amount=1000000000
@@ -133,5 +134,6 @@ module.exports = {
     formatTransferUrl,
     keyPairFromSeed,
     newKeyPair,
-    newSeed
+    newSeed,
+    SendMode
 };
